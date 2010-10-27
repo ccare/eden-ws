@@ -183,6 +183,17 @@ public class ScriptTest {
         assertEquals(null, table.getValue(b));
         table.define(c, "101");
         assertEquals(3, table.getValue(b));
+        table.define(b, "2");
+        assertEquals(2, table.getValue(b));
+        table.define(c, "'a'");         
+        assertEquals(3, table.getValue(b));
+
+        // Remove the trigger and verify that the linkage is broken
+        table.defineTriggeredProc(a, "function() { $eden_define('b','3');}");
+        table.define(b, "2");
+        assertEquals(2, table.getValue(b));
+        table.define(c, "'a'");
+        assertEquals(2, table.getValue(b));
     }
 
     @Test

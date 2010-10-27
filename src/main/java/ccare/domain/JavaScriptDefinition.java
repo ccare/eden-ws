@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class JavaScriptDefinition implements SymbolDefinition {
 
     public enum ExprType {
-        FUNCTION, EXPRESSION, OBJECT
+        FUNCTION, EXPRESSION
     }
 
     private final String expr;
@@ -28,13 +28,13 @@ public class JavaScriptDefinition implements SymbolDefinition {
     private List<SymbolReference> triggers;
 
     public JavaScriptDefinition(String expr) {
-        this(expr, ExprType.EXPRESSION);
+        this(expr, ExprType.EXPRESSION, null);
     }
 
     public JavaScriptDefinition(String expr, ExprType type, String... triggers) {
         this.expr = expr;
         this.type = type;
-        if (triggers == null) {
+        if (triggers == null || triggers.length == 0) {
             this.triggers = Collections.<SymbolReference>emptyList();
         } else {
             this.triggers = new ArrayList(triggers.length);
@@ -73,8 +73,6 @@ public class JavaScriptDefinition implements SymbolDefinition {
             final Scriptable scope = JavaScriptScopeFactory.getInstance().scopeFor(t);
             if (isExecutable()) {
                 return cx.compileFunction(scope, getExpr(), "<func>", 1, null);
-            } else if (isObject()) {
-                return null;
             } else {
                 return cx.evaluateString(scope, getExpr(), "<cmd>", 1, null);
             }
@@ -86,10 +84,6 @@ public class JavaScriptDefinition implements SymbolDefinition {
     @Override
     public boolean isExecutable() {
         return type == ExprType.FUNCTION;
-    }
-
-    public boolean isObject() {
-        return type == ExprType.OBJECT;
     }
 
     static Set<String> extractSpecialSymbols(final String input) {
