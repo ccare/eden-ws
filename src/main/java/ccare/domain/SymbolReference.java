@@ -26,9 +26,14 @@ public class SymbolReference {
 
         SymbolReference that = (SymbolReference) o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-
-        return true;
+        final String n = getName();
+        if (n == null) {
+            return false;
+        } else if (n.equals(that.getName())) {
+           return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
