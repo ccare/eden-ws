@@ -10,6 +10,7 @@ import javax.naming.NamingException;
 import java.util.Properties;
 
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -50,7 +51,7 @@ public class SymbolTableBeanTest {
         def.setDefinition("a+b");
         SymbolReference r = new SymbolReference();
         serviceBean.define(r, def);
-        assertThat(serviceBean.listSymbols(), hasItem(r));
+        assertTrue(serviceBean.listSymbols().contains(r));
     }
 
     private InitialContext createContext() {

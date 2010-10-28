@@ -16,12 +16,6 @@ public class SymbolImpl implements Symbol {
     private Set<Symbol> dependents = new HashSet<Symbol>();
     private Set<Symbol> dependsOn = new HashSet<Symbol>();
     private Set<Symbol> triggeredBy = new HashSet<Symbol>();
-
-    @Override
-    public Set<Symbol> getTriggers() {
-        return triggers;
-    }
-
     private Set<Symbol> triggers = new HashSet<Symbol>();
 
     public SymbolImpl(SymbolReference ref) {

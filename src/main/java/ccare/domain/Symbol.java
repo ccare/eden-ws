@@ -32,6 +32,4 @@ public interface Symbol {
     boolean isDependentOn(Symbol symbol);
 
     boolean isUpToDate();
-
-    Set<Symbol> getTriggers();
 }
