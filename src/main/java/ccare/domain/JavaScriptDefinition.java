@@ -31,8 +31,8 @@ public class JavaScriptDefinition implements SymbolDefinition {
     private static final Pattern SPECIALNAME_DIFFICULT_DEFINITION_OBJECT = Pattern.compile("[^#]*#[\\w:/#_]+\\s*is[^\\{]*\\{.*");
     public static final Pattern SPECIALNAME_DIFFICULT_DEFINITION_SINGLEQUOTE = Pattern.compile("[^#]*#[\\w:/#_]+\\s*is[^']'.*");
     private static final Pattern SPECIALNAME_DEFINITION = Pattern.compile("#([\\w:/#_]+)\\s*is\\s*([^\\};\\n]*)");
-    public static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([\\w:/#_]+)");
-    private static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern.compile("#\\{([^\\}]+)\\}");
+    public static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([\\w:/#_]+)(?<!\\s+is)");
+    private static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern.compile("#\\{([^\\}]+)\\}(?<!\\s*is)");
     private static final Pattern DOUBLE_QUOTE_REGION = Pattern.compile("\"[^\"\\r\\n]*\"");
     private static final Pattern SINGLE_QUOTE_REGION = Pattern.compile("'[^'\\r\\n]*'");
     private List<SymbolReference> triggers;
@@ -55,18 +55,20 @@ public class JavaScriptDefinition implements SymbolDefinition {
     }
 
     public String getExpr() {
-        final String translatedDefns;
-        if (SPECIALNAME_DIFFICULT_DEFINITION_OBJECT.matcher(expr).matches()) {
-            translatedDefns = translateExpression(expr);
-            //throw new NotImplementedException("Cannot (yet) parse definitions involving objects");
-        } else if (SPECIALNAME_DIFFICULT_DEFINITION_SINGLEQUOTE.matcher(expr).matches()) {
-            translatedDefns = translateExpression(expr);
-        } else {
-            translatedDefns = SPECIALNAME_DEFINITION.matcher(expr).replaceAll("\\$eden_define('$1','$2')");
-        }
-        final String translatedSimples = SPECIALNAME_PATTERN.matcher(translatedDefns).replaceAll("\\$eden_observe('$1')");
-        final String translatedEscaped = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedSimples).replaceAll("\\$eden_observe('$1')");
-        return translatedEscaped;
+//        final String translatedDefns;
+//
+//            translatedDefns = translateExpression(SPECIALNAME_PATTERN.matcher(expr).replaceAll("\\$eden_observe('$1')"));
+//        if (SPECIALNAME_DIFFICULT_DEFINITION_OBJECT.matcher(expr).matches()) {
+//            translatedDefns = translateExpression(SPECIALNAME_PATTERN.matcher(expr).replaceAll("\\$eden_observe('$1')"));
+//            //throw new NotImplementedException("Cannot (yet) parse definitions involving objects");
+//        } else if (SPECIALNAME_DIFFICULT_DEFINITION_SINGLEQUOTE.matcher(expr).matches()) {
+//            translatedDefns = translateExpression(SPECIALNAME_PATTERN.matcher(expr).replaceAll("\\$eden_observe('$1')"));
+//        } else {
+//            translatedDefns = SPECIALNAME_DEFINITION.matcher(expr).replaceAll("\\$eden_define('$1','$2')");
+//        }
+//        final String translatedSimples = SPECIALNAME_PATTERN.matcher(expr).replaceAll("\\$eden_observe('$1')");
+//        final String translatedEscaped = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedSimples).replaceAll("\\$eden_observe('$1')");
+        return translateExpression(expr);
     }
     
 
@@ -196,7 +198,15 @@ public class JavaScriptDefinition implements SymbolDefinition {
             ptr = end;
         }
         sb.append(expr.substring(ptr,expr.length()));
-        return sb.toString();
+        final String s = sb.toString();
+
+
+        final String translatedSimples = SPECIALNAME_PATTERN.matcher(s).replaceAll("\\$eden_observe('$1')");
+        final String translatedEscaped = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedSimples).replaceAll("\\$eden_observe('$1')");
+
+        return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe\\('([^\\)']*)'\\)","$1\\$eden_observe(\\\\'$2\\\\')");
+
+      //  return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe","x')");
     }
 
 

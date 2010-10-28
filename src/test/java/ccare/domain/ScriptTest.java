@@ -1,6 +1,7 @@
 package ccare.domain;
 
 import ccare.service.SymbolTableBean;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Undefined;
@@ -174,6 +175,26 @@ public class ScriptTest {
         table.defineFunction(a, "function() { $eden_define('b','3'); }");
         table.execute(a);
         assertEquals(3, table.getValue(b));
+    }
+
+    @Test
+    public void testExecuteFuncWithInnerDefinition() {
+        SymbolTable table = new SymbolTableBean();
+        table.defineFunction(a, "function() { #b is 3; }");
+        table.execute(a);
+        assertEquals(3, table.getValue(b));
+    }
+
+    @Ignore
+    @Test
+    public void testExecuteFuncWithInnerDefinitionCreatingDependency() {
+        SymbolTable table = new SymbolTableBean();
+        table.define(c, "45");
+        table.defineFunction(a, "function() { #b is #c + 1; }");
+        table.execute(a);
+        assertEquals(46.0, table.getValue(b));
+        table.define(c, "2");
+        assertEquals(46.0, table.getValue(b));
     }
 
     @Test
