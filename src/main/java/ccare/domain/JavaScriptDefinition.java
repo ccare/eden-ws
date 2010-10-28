@@ -57,7 +57,8 @@ public class JavaScriptDefinition implements SymbolDefinition {
     public String getExpr() {
         final String translatedDefns;
         if (SPECIALNAME_DIFFICULT_DEFINITION_OBJECT.matcher(expr).matches()) {
-            throw new NotImplementedException("Cannot (yet) parse definitions involving objects");
+            translatedDefns = translateExpression(expr);
+            //throw new NotImplementedException("Cannot (yet) parse definitions involving objects");
         } else if (SPECIALNAME_DIFFICULT_DEFINITION_SINGLEQUOTE.matcher(expr).matches()) {
             translatedDefns = translateExpression(expr);
         } else {

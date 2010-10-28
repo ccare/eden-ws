@@ -111,18 +111,14 @@ public class JavaScriptDefinitionTest {
     }
 
 
-    // TODO: IMPLEMENT THIS
-    //@Test(expected = NotImplementedException.class)
     @Test
     public void testExpressionTranslationForObjects() {
         validateExpr("$eden_define('a','({ a: 1})')", "#a is ({ a: 1})");
     }
 
-    // TODO: IMPLEMENT THIS
-    //@Test(expected = NotImplementedException.class)
     @Test
     public void testExpressionTranslationForObjectsInFunctions() {
-        validateExpr("$eden_define('a','({ a: 1})')", "function() { #a is ({ a: 1}); }");
+        validateExpr("function() { $eden_define('a','({ a: 1})'); }", "function() { #a is ({ a: 1}); }");
     }
 
     @Test
