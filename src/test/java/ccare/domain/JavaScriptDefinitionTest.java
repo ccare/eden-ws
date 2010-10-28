@@ -1,17 +1,21 @@
 package ccare.domain;
 
 import ccare.service.SymbolTableBean;
-import org.apache.commons.lang.NotImplementedException;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
 
+import static ccare.domain.JavaScriptDefinition.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Created by IntelliJ IDEA.
@@ -95,26 +99,178 @@ public class JavaScriptDefinitionTest {
     }
 
 
-    @Test(expected = NotImplementedException.class)
+    @Test
     public void testExpressionTranslationForSingleQuoteStrings() {
         validateExpr("$eden_define('a','\\'...\\'')", "#a is '...'");
-        validateExpr("function() {$eden_define('a','\\'b+c\\'')}", "function() {#a is 'b+c'}");
     }
-
-    @Test(expected = NotImplementedException.class)
+    
+    @Test
     public void testExpressionTranslationForSingleQuoteStringsInFunctions() {
         validateExpr("function() {$eden_define('a','\\'b+c\\'')}", "function() {#a is 'b+c'}");
+        validateExpr("function() {$eden_define('a','\\'b+c\\'');}", "function() {#a is 'b+c';}");
     }
 
 
-    @Test(expected = NotImplementedException.class)
+    // TODO: IMPLEMENT THIS
+    //@Test(expected = NotImplementedException.class)
+    @Test
     public void testExpressionTranslationForObjects() {
         validateExpr("$eden_define('a','({ a: 1})')", "#a is ({ a: 1})");
     }
 
-    @Test(expected = NotImplementedException.class)
+    // TODO: IMPLEMENT THIS
+    //@Test(expected = NotImplementedException.class)
+    @Test
     public void testExpressionTranslationForObjectsInFunctions() {
         validateExpr("$eden_define('a','({ a: 1})')", "function() { #a is ({ a: 1}); }");
+    }
+
+    @Test
+    public void testFindStartOfDefinitionForEmpty() {
+        final List<DefnFragment> fragments = findExprRange("''");
+        assertEquals(0, fragments.size());
+    }
+
+    @Test
+    public void testFindStartOfDefinitionContainingSingleQuoteStrings() {
+        List<DefnFragment> fragments = findExprRange("#a is '...'");
+        assertEquals(0, fragments.get(0).start);
+
+        fragments = findExprRange(" #a is '...'");
+        assertEquals(1, fragments.get(0).start);
+
+        fragments = findExprRange("asd; #a is '...'");
+        assertEquals(5, fragments.get(0).start);
+    }
+
+    @Test
+    public void testFindStartAndEndOfExpressionContainingSingleQuoteStrings() {
+        List<DefnFragment> fragments = findExprRange("#a is '...'");
+        assertEquals(6, fragments.get(0).exprStart);
+        assertEquals(11, fragments.get(0).exprEnd);
+
+        final String expr = "#a is '....'";
+        fragments = findExprRange(expr);
+        final int start = fragments.get(0).exprStart;
+        assertEquals(6, start);
+        final int end = fragments.get(0).exprEnd;
+        assertEquals(12, end);
+        assertEquals("'....'", expr.substring(start, end));
+    }
+
+    @Test
+    public void testExtractExpressionContainingSingleQuoteStrings() {
+        final String expr = "#a is '....'";
+        assertEquals("$eden_define('a','\\'....\\'')", translateExpression(expr));
+        assertEquals("$eden_define('a','\\'..\\\\a..\\'')", translateExpression("#a is '..\\a..'"));
+    }
+
+
+
+
+    @Test
+    public void testFindStarts() {
+        assertEquals(0, findStarts("").size());
+        assertEquals(1, findStarts("#a is b;").size());
+        assertEquals(2, findStarts("#a is b; #c is d;").size());
+
+        assertEquals(0, (Object) findStarts("#a is b;").get(0)[0]);
+        assertEquals(0, (Object) findStarts("#a is b; #c is d;").get(0)[0]);
+        assertEquals(9, (Object) findStarts("#a is b; #c is d;").get(1)[0]);  
+    }
+
+
+
+    @Test
+    public void testFindEndOfExprForSimpleInput() {
+        assertEquals(0, JavaScriptDefinition.findEndOfExpr("",0));
+        assertEquals(1, JavaScriptDefinition.findEndOfExpr("a",1));
+        assertEquals(1, JavaScriptDefinition.findEndOfExpr("a",0));
+    }
+
+    @Test
+    public void testExtractExprForSimpleInput() {
+        assertEquals("", extractExpr("",0));
+        assertEquals("", extractExpr("a",1));
+        assertEquals("a", extractExpr("a",0));
+        assertEquals("a b c", extractExpr("a b c",0));
+    }
+
+    @Test
+    public void testExtractExprTerminatedBySemiColonAndNewline() {
+        assertEquals("a b", extractExpr("a b; c",0));
+        assertEquals("a b", extractExpr("a b\n c",0));
+        assertEquals("a b c", extractExpr("a b c;\n a v l;;;;",0));
+        assertEquals(" b + c", extractExpr("a is b + c; ...",4));
+    }
+
+    @Test
+    public void testExtractExprContainingSingleQuotString() {
+        assertEquals("';' + a", extractExpr("';' + a",0));
+        assertEquals("'a string' + a", extractExpr("'a string' + a; a = 2",0));
+    }
+
+    @Test
+    public void testExtractExprFromWithinFunction() {
+        assertEquals("b + c", extractExpr("function() {a is b + c; ...}",17));
+        assertEquals("b + c", extractExpr("function() {a is b + c}",17));
+    }
+
+
+
+    @Test
+    public void testExtractExprContainingSingleQuotStringWithEscapedQuotes() {
+        assertEquals("'a \\'string\\' containing \\'' + a", extractExpr("'a \\'string\\' containing \\'' + a; a = 2",0));
+    }
+
+    @Test
+    public void testExtractExprContainingDblQuotString() {
+        assertEquals("\";\" + a", extractExpr("\";\" + a",0));
+        assertEquals("\"a string\" + a", extractExpr("\"a string\" + a; a = 2",0));
+    }
+
+    @Test
+    public void testExtractExprContainingSingleDblStringWithEscapedQuotes() {
+        assertEquals("\"a \\\"string\\\" containing \\\"\" + a", extractExpr("\"a \\\"string\\\" containing \\\"\" + a; a = 2",0));
+    }
+
+    @Test
+    public void testExtractExprContainingBraces() {
+        assertEquals("{}", extractExpr("{}; a = 2",0));
+        assertEquals("{{{}}}", extractExpr("{{{}}}; a = 2",0));
+    }
+
+    @Test
+    public void testExtractExprIgnoresSemiColonInBraces() {
+        assertEquals("{a;a}", extractExpr("{a;a}; a = 2",0));
+        assertEquals("{{{{{{{{{a;a};};};};};};};};}", extractExpr("{{{{{{{{{a;a};};};};};};};};}; a = 2",0));
+    }
+
+    @Test
+    public void testExtractExprIgnoresNewLineInBraces() {
+        assertEquals("{a;\n" +
+                "a}", extractExpr("{a;\na}; a = 2",0));
+        assertEquals("{a;\n}", extractExpr("{a;\n}\na}; a = 2",0));
+    }
+
+    @Test
+    public void testExtractExprIgnoresOpeningBracesInSingleString() {
+        assertEquals("'{' + a", extractExpr("'{' + a;}",0));
+    }
+
+    @Test
+    public void testExtractExprIgnoresOpeningBracesInDoubleString() {
+        assertEquals("\"{\" + a", extractExpr("\"{\" + a;}",0));
+    }
+
+    @Test
+    public void testExtractExprIgnoresClosingBracesInSingleString() {
+        assertEquals("{ + '}';...", extractExpr("{ + '}';...",0));
+    }
+
+    @Test
+    public void testExtractExprIgnoresClosingBracesInDoubleString() {
+        assertEquals("{ + \"}\";...", extractExpr("{ + \"}\";...",0));
     }
 
 
@@ -126,8 +282,7 @@ public class JavaScriptDefinitionTest {
         final JavaScriptDefinition defn = new JavaScriptDefinition(expr);
         assertEquals(target, defn.getExpr());
     }
-
-
+    
     @Test
     public void testGetDependenciesAndTriggersForSimpleExpr() throws Exception {
         SymbolDefinition d = new JavaScriptDefinition("1 + 2");

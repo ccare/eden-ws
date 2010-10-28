@@ -18,16 +18,20 @@ import java.util.regex.Pattern;
  */
 public class JavaScriptDefinition implements SymbolDefinition {
 
+
+
     public enum ExprType {
         FUNCTION, EXPRESSION
     }
 
     private final String expr;
     private final ExprType type;
+    public static final Pattern DEFN = Pattern.compile("#[\\w:/#_]+\\s*is(\\s+)");
+
     private static final Pattern SPECIALNAME_DIFFICULT_DEFINITION_OBJECT = Pattern.compile("[^#]*#[\\w:/#_]+\\s*is[^\\{]*\\{.*");
-    private static final Pattern SPECIALNAME_DIFFICULT_DEFINITION_SINGLEQUOTE = Pattern.compile("[^#]*#[\\w:/#_]+\\s*is[^']'.*");
+    public static final Pattern SPECIALNAME_DIFFICULT_DEFINITION_SINGLEQUOTE = Pattern.compile("[^#]*#[\\w:/#_]+\\s*is[^']'.*");
     private static final Pattern SPECIALNAME_DEFINITION = Pattern.compile("#([\\w:/#_]+)\\s*is\\s*([^\\};\\n]*)");
-    private static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([\\w:/#_]+)");
+    public static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([\\w:/#_]+)");
     private static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern.compile("#\\{([^\\}]+)\\}");
     private static final Pattern DOUBLE_QUOTE_REGION = Pattern.compile("\"[^\"\\r\\n]*\"");
     private static final Pattern SINGLE_QUOTE_REGION = Pattern.compile("'[^'\\r\\n]*'");
@@ -50,19 +54,20 @@ public class JavaScriptDefinition implements SymbolDefinition {
         }
     }
 
-
     public String getExpr() {
+        final String translatedDefns;
         if (SPECIALNAME_DIFFICULT_DEFINITION_OBJECT.matcher(expr).matches()) {
             throw new NotImplementedException("Cannot (yet) parse definitions involving objects");
+        } else if (SPECIALNAME_DIFFICULT_DEFINITION_SINGLEQUOTE.matcher(expr).matches()) {
+            translatedDefns = translateExpression(expr);
+        } else {
+            translatedDefns = SPECIALNAME_DEFINITION.matcher(expr).replaceAll("\\$eden_define('$1','$2')");
         }
-        if (SPECIALNAME_DIFFICULT_DEFINITION_SINGLEQUOTE.matcher(expr).matches()) {
-            throw new NotImplementedException("Cannot (yet) parse definitions involving single quotes");
-        }
-        final String translatedDefns = SPECIALNAME_DEFINITION.matcher(expr).replaceAll("\\$eden_define('$1','$2')");
         final String translatedSimples = SPECIALNAME_PATTERN.matcher(translatedDefns).replaceAll("\\$eden_observe('$1')");
         final String translatedEscaped = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedSimples).replaceAll("\\$eden_observe('$1')");
         return translatedEscaped;
     }
+    
 
     @Override
     public Collection<SymbolReference> getDependencies() {
@@ -118,6 +123,112 @@ public class JavaScriptDefinition implements SymbolDefinition {
         }
 
         return rtn;
+    }
+
+    static int findEndOfExpr(final String s, final int i) {
+        if (s.length() == 0) {
+            return 0;
+        } else if (s.length() == i) {
+            return i;
+        }
+        int ptr = i;
+        boolean inSingleQuote = false;
+        boolean inDoubleQuote = false;
+        int braceLevel = 0;
+        while (ptr < s.length()) {
+            char c = s.charAt(ptr);
+            if (inSingleQuote) {
+                if (c == '\\' && s.charAt(ptr+1) == '\'') {
+                    ptr++;
+                } else if (c == '\'') {
+                    inSingleQuote = false;
+                }
+            } else if (inDoubleQuote) {
+                if (c == '\\' && s.charAt(ptr+1) == '"') {
+                    ptr++;
+                } else if (c == '"') {
+                    inDoubleQuote = false;
+                }
+            } else if (c == '{') {
+                braceLevel++;
+            } else if (braceLevel > 0) {
+                switch (c) {
+                    case '}' : braceLevel--; break;
+                    case '\'' : inSingleQuote = true; break;
+                    case '"' : inDoubleQuote = true; break;
+                }
+            } else if (braceLevel == 0) {
+                switch (c) {
+                    case '}' : return ptr;
+                    case ';' : return ptr;
+                    case '\n' : return ptr;
+                    case '\'' : inSingleQuote = true; break;
+                    case '"' : inDoubleQuote = true; break;
+                }
+            }
+            ptr++;
+        }
+        return ptr;
+    }
+
+    static String extractExpr(String s, int i) {
+        return s.substring(i, JavaScriptDefinition.findEndOfExpr(s, i));
+    }
+
+    static String translateExpression(String expr) {
+        List<DefnFragment> fragments = findExprRange(expr);
+        StringBuilder sb = new StringBuilder();
+        int ptr = 0;
+        for (DefnFragment d : fragments) {
+            final int defnStart = d.start;
+            final int start = d.exprStart;
+            final int end = d.exprEnd;
+            final String preamble = expr.substring(ptr, defnStart);
+            final String sym = expr.substring(defnStart, start);
+            final String expression = expr.substring(start, end);
+            sb.append(preamble);
+            sb.append("$eden_define('");
+            sb.append(sym.replaceAll("\\s*is\\s*","").replaceAll("^#",""));
+            sb.append("','");
+            sb.append(expression.replaceAll("\\\\","\\\\\\\\").replaceAll("'","\\\\'"));
+            sb.append("')");
+            ptr = end;
+        }
+        sb.append(expr.substring(ptr,expr.length()));
+        return sb.toString();
+    }
+
+
+    static List<Integer[]> findStarts(String input) {
+        final Matcher matcher = JavaScriptDefinition.DEFN.matcher(input);
+        List<Integer[]> indexes = new ArrayList();
+        while (matcher.find() == true)  {
+            indexes.add(new Integer[] {matcher.start(), matcher.end()} );
+        }
+        return indexes;
+    }
+
+
+    static List<DefnFragment> findExprRange(final String s) {
+        final List<DefnFragment> list = new ArrayList<DefnFragment>();
+        for (Integer[] i : findStarts(s)){
+            final int start = i[1];
+            list.add(new DefnFragment(i[0], start, findEndOfExpr(s, start)));
+        }
+        return list;
+    }
+
+
+    static class DefnFragment {
+        public final int exprStart;
+        public final int start;
+        public final int exprEnd;
+
+        public DefnFragment(int start, int exprStart, int exprEnd) {
+            this.start = start;
+            this.exprStart = exprStart;
+            this.exprEnd = exprEnd;
+        }
     }
 
 }
