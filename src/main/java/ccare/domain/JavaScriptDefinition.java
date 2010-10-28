@@ -1,6 +1,7 @@
 package ccare.domain;
 
 import ccare.engine.JavaScriptScopeFactory;
+import org.apache.commons.lang.NotImplementedException;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
@@ -23,8 +24,13 @@ public class JavaScriptDefinition implements SymbolDefinition {
 
     private final String expr;
     private final ExprType type;
+    private static final Pattern SPECIALNAME_DIFFICULT_DEFINITION_OBJECT = Pattern.compile("[^#]*#[\\w:/#_]+\\s*is[^\\{]*\\{.*");
+    private static final Pattern SPECIALNAME_DIFFICULT_DEFINITION_SINGLEQUOTE = Pattern.compile("[^#]*#[\\w:/#_]+\\s*is[^']'.*");
+    private static final Pattern SPECIALNAME_DEFINITION = Pattern.compile("#([\\w:/#_]+)\\s*is\\s*([^\\};\\n]*)");
     private static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([\\w:/#_]+)");
     private static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern.compile("#\\{([^\\}]+)\\}");
+    private static final Pattern DOUBLE_QUOTE_REGION = Pattern.compile("\"[^\"\\r\\n]*\"");
+    private static final Pattern SINGLE_QUOTE_REGION = Pattern.compile("'[^'\\r\\n]*'");
     private List<SymbolReference> triggers;
 
     public JavaScriptDefinition(String expr) {
@@ -46,7 +52,14 @@ public class JavaScriptDefinition implements SymbolDefinition {
 
 
     public String getExpr() {
-        final String translatedSimples = SPECIALNAME_PATTERN.matcher(expr).replaceAll("\\$eden_observe('$1')");
+        if (SPECIALNAME_DIFFICULT_DEFINITION_OBJECT.matcher(expr).matches()) {
+            throw new NotImplementedException("Cannot (yet) parse definitions involving objects");
+        }
+        if (SPECIALNAME_DIFFICULT_DEFINITION_SINGLEQUOTE.matcher(expr).matches()) {
+            throw new NotImplementedException("Cannot (yet) parse definitions involving single quotes");
+        }
+        final String translatedDefns = SPECIALNAME_DEFINITION.matcher(expr).replaceAll("\\$eden_define('$1','$2')");
+        final String translatedSimples = SPECIALNAME_PATTERN.matcher(translatedDefns).replaceAll("\\$eden_observe('$1')");
         final String translatedEscaped = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedSimples).replaceAll("\\$eden_observe('$1')");
         return translatedEscaped;
     }
@@ -87,9 +100,9 @@ public class JavaScriptDefinition implements SymbolDefinition {
     }
 
     static Set<String> extractSpecialSymbols(final String input) {
-        final String removedDblQuotedRegions = input.replaceAll("\"[^\"\\r\\n]*\"", "");
-        final String removedSingleQuotedRegions = removedDblQuotedRegions.replaceAll("'[^'\\r\\n]*'", "");
-        final String removedEscapedRegions = removedSingleQuotedRegions.replaceAll("#\\{[^\\}]*\\}", "");
+        final String removedDblQuotedRegions = DOUBLE_QUOTE_REGION.matcher(input).replaceAll("");
+        final String removedSingleQuotedRegions = SINGLE_QUOTE_REGION.matcher(removedDblQuotedRegions).replaceAll("");
+        final String removedEscapedRegions = SPECIALNAME_ESCAPEDPATTERN.matcher(removedSingleQuotedRegions).replaceAll("");
         final Matcher m = SPECIALNAME_PATTERN.matcher(removedEscapedRegions);
         Set<String> rtn = new HashSet<String>();
 

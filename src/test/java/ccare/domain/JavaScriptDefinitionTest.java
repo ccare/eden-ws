@@ -1,6 +1,7 @@
 package ccare.domain;
 
 import ccare.service.SymbolTableBean;
+import org.apache.commons.lang.NotImplementedException;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -44,6 +45,76 @@ public class JavaScriptDefinitionTest {
     public void testExpressionTranslationForExpressionWithEscapedObservables() {
         validateExpr("$eden_observe('abc')", "#{abc}");
         validateExpr("$eden_observe('http://foo/bar/') * $eden_observe('b')", "#{http://foo/bar/} * #b");
+    }
+
+    @Test
+    public void testExpressionTranslationForCalculatedExpresions() {
+       validateExpr("$eden_observe('abc')", "#{abc}");
+    }
+
+
+    @Test
+    public void testExpressionTranslationForDefinition() {
+        validateExpr("$eden_define('a','b+c')", "#a is b+c");
+    }
+
+    @Test
+    public void testExpressionTranslationForDefinitionsInFunctions() {
+        validateExpr("function() {$eden_define('a','b+c')}", "function() {#a is b+c}");
+        validateExpr("function() {$eden_define('a','b+c');}", "function() {#a is b+c;}");
+        validateExpr("function() {$eden_define('a','[1,2,\"3\"]');}", "function() {#a is [1,2,\"3\"];}");
+        validateExpr("function() {$eden_define('a','12')}", "function() {#a is 12}");
+    }
+
+    @Test
+    public void testExpressionTranslationForDefinitionsInFunctionsSplitsOnSemiColonAndNewline() {
+        validateExpr("function() {$eden_define('a','12'); $eden_define('b','5'); return $eden_observe('b')}", "function() {#a is 12; #b is 5; return #b}");
+        validateExpr("function() {" +
+                "$eden_define('a','12');\n" +
+                "$eden_define('b','5');\n" +
+                "return $eden_observe('b')\n" +
+                "}",
+                "function() {" +
+                "#a is 12;\n" +
+                "#b is 5;\n" +
+                "return #b\n}");
+        validateExpr("function() {" +
+                "$eden_define('a','12')\n" +
+                "$eden_define('b','5')\n" +
+                "return $eden_observe('b')\n" +
+                "}",
+                "function() {" +
+                "#a is 12\n" +
+                "#b is 5\n" +
+                "return #b\n}");
+    }
+
+    @Test
+    public void testExpressionTranslationForDoubleQuoteStrings() {
+        validateExpr("function() {$eden_define('a','\"b+c\"');}", "function() {#a is \"b+c\";}");
+    }
+
+
+    @Test(expected = NotImplementedException.class)
+    public void testExpressionTranslationForSingleQuoteStrings() {
+        validateExpr("$eden_define('a','\\'...\\'')", "#a is '...'");
+        validateExpr("function() {$eden_define('a','\\'b+c\\'')}", "function() {#a is 'b+c'}");
+    }
+
+    @Test(expected = NotImplementedException.class)
+    public void testExpressionTranslationForSingleQuoteStringsInFunctions() {
+        validateExpr("function() {$eden_define('a','\\'b+c\\'')}", "function() {#a is 'b+c'}");
+    }
+
+
+    @Test(expected = NotImplementedException.class)
+    public void testExpressionTranslationForObjects() {
+        validateExpr("$eden_define('a','({ a: 1})')", "#a is ({ a: 1})");
+    }
+
+    @Test(expected = NotImplementedException.class)
+    public void testExpressionTranslationForObjectsInFunctions() {
+        validateExpr("$eden_define('a','({ a: 1})')", "function() { #a is ({ a: 1}); }");
     }
 
 
