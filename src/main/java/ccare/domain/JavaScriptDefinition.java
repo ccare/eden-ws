@@ -193,20 +193,30 @@ public class JavaScriptDefinition implements SymbolDefinition {
             sb.append("$eden_define('");
             sb.append(sym.replaceAll("\\s*is\\s*","").replaceAll("^#",""));
             sb.append("','");
-            sb.append(expression.replaceAll("\\\\","\\\\\\\\").replaceAll("'","\\\\'"));
+            final String escapedHashes = expression;// expression.replaceAll("#", "###");
+            final String escapedSlashes = escapedHashes.replaceAll("\\\\", "\\\\\\\\");
+            final String escapedQuotes = escapedSlashes.replaceAll("'", "\\\\'");
+            sb.append(escapedQuotes);
             sb.append("')");
             ptr = end;
         }
-        sb.append(expr.substring(ptr,expr.length()));
+        final String remainingCode = expr.substring(ptr, expr.length());
+        sb.append(encodeObservation(remainingCode));
         final String s = sb.toString();
 
 
+        return s;
+
+        //return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe\\('([^\\)']*)'\\)","$1\\$eden_observe(\\\\'$2\\\\')");
+
+      //  return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe","x')");
+    }
+
+    private static String encodeObservation(String s) {
         final String translatedSimples = SPECIALNAME_PATTERN.matcher(s).replaceAll("\\$eden_observe('$1')");
         final String translatedEscaped = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedSimples).replaceAll("\\$eden_observe('$1')");
 
-        return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe\\('([^\\)']*)'\\)","$1\\$eden_observe(\\\\'$2\\\\')");
-
-      //  return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe","x')");
+        return translatedEscaped;
     }
 
 

@@ -185,7 +185,6 @@ public class ScriptTest {
         assertEquals(3, table.getValue(b));
     }
 
-    @Ignore
     @Test
     public void testExecuteFuncWithInnerDefinitionCreatingDependency() {
         SymbolTable table = new SymbolTableBean();
@@ -194,7 +193,7 @@ public class ScriptTest {
         table.execute(a);
         assertEquals(46.0, table.getValue(b));
         table.define(c, "2");
-        assertEquals(46.0, table.getValue(b));
+        assertEquals(3.0, table.getValue(b));
     }
 
     @Test

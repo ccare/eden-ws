@@ -15,6 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -25,6 +26,22 @@ import static org.junit.Assert.fail;
  * To change this template use File | Settings | File Templates.
  */
 public class JavaScriptDefinitionTest {
+
+//    @Test
+//    public void testRE() {
+//       assertEquals("a","b".replaceAll("b","a"));
+//       assertEquals("ba","bb".replaceAll("b","a"));
+//
+//    }
+//
+//    @Test
+//    public void testPattern() {
+//       assertEquals("b+c", SPECIALNAME_PATTERN.matcher("b+c").replaceAll("foo"));
+//       assertEquals("foo+c", SPECIALNAME_PATTERN.matcher(" #b+c").replaceAll("foo"));
+//       assertEquals("foo+c", SPECIALNAME_PATTERN.matcher("#b+c").replaceAll("foo"));
+//       assertEquals("##b+c", SPECIALNAME_PATTERN.matcher("##b+c").replaceAll("foo"));
+//       assertEquals("b+fooc", SPECIALNAME_PATTERN.matcher("b+#c").replaceAll("foo"));
+//    }
 
     @Test
     public void testCreate() {
@@ -63,6 +80,14 @@ public class JavaScriptDefinitionTest {
     }
 
     @Test
+    public void testExpressionTranslationForDefinitionWithDependency() {
+        validateExpr("$eden_define('a','#b+c')", "#a is #b+c");
+        validateExpr("$eden_define('a','#c')", "#a is #c");
+        validateExpr("$eden_define('a','f(#c)')", "#a is f(#c)");            
+        validateExpr("$eden_define('a','#f(#c)')", "#a is #f(#c)");
+    }
+
+    @Test
     public void testExpressionTranslationForDefinitionsInFunctions() {
         validateExpr("function() {$eden_define('a','b+c')}", "function() {#a is b+c}");
         validateExpr("function() {$eden_define('a','b+c');}", "function() {#a is b+c;}");
@@ -96,6 +121,11 @@ public class JavaScriptDefinitionTest {
     @Test
     public void testExpressionTranslationForDoubleQuoteStrings() {
         validateExpr("function() {$eden_define('a','\"b+c\"');}", "function() {#a is \"b+c\";}");
+    }
+
+    @Test
+    public void testExpressionTranslationForDoubleQuoteStringsContainingDependency() {
+        validateExpr("function() {$eden_define('a','\"#b+c\"');}", "function() {#a is \"#b+c\";}");
     }
 
 
@@ -473,6 +503,7 @@ public class JavaScriptDefinitionTest {
         assertThat(symbols, hasItem(fragment));
         assertThat(symbols.size(), is(equalTo(1)));
     }
+
 
 
 }
