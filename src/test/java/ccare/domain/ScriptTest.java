@@ -1,11 +1,14 @@
 package ccare.domain;
 
+import ccare.domain.exceptions.IllegalDefinitionException;
 import ccare.service.SymbolTableBean;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Undefined;
 
+import static ccare.domain.JavaScriptDefinition.encodeObservation;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
@@ -100,6 +103,109 @@ public class ScriptTest {
         table.define(a, "2");
         assertEquals("21", table.getValue(b));
     }
+
+    @Test
+    public void testStringsContainingMagicChar() {
+        SymbolTable table = new SymbolTableBean();
+        
+        table.define(b, "'#a'");
+
+        assertEquals("#a", table.getValue(b));
+    }
+
+    @Test
+    public void testStringsContainingMagicCharInsideProc() {
+        SymbolTable table = new SymbolTableBean();
+
+        table.defineFunction(b, "function() { #a is '#c' }");
+        table.execute(b);
+
+        assertEquals("#c", table.getValue(a));
+    }
+
+    @Test
+    public void testStringsContainingMagicCharInsideProc_doubleQuotes() {
+        SymbolTable table = new SymbolTableBean();
+
+        table.defineFunction(b, "function() { #a is \"#c\" }");
+        table.execute(b);
+
+        assertEquals("#c", table.getValue(a));
+    }
+
+    @Test
+    public void testStringsContainingMagicCharInsideProcAndEndedBySemiColon() {
+        SymbolTable table = new SymbolTableBean();
+
+        table.defineFunction(b, "function() { #a is '#c'; }");
+        table.execute(b);
+
+        assertEquals("#c", table.getValue(a));
+    }
+
+    @Test
+    public void testStringsContainingMagicCharInsideProc_doubleQuotesAndEndedBySemiColon() {
+        SymbolTable table = new SymbolTableBean();
+
+        table.defineFunction(b, "function() { #a is \"#c\"; }");
+        table.execute(b);
+
+        assertEquals("#c", table.getValue(a));
+    }
+
+    @Test
+    public void testStringsContainingDependencyDefnInsideProc() {
+        SymbolTable table = new SymbolTableBean();
+
+        table.defineFunction(b, "function() { #a is '1' }");
+        table.execute(b);
+
+        assertEquals("1", table.getValue(a));
+    }
+
+    // TODO: Switch these and implement handling
+    //@Test(expected = IllegalDefinitionException.class)
+    @Test(expected = EvaluatorException.class)
+    public void testStringsContainingDependencyDefnAgainstNonObservable() {
+        SymbolTable table = new SymbolTableBean();
+
+        table.defineFunction(b, "function() { a is '1' }");
+        table.execute(b);
+    }
+
+    @Test
+    public void test_Is_InsideAString() {
+        SymbolTable table = new SymbolTableBean();
+        table.define(a, "'a is b'");
+        assertEquals("a is b", table.getValue(a));
+    }
+
+    // Todo Implement this
+    @Ignore
+    @Test
+    public void test_Is_InsideAString2() {
+        SymbolTable table = new SymbolTableBean();
+        table.define(a, "'#a is b'");
+        assertEquals("#a is b", table.getValue(a));
+    }
+
+    @Test
+    public void test_Is_InsideAFunction() {
+        SymbolTable table = new SymbolTableBean();
+        table.defineFunction(a, "function() { return 'a is b'}");
+        table.define(b, "#a()");
+        assertEquals("a is b", table.getValue(b));
+    }
+
+//    @Test
+//    public void test_Is_InsideAComplexFunction() {
+//        SymbolTable table = new SymbolTableBean();
+//
+//        table.defineFunction(a, "function() { #b is  return 'a is b'}");
+//        table.define(b, "#a()");
+//
+//        assertEquals("a is b", table.getValue(b));   
+//    }
 
     @Test
     public void testArrayValues() {
@@ -284,5 +390,7 @@ public class ScriptTest {
         assertEquals("baz", table.getValue(c));
         assertEquals("bazzy", table.getValue(d));
     }
+
+    
 
 }

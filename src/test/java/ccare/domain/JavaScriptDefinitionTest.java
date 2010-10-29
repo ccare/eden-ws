@@ -8,15 +8,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static ccare.domain.JavaScriptDefinition.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,21 +25,30 @@ import static org.junit.Assert.fail;
  * To change this template use File | Settings | File Templates.
  */
 public class JavaScriptDefinitionTest {
+//
+//    private static final Pattern BAD_DEFN = Pattern.compile("#\\w+\\s+is");
+
+
+    @Test
+    public void testPattern() {
+       assertEquals("b+c", SPECIALNAME_PATTERN.matcher("b+c").replaceAll("foo"));
+       assertEquals(" foo+c", SPECIALNAME_PATTERN.matcher(" #b+c").replaceAll("foo"));
+       assertEquals("foo+c", SPECIALNAME_PATTERN.matcher("#b+c").replaceAll("foo"));
+       assertEquals("#foo+c", SPECIALNAME_PATTERN.matcher("##b+c").replaceAll("foo"));
+       assertEquals("#{b+c", SPECIALNAME_PATTERN.matcher("#{b+c").replaceAll("foo"));
+       assertEquals("b+foo", SPECIALNAME_PATTERN.matcher("b+#c").replaceAll("foo"));
+    }
 
 //    @Test
-//    public void testRE() {
-//       assertEquals("a","b".replaceAll("b","a"));
-//       assertEquals("ba","bb".replaceAll("b","a"));
-//
+//    public void testFindBadDefnPattern() {
+//       assertFalse(isBadDefn("b+c"));
+//       assertFalse(isBadDefn("#a is b+c"));
+//       assertTrue(isBadDefn(" a is b+c"));
+//       assertTrue(isBadDefn("a is b+c"));
 //    }
 //
-//    @Test
-//    public void testPattern() {
-//       assertEquals("b+c", SPECIALNAME_PATTERN.matcher("b+c").replaceAll("foo"));
-//       assertEquals("foo+c", SPECIALNAME_PATTERN.matcher(" #b+c").replaceAll("foo"));
-//       assertEquals("foo+c", SPECIALNAME_PATTERN.matcher("#b+c").replaceAll("foo"));
-//       assertEquals("##b+c", SPECIALNAME_PATTERN.matcher("##b+c").replaceAll("foo"));
-//       assertEquals("b+fooc", SPECIALNAME_PATTERN.matcher("b+#c").replaceAll("foo"));
+//    private boolean isBadDefn(String s) {
+//        return BAD_DEFN.matcher(s).matches();
 //    }
 
     @Test
@@ -505,5 +513,105 @@ public class JavaScriptDefinitionTest {
     }
 
 
+    @Test
+    public void testEncodeObservation_simple() {
+        assertEquals("a", encodeObservation("a"));
+        assertEquals("a + b", encodeObservation("a + b"));
+        assertEquals("function () {a + b}", encodeObservation("function () {a + b}"));
+    }
+
+    @Test
+    public void testEncodeObservation_withStrings() {
+        assertEquals("'a'", encodeObservation("'a'"));
+        assertEquals("a + 'b'", encodeObservation("a + 'b'"));
+        assertEquals("function () {a + 'b'}", encodeObservation("function () {a + 'b'}"));
+    }
+
+    @Test
+    public void testEncodeObservation_withObservable() {
+        assertEquals("$eden_observe('a')", encodeObservation("#a"));
+        assertEquals("a + $eden_observe('b')", encodeObservation("a + #b"));
+        assertEquals("function () {a + $eden_observe('b')}", encodeObservation("function () {a + #b}"));
+    }
+
+    @Test
+    public void testEncodeObservation_withObservableNameInString() {
+        assertEquals("'#a'", encodeObservation("'#a'"));
+    }
+
+    @Test
+    public void testPullOutRegions_baseCase() {
+        final List<String> stringList = pullOutRegions("");
+        assertEquals(1, stringList.size());
+        assertEquals("", stringList.get(0));                              
+    }
+
+    @Test
+    public void testPullOutRegions_simple() {
+        final List<String> stringList = pullOutRegions("abcdefg");
+        assertEquals(1, stringList.size());
+        assertEquals("abcdefg", stringList.get(0));                              
+    }
+
+    @Test
+    public void testPullOutRegions_simpleWithSpaces() {
+        final List<String> stringList = pullOutRegions("abc defg");
+        assertEquals(1, stringList.size());
+        assertEquals("abc defg", stringList.get(0));
+    }
+
+    @Test
+    public void testPullOutRegions_simpleWithDblQuotedText() {
+        final List<String> stringList = pullOutRegions("abc \"de\"fg");
+        assertEquals(3, stringList.size());
+        assertEquals("abc ", stringList.get(0));
+        assertEquals("\"de\"", stringList.get(1));
+        assertEquals("fg", stringList.get(2));
+    }
+
+    @Test
+    public void testPullOutRegions_simpleWithSingleQuotedText() {
+        final List<String> stringList = pullOutRegions("abc 'de'fg");
+        assertEquals(3, stringList.size());
+        assertEquals("abc ", stringList.get(0));
+        assertEquals("'de'", stringList.get(1));
+        assertEquals("fg", stringList.get(2));
+    }
+
+    @Test
+    public void testPullOutRegions_singleQuotesInsideDoubleQuotes() {
+        final List<String> stringList = pullOutRegions("a \"b 'b' b\" c");
+        assertEquals(3, stringList.size());
+        assertEquals("a ", stringList.get(0));
+        assertEquals("\"b 'b' b\"", stringList.get(1));
+        assertEquals(" c", stringList.get(2));
+    }
+
+    @Test
+    public void testPullOutRegions_doubleQuotesInsideSingleQuotes() {
+        final List<String> stringList = pullOutRegions("a 'b \"b\" b' c");
+        assertEquals(3, stringList.size());
+        assertEquals("a ", stringList.get(0));
+        assertEquals("'b \"b\" b'", stringList.get(1));
+        assertEquals(" c", stringList.get(2));
+    }
+
+    @Test
+    public void testPullOutRegions_escapedDoubleQuotes() {
+        final List<String> stringList = pullOutRegions("a \"b \\\"b\\\" b\" c");
+        assertEquals(3, stringList.size());
+        assertEquals("a ", stringList.get(0));
+        assertEquals("\"b \\\"b\\\" b\"", stringList.get(1));
+        assertEquals(" c", stringList.get(2));
+    }
+
+    @Test
+    public void testPullOutRegions_escapedSingleQuotes() {
+        final List<String> stringList = pullOutRegions("a 'b \\'b\\' b' c");
+        assertEquals(3, stringList.size());
+        assertEquals("a ", stringList.get(0));
+        assertEquals("'b \\'b\\' b'", stringList.get(1));
+        assertEquals(" c", stringList.get(2));
+    }
 
 }

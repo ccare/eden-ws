@@ -31,7 +31,7 @@ public class JavaScriptDefinition implements SymbolDefinition {
     private static final Pattern SPECIALNAME_DIFFICULT_DEFINITION_OBJECT = Pattern.compile("[^#]*#[\\w:/#_]+\\s*is[^\\{]*\\{.*");
     public static final Pattern SPECIALNAME_DIFFICULT_DEFINITION_SINGLEQUOTE = Pattern.compile("[^#]*#[\\w:/#_]+\\s*is[^']'.*");
     private static final Pattern SPECIALNAME_DEFINITION = Pattern.compile("#([\\w:/#_]+)\\s*is\\s*([^\\};\\n]*)");
-    public static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([\\w:/#_]+)(?<!\\s+is)");
+    public static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([^#{][\\w:/#_]*)(?<!\\s+is)");
     private static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern.compile("#\\{([^\\}]+)\\}(?<!\\s*is)");
     private static final Pattern DOUBLE_QUOTE_REGION = Pattern.compile("\"[^\"\\r\\n]*\"");
     private static final Pattern SINGLE_QUOTE_REGION = Pattern.compile("'[^'\\r\\n]*'");
@@ -193,8 +193,7 @@ public class JavaScriptDefinition implements SymbolDefinition {
             sb.append("$eden_define('");
             sb.append(sym.replaceAll("\\s*is\\s*","").replaceAll("^#",""));
             sb.append("','");
-            final String escapedHashes = expression;// expression.replaceAll("#", "###");
-            final String escapedSlashes = escapedHashes.replaceAll("\\\\", "\\\\\\\\");
+            final String escapedSlashes = expression.replaceAll("\\\\", "\\\\\\\\");
             final String escapedQuotes = escapedSlashes.replaceAll("'", "\\\\'");
             sb.append(escapedQuotes);
             sb.append("')");
@@ -212,11 +211,63 @@ public class JavaScriptDefinition implements SymbolDefinition {
       //  return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe","x')");
     }
 
-    private static String encodeObservation(String s) {
-        final String translatedSimples = SPECIALNAME_PATTERN.matcher(s).replaceAll("\\$eden_observe('$1')");
-        final String translatedEscaped = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedSimples).replaceAll("\\$eden_observe('$1')");
+    static String encodeObservation(final String in) {
+        final StringBuilder sb = new StringBuilder();
+        for (final String s: pullOutRegions(in)) {
+            if (!s.isEmpty()) {
+                final char c = s.charAt(0);
+                if (c == '"' || c == '\'') {
+                    sb.append(s);
+                } else {
+                    final String translatedSimples = SPECIALNAME_PATTERN.matcher(s).replaceAll("\\$eden_observe('$1')");
+                    final String translatedEscaped = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedSimples).replaceAll("\\$eden_observe('$1')");
+                    sb.append(translatedEscaped);
+                }
+            }
+        }
+        return sb.toString();
+    }
 
-        return translatedEscaped;
+    static List<String> pullOutRegions(final String s) {
+        List<String> list = new ArrayList<String>();
+        int start = 0;
+        int pos = 0;
+        boolean inDblString = false;
+        boolean inSingleString = false;
+        final int length = s.length();
+        for (; pos < length; pos++) {
+            char c = s.charAt(pos);
+            if (!inSingleString && !inDblString && c == '"') {
+               list.add(s.substring(start, pos));
+               start = pos;
+               inDblString = true;
+            } else if (inDblString && c == '"') {
+               list.add(s.substring(start, pos+1));
+               pos++;
+               start = pos;
+               inDblString= false;               
+            } else if (inDblString && c == '\\') {
+               pos++;
+            } else if (inSingleString && c == '\\') {
+               pos++;
+            } else if (!inDblString && !inSingleString && c == '\'') {
+               list.add(s.substring(start, pos));
+               start = pos;
+               inSingleString = true;
+            } else if (inSingleString && c == '\'') {
+               list.add(s.substring(start, pos+1));
+               pos++;
+               start = pos;
+               inSingleString= false;
+            }
+
+        }
+        if (pos < length) {
+            list.add(s.substring(start, pos));
+        } else {
+            list.add(s.substring(start, length));            
+        }
+        return list;
     }
 
 
