@@ -118,16 +118,21 @@ public class JavaScriptTranslationUtils {
 
     static String encodeObservation(final String in) {
         final StringBuilder sb = new StringBuilder();
-        for (final String s: pullOutRegions(in)) {
-            if (processibleRegion(s)) {
-                final String translatedSimples = SPECIALNAME_PATTERN.matcher(s).replaceAll("\\$eden_observe('$1')");
-                final String translatedEscaped = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedSimples).replaceAll("\\$eden_observe('$1')");
+        for (final String region: pullOutRegions(in)) {
+            if (processibleRegion(region)) {
+                final String translatedEscaped = translateObservationsInString(region);
                 sb.append(translatedEscaped);
             } else {
-                sb.append(s);
+                sb.append(region);
             }
         }
         return sb.toString();
+    }
+
+    private static String translateObservationsInString(final String input) {
+        final String translatedNormalObservables = SPECIALNAME_PATTERN.matcher(input).replaceAll("\\$eden_observe('$1')");
+        final String translatedEscapedObservables = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedNormalObservables).replaceAll("\\$eden_observe('$1')");
+        return translatedEscapedObservables;
     }
 
     static List<String> pullOutRegions(final String s) {
