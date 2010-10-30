@@ -22,20 +22,17 @@ public class JavaScriptTranslationUtils {
         Set<String> symbols = new HashSet<String>();
         final List<String> regions = pullOutRegions(input);
         for (String region : regions) {
-           if (region.length() > 0) {
-                final char c = region.charAt(0);
-                if (notStringDeliminator(c)) {
-                    final String removedEscapedRegions = SPECIALNAME_ESCAPEDPATTERN.matcher(region).replaceAll("");
-                    final Matcher m = SPECIALNAME_PATTERN.matcher(removedEscapedRegions);
+           if (processibleRegion(region)) {
+                final String removedEscapedRegions = SPECIALNAME_ESCAPEDPATTERN.matcher(region).replaceAll("");
+                final Matcher m = SPECIALNAME_PATTERN.matcher(removedEscapedRegions);
 
-                    while (m.find()) {
-                        symbols.add(m.group(1));
-                    }
+                while (m.find()) {
+                    symbols.add(m.group(1));
+                }
 
-                    final Matcher m2 = SPECIALNAME_ESCAPEDPATTERN.matcher(region);
-                    while (m2.find()) {
-                        symbols.add(m2.group(1));
-                    }
+                final Matcher m2 = SPECIALNAME_ESCAPEDPATTERN.matcher(region);
+                while (m2.find()) {
+                    symbols.add(m2.group(1));
                 }
             }
         }
@@ -193,24 +190,28 @@ public class JavaScriptTranslationUtils {
         List<DefnFragment> indexes = new ArrayList();
         int index = 0;
         for (String region : regions) {
-            if (region.length() > 0) {
+            if (processibleRegion(region)) {
                 final Matcher matcher = DEFN.matcher(region);
-                final char c = region.charAt(0);
-                if (notStringDeliminator(c)) {
-                    while (matcher.find() == true)  {
-                        final int exprStart = index + matcher.end();
-                        indexes.add(new DefnFragment(index + matcher.start(), exprStart,  findEndOfExpr(input, exprStart) ) );
-                    }
+                while (matcher.find() == true)  {
+                    final int exprStart = index + matcher.end();
+                    indexes.add(new DefnFragment(index + matcher.start(), exprStart,  findEndOfExpr(input, exprStart) ) );
                 }
-                index = index + region.length();
             }
+            index = index + region.length();
         }
         return indexes;
     }
 
-    private static boolean notStringDeliminator(char c) {
-        return c != '\'' && c != '"';
+    private static boolean processibleRegion(String region) {
+        if (region.isEmpty()) {
+            return false;
+        } else {
+            final char c = region.charAt(0);
+            return c != '\'' && c != '"';                            
+        }
     }
+
+
 
     /**
      * Tuple to represent the location of a Definition Fragment inside a bigger definition
