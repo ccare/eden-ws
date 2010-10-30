@@ -62,13 +62,9 @@ public class JavaScriptTranslationUtils {
         final String remainingCode = expr.substring(ptr, expr.length());
         sb.append(encodeObservation(remainingCode));
         final String s = sb.toString();
-
-
+        
         return s;
     }
-
-
-
 
     static int findEndOfExpr(final String s, final int i) {
         if (s.length() == 0) {
@@ -206,8 +202,6 @@ public class JavaScriptTranslationUtils {
             return c != '\'' && c != '"';                            
         }
     }
-
-
 
     /**
      * Tuple to represent the location of a Definition Fragment inside a bigger definition
