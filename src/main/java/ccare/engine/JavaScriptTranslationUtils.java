@@ -187,7 +187,7 @@ public class JavaScriptTranslationUtils {
      * @param input
      * @return
      */
-    static List<DefnFragment> findStarts(final String input) {
+    static List<DefnFragment> findExprRange(final String input) {
         final List<String> regions = pullOutRegions(input);
         List<DefnFragment> indexes = new ArrayList();
         int index = 0;
@@ -205,11 +205,6 @@ public class JavaScriptTranslationUtils {
             }
         }
         return indexes;
-    }
-
-    static List<DefnFragment> findExprRange(final String s) {
-        final List<DefnFragment> list = findStarts(s);
-        return list;
     }
 
     /**

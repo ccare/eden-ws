@@ -76,31 +76,31 @@ public class JavaScriptTranslationUtilsTest {
 
        @Test
        public void testFindStarts() {
-           assertEquals(0, findStarts("").size());
-           assertEquals(1, findStarts("#a is b;").size());
-           assertEquals(2, findStarts("#a is b; #c is d;").size());
+           assertEquals(0, findExprRange("").size());
+           assertEquals(1, findExprRange("#a is b;").size());
+           assertEquals(2, findExprRange("#a is b; #c is d;").size());
 
-           assertEquals(0, (Object) findStarts("#a is b;").get(0).start);
-           assertEquals(0, (Object) findStarts("#a is b; #c is d;").get(0).start);
-           assertEquals(9, (Object) findStarts("#a is b; #c is d;").get(1).start);
+           assertEquals(0, (Object) findExprRange("#a is b;").get(0).start);
+           assertEquals(0, (Object) findExprRange("#a is b; #c is d;").get(0).start);
+           assertEquals(9, (Object) findExprRange("#a is b; #c is d;").get(1).start);
        }
 
        @Test
        public void testFindStartsWhenIsExistsInString() {
-           final List<DefnFragment> normal = findStarts("#a is b; #c is d;");
+           final List<DefnFragment> normal = findExprRange("#a is b; #c is d;");
            assertEquals(2, normal.size());
 
-           final List<DefnFragment> withSingleQuotes = findStarts("#a is b; a = '#c is d'");
+           final List<DefnFragment> withSingleQuotes = findExprRange("#a is b; a = '#c is d'");
            assertEquals(1, withSingleQuotes.size());
            assertEquals(0, (Object) withSingleQuotes.get(0).start);
            assertEquals(6, (Object) withSingleQuotes.get(0).exprStart);
 
-           final List<DefnFragment> withDoubleQuotes = findStarts("#a is b; a = \"#c is d\"");
+           final List<DefnFragment> withDoubleQuotes = findExprRange("#a is b; a = \"#c is d\"");
            assertEquals(1, withDoubleQuotes.size());
            assertEquals(0, (Object) withDoubleQuotes.get(0).start);
            assertEquals(6, (Object) withDoubleQuotes.get(0).exprStart);
 
-           final List<DefnFragment> withMultiple = findStarts("#a is b; #b is 2;");
+           final List<DefnFragment> withMultiple = findExprRange("#a is b; #b is 2;");
            assertEquals(2, withMultiple.size());
            assertEquals(0, (Object) withMultiple.get(0).start);
            assertEquals(6, (Object) withMultiple.get(0).exprStart);
