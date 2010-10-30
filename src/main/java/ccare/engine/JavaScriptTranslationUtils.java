@@ -15,8 +15,6 @@ import java.util.regex.Pattern;
 public class JavaScriptTranslationUtils {
     
     static final Pattern DEFN = Pattern.compile("[\\w:/#_]+\\s*is(\\s+)");
-    static final Pattern DOUBLE_QUOTE_REGION = Pattern.compile("\"[^\"\\r\\n]*\"");
-    static final Pattern SINGLE_QUOTE_REGION = Pattern.compile("'[^'\\r\\n]*'");
     static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern.compile("#\\{([^\\}]+)\\}(?<!\\s*is)");
     static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([^#{][\\w:/#_]*)(?<!\\s+is)");
     
@@ -43,7 +41,6 @@ public class JavaScriptTranslationUtils {
                 }
             }
         }
-
         return symbols;
     }
 
