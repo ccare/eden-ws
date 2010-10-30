@@ -1,6 +1,5 @@
 package ccare.engine;
 
-import ccare.domain.JavaScriptDefinition;
 import org.junit.Test;
 
 import java.util.List;
@@ -23,191 +22,181 @@ public class JavaScriptTranslationUtilsTest {
 
     @Test
     public void testPattern() {
-       assertEquals("b+c", SPECIALNAME_PATTERN.matcher("b+c").replaceAll("foo"));
-       assertEquals(" foo+c", SPECIALNAME_PATTERN.matcher(" #b+c").replaceAll("foo"));
-       assertEquals("foo+c", SPECIALNAME_PATTERN.matcher("#b+c").replaceAll("foo"));
-       assertEquals("#foo+c", SPECIALNAME_PATTERN.matcher("##b+c").replaceAll("foo"));
-       assertEquals("#{b+c", SPECIALNAME_PATTERN.matcher("#{b+c").replaceAll("foo"));
-       assertEquals("b+foo", SPECIALNAME_PATTERN.matcher("b+#c").replaceAll("foo"));
+        assertEquals("b+c", SPECIALNAME_PATTERN.matcher("b+c").replaceAll("foo"));
+        assertEquals(" foo+c", SPECIALNAME_PATTERN.matcher(" #b+c").replaceAll("foo"));
+        assertEquals("foo+c", SPECIALNAME_PATTERN.matcher("#b+c").replaceAll("foo"));
+        assertEquals("#foo+c", SPECIALNAME_PATTERN.matcher("##b+c").replaceAll("foo"));
+        assertEquals("#{b+c", SPECIALNAME_PATTERN.matcher("#{b+c").replaceAll("foo"));
+        assertEquals("b+foo", SPECIALNAME_PATTERN.matcher("b+#c").replaceAll("foo"));
     }
 
     @Test
-       public void testFindStartOfDefinitionForEmpty() {
-           final List<DefnFragment> fragments = findExprRange("''");
-           assertEquals(0, fragments.size());
-       }
+    public void testFindStartOfDefinitionForEmpty() {
+        final List<DefnFragment> fragments = findExprRange("''");
+        assertEquals(0, fragments.size());
+    }
 
-       @Test
-       public void testFindStartOfDefinitionContainingSingleQuoteStrings() {
-           List<DefnFragment> fragments = findExprRange("#a is '...'");
-           assertEquals(0, fragments.get(0).start);
+    @Test
+    public void testFindStartOfDefinitionContainingSingleQuoteStrings() {
+        List<DefnFragment> fragments = findExprRange("#a is '...'");
+        assertEquals(0, fragments.get(0).start);
 
-           fragments = findExprRange(" #a is '...'");
-           assertEquals(1, fragments.get(0).start);
+        fragments = findExprRange(" #a is '...'");
+        assertEquals(1, fragments.get(0).start);
 
-           fragments = findExprRange("asd; #a is '...'");
-           assertEquals(5, fragments.get(0).start);
-       }
+        fragments = findExprRange("asd; #a is '...'");
+        assertEquals(5, fragments.get(0).start);
+    }
 
-       @Test
-       public void testFindStartAndEndOfExpressionContainingSingleQuoteStrings() {
-           List<DefnFragment> fragments = findExprRange("#a is '...'");
-           assertEquals(6, fragments.get(0).exprStart);
-           assertEquals(11, fragments.get(0).exprEnd);
+    @Test
+    public void testFindStartAndEndOfExpressionContainingSingleQuoteStrings() {
+        List<DefnFragment> fragments = findExprRange("#a is '...'");
+        assertEquals(6, fragments.get(0).exprStart);
+        assertEquals(11, fragments.get(0).exprEnd);
 
-           final String expr = "#a is '....'";
-           fragments = findExprRange(expr);
-           final int start = fragments.get(0).exprStart;
-           assertEquals(6, start);
-           final int end = fragments.get(0).exprEnd;
-           assertEquals(12, end);
-           assertEquals("'....'", expr.substring(start, end));
-       }
+        final String expr = "#a is '....'";
+        fragments = findExprRange(expr);
+        final int start = fragments.get(0).exprStart;
+        assertEquals(6, start);
+        final int end = fragments.get(0).exprEnd;
+        assertEquals(12, end);
+        assertEquals("'....'", expr.substring(start, end));
+    }
 
-       @Test
-       public void testExtractExpressionContainingSingleQuoteStrings() {
-           final String expr = "#a is '....'";
-           assertEquals("$eden_define('a','\\'....\\'')", translateExpression(expr));
-           assertEquals("$eden_define('a','\\'..\\\\a..\\'')", translateExpression("#a is '..\\a..'"));
-       }
+    @Test
+    public void testExtractExpressionContainingSingleQuoteStrings() {
+        final String expr = "#a is '....'";
+        assertEquals("$eden_define('a','\\'....\\'')", translateExpression(expr));
+        assertEquals("$eden_define('a','\\'..\\\\a..\\'')", translateExpression("#a is '..\\a..'"));
+    }
 
+    @Test
+    public void testFindStarts() {
+        assertEquals(0, findExprRange("").size());
+        assertEquals(1, findExprRange("#a is b;").size());
+        assertEquals(2, findExprRange("#a is b; #c is d;").size());
 
+        assertEquals(0, (Object) findExprRange("#a is b;").get(0).start);
+        assertEquals(0, (Object) findExprRange("#a is b; #c is d;").get(0).start);
+        assertEquals(9, (Object) findExprRange("#a is b; #c is d;").get(1).start);
+    }
 
+    @Test
+    public void testFindStartsWhenIsExistsInString() {
+        final List<DefnFragment> normal = findExprRange("#a is b; #c is d;");
+        assertEquals(2, normal.size());
 
-       @Test
-       public void testFindStarts() {
-           assertEquals(0, findExprRange("").size());
-           assertEquals(1, findExprRange("#a is b;").size());
-           assertEquals(2, findExprRange("#a is b; #c is d;").size());
+        final List<DefnFragment> withSingleQuotes = findExprRange("#a is b; a = '#c is d'");
+        assertEquals(1, withSingleQuotes.size());
+        assertEquals(0, (Object) withSingleQuotes.get(0).start);
+        assertEquals(6, (Object) withSingleQuotes.get(0).exprStart);
 
-           assertEquals(0, (Object) findExprRange("#a is b;").get(0).start);
-           assertEquals(0, (Object) findExprRange("#a is b; #c is d;").get(0).start);
-           assertEquals(9, (Object) findExprRange("#a is b; #c is d;").get(1).start);
-       }
+        final List<DefnFragment> withDoubleQuotes = findExprRange("#a is b; a = \"#c is d\"");
+        assertEquals(1, withDoubleQuotes.size());
+        assertEquals(0, (Object) withDoubleQuotes.get(0).start);
+        assertEquals(6, (Object) withDoubleQuotes.get(0).exprStart);
 
-       @Test
-       public void testFindStartsWhenIsExistsInString() {
-           final List<DefnFragment> normal = findExprRange("#a is b; #c is d;");
-           assertEquals(2, normal.size());
+        final List<DefnFragment> withMultiple = findExprRange("#a is b; #b is 2;");
+        assertEquals(2, withMultiple.size());
+        assertEquals(0, (Object) withMultiple.get(0).start);
+        assertEquals(6, (Object) withMultiple.get(0).exprStart);
+        assertEquals(9, (Object) withMultiple.get(1).start);
+        assertEquals(15, (Object) withMultiple.get(1).exprStart);
+    }
 
-           final List<DefnFragment> withSingleQuotes = findExprRange("#a is b; a = '#c is d'");
-           assertEquals(1, withSingleQuotes.size());
-           assertEquals(0, (Object) withSingleQuotes.get(0).start);
-           assertEquals(6, (Object) withSingleQuotes.get(0).exprStart);
+    @Test
+    public void testFindEndOfExprForSimpleInput() {
+        assertEquals(0, findEndOfExpr("", 0));
+        assertEquals(1, findEndOfExpr("a", 1));
+        assertEquals(1, findEndOfExpr("a", 0));
+    }
 
-           final List<DefnFragment> withDoubleQuotes = findExprRange("#a is b; a = \"#c is d\"");
-           assertEquals(1, withDoubleQuotes.size());
-           assertEquals(0, (Object) withDoubleQuotes.get(0).start);
-           assertEquals(6, (Object) withDoubleQuotes.get(0).exprStart);
+    @Test
+    public void testExtractExprForSimpleInput() {
+        assertEquals("", extractExpr("", 0));
+        assertEquals("", extractExpr("a", 1));
+        assertEquals("a", extractExpr("a", 0));
+        assertEquals("a b c", extractExpr("a b c", 0));
+    }
 
-           final List<DefnFragment> withMultiple = findExprRange("#a is b; #b is 2;");
-           assertEquals(2, withMultiple.size());
-           assertEquals(0, (Object) withMultiple.get(0).start);
-           assertEquals(6, (Object) withMultiple.get(0).exprStart);
-           assertEquals(9, (Object) withMultiple.get(1).start);
-           assertEquals(15, (Object) withMultiple.get(1).exprStart);
+    @Test
+    public void testExtractExprTerminatedBySemiColonAndNewline() {
+        assertEquals("a b", extractExpr("a b; c", 0));
+        assertEquals("a b", extractExpr("a b\n c", 0));
+        assertEquals("a b c", extractExpr("a b c;\n a v l;;;;", 0));
+        assertEquals(" b + c", extractExpr("a is b + c; ...", 4));
+    }
 
-       }
+    @Test
+    public void testExtractExprContainingSingleQuotString() {
+        assertEquals("';' + a", extractExpr("';' + a", 0));
+        assertEquals("'a string' + a", extractExpr("'a string' + a; a = 2", 0));
+    }
 
-
-
-
-
-       @Test
-       public void testFindEndOfExprForSimpleInput() {
-           assertEquals(0, findEndOfExpr("",0));
-           assertEquals(1, findEndOfExpr("a",1));
-           assertEquals(1, findEndOfExpr("a",0));
-       }
-
-       @Test
-       public void testExtractExprForSimpleInput() {
-           assertEquals("", extractExpr("",0));
-           assertEquals("", extractExpr("a",1));
-           assertEquals("a", extractExpr("a",0));
-           assertEquals("a b c", extractExpr("a b c",0));
-       }
-
-       @Test
-       public void testExtractExprTerminatedBySemiColonAndNewline() {
-           assertEquals("a b", extractExpr("a b; c",0));
-           assertEquals("a b", extractExpr("a b\n c",0));
-           assertEquals("a b c", extractExpr("a b c;\n a v l;;;;",0));
-           assertEquals(" b + c", extractExpr("a is b + c; ...",4));
-       }
-
-       @Test
-       public void testExtractExprContainingSingleQuotString() {
-           assertEquals("';' + a", extractExpr("';' + a",0));
-           assertEquals("'a string' + a", extractExpr("'a string' + a; a = 2",0));
-       }
-
-       @Test
-       public void testExtractExprFromWithinFunction() {
-           assertEquals("b + c", extractExpr("function() {a is b + c; ...}",17));
-           assertEquals("b + c", extractExpr("function() {a is b + c}",17));
-       }
+    @Test
+    public void testExtractExprFromWithinFunction() {
+        assertEquals("b + c", extractExpr("function() {a is b + c; ...}", 17));
+        assertEquals("b + c", extractExpr("function() {a is b + c}", 17));
+    }
 
 
+    @Test
+    public void testExtractExprContainingSingleQuotStringWithEscapedQuotes() {
+        assertEquals("'a \\'string\\' containing \\'' + a", extractExpr("'a \\'string\\' containing \\'' + a; a = 2", 0));
+    }
 
-       @Test
-       public void testExtractExprContainingSingleQuotStringWithEscapedQuotes() {
-           assertEquals("'a \\'string\\' containing \\'' + a", extractExpr("'a \\'string\\' containing \\'' + a; a = 2",0));
-       }
+    @Test
+    public void testExtractExprContainingDblQuotString() {
+        assertEquals("\";\" + a", extractExpr("\";\" + a", 0));
+        assertEquals("\"a string\" + a", extractExpr("\"a string\" + a; a = 2", 0));
+    }
 
-       @Test
-       public void testExtractExprContainingDblQuotString() {
-           assertEquals("\";\" + a", extractExpr("\";\" + a",0));
-           assertEquals("\"a string\" + a", extractExpr("\"a string\" + a; a = 2",0));
-       }
+    @Test
+    public void testExtractExprContainingSingleDblStringWithEscapedQuotes() {
+        assertEquals("\"a \\\"string\\\" containing \\\"\" + a", extractExpr("\"a \\\"string\\\" containing \\\"\" + a; a = 2", 0));
+    }
 
-       @Test
-       public void testExtractExprContainingSingleDblStringWithEscapedQuotes() {
-           assertEquals("\"a \\\"string\\\" containing \\\"\" + a", extractExpr("\"a \\\"string\\\" containing \\\"\" + a; a = 2",0));
-       }
+    @Test
+    public void testExtractExprContainingBraces() {
+        assertEquals("{}", extractExpr("{}; a = 2", 0));
+        assertEquals("{{{}}}", extractExpr("{{{}}}; a = 2", 0));
+    }
 
-       @Test
-       public void testExtractExprContainingBraces() {
-           assertEquals("{}", extractExpr("{}; a = 2",0));
-           assertEquals("{{{}}}", extractExpr("{{{}}}; a = 2",0));
-       }
+    @Test
+    public void testExtractExprIgnoresSemiColonInBraces() {
+        assertEquals("{a;a}", extractExpr("{a;a}; a = 2", 0));
+        assertEquals("{{{{{{{{{a;a};};};};};};};};}", extractExpr("{{{{{{{{{a;a};};};};};};};};}; a = 2", 0));
+    }
 
-       @Test
-       public void testExtractExprIgnoresSemiColonInBraces() {
-           assertEquals("{a;a}", extractExpr("{a;a}; a = 2",0));
-           assertEquals("{{{{{{{{{a;a};};};};};};};};}", extractExpr("{{{{{{{{{a;a};};};};};};};};}; a = 2",0));
-       }
+    @Test
+    public void testExtractExprIgnoresNewLineInBraces() {
+        assertEquals("{a;\n" +
+                "a}", extractExpr("{a;\na}; a = 2", 0));
+        assertEquals("{a;\n}", extractExpr("{a;\n}\na}; a = 2", 0));
+    }
 
-       @Test
-       public void testExtractExprIgnoresNewLineInBraces() {
-           assertEquals("{a;\n" +
-                   "a}", extractExpr("{a;\na}; a = 2",0));
-           assertEquals("{a;\n}", extractExpr("{a;\n}\na}; a = 2",0));
-       }
+    @Test
+    public void testExtractExprIgnoresOpeningBracesInSingleString() {
+        assertEquals("'{' + a", extractExpr("'{' + a;}", 0));
+    }
 
-       @Test
-       public void testExtractExprIgnoresOpeningBracesInSingleString() {
-           assertEquals("'{' + a", extractExpr("'{' + a;}",0));
-       }
+    @Test
+    public void testExtractExprIgnoresOpeningBracesInDoubleString() {
+        assertEquals("\"{\" + a", extractExpr("\"{\" + a;}", 0));
+    }
 
-       @Test
-       public void testExtractExprIgnoresOpeningBracesInDoubleString() {
-           assertEquals("\"{\" + a", extractExpr("\"{\" + a;}",0));
-       }
+    @Test
+    public void testExtractExprIgnoresClosingBracesInSingleString() {
+        assertEquals("{ + '}';...", extractExpr("{ + '}';...", 0));
+    }
 
-       @Test
-       public void testExtractExprIgnoresClosingBracesInSingleString() {
-           assertEquals("{ + '}';...", extractExpr("{ + '}';...",0));
-       }
-
-       @Test
-       public void testExtractExprIgnoresClosingBracesInDoubleString() {
-           assertEquals("{ + \"}\";...", extractExpr("{ + \"}\";...",0));
-       }
-
+    @Test
+    public void testExtractExprIgnoresClosingBracesInDoubleString() {
+        assertEquals("{ + \"}\";...", extractExpr("{ + \"}\";...", 0));
+    }
 
 
-     @Test
+    @Test
     public void testExtractSpecialSymbols() {
         assertThat(extractSpecialSymbols("1+2").size(), is(equalTo(0)));
         assertThat(extractSpecialSymbols("1 + 2*34 + 111").size(), is(equalTo(0)));
