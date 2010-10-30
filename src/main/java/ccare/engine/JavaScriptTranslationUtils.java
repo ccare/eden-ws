@@ -13,15 +13,13 @@ import java.util.regex.Pattern;
  * Time: 16:18:58
  */
 public class JavaScriptTranslationUtils {
-
-
-    public static final Pattern DEFN = Pattern.compile("[\\w:/#_]+\\s*is(\\s+)");
-    private static final Pattern DOUBLE_QUOTE_REGION = Pattern.compile("\"[^\"\\r\\n]*\"");
-    private static final Pattern SINGLE_QUOTE_REGION = Pattern.compile("'[^'\\r\\n]*'");
-    private static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern.compile("#\\{([^\\}]+)\\}(?<!\\s*is)");
-    public static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([^#{][\\w:/#_]*)(?<!\\s+is)");
-
-
+    
+    static final Pattern DEFN = Pattern.compile("[\\w:/#_]+\\s*is(\\s+)");
+    static final Pattern DOUBLE_QUOTE_REGION = Pattern.compile("\"[^\"\\r\\n]*\"");
+    static final Pattern SINGLE_QUOTE_REGION = Pattern.compile("'[^'\\r\\n]*'");
+    static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern.compile("#\\{([^\\}]+)\\}(?<!\\s*is)");
+    static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([^#{][\\w:/#_]*)(?<!\\s+is)");
+    
     public static Set<String> extractSpecialSymbols(final String input) {
         final String removedDblQuotedRegions = DOUBLE_QUOTE_REGION.matcher(input).replaceAll("");
         final String removedSingleQuotedRegions = SINGLE_QUOTE_REGION.matcher(removedDblQuotedRegions).replaceAll("");
@@ -43,7 +41,43 @@ public class JavaScriptTranslationUtils {
         return rtn;
     }
 
-    public static int findEndOfExpr(final String s, final int i) {
+    public static String translateExpression(String expr) {
+        List<DefnFragment> fragments = findExprRange(expr);
+        StringBuilder sb = new StringBuilder();
+        int ptr = 0;
+        for (DefnFragment d : fragments) {
+            final int defnStart = d.start;
+            final int start = d.exprStart;
+            final int end = d.exprEnd;
+            final String preamble = expr.substring(ptr, defnStart);
+            final String sym = expr.substring(defnStart, start);
+            final String expression = expr.substring(start, end);
+            sb.append(preamble);
+            sb.append("$eden_define('");
+            sb.append(sym.replaceAll("\\s*is\\s*","").replaceAll("^#",""));
+            sb.append("','");
+            final String escapedSlashes = expression.replaceAll("\\\\", "\\\\\\\\");
+            final String escapedQuotes = escapedSlashes.replaceAll("'", "\\\\'");
+            sb.append(escapedQuotes);
+            sb.append("')");
+            ptr = end;
+        }
+        final String remainingCode = expr.substring(ptr, expr.length());
+        sb.append(encodeObservation(remainingCode));
+        final String s = sb.toString();
+
+
+        return s;
+
+        //return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe\\('([^\\)']*)'\\)","$1\\$eden_observe(\\\\'$2\\\\')");
+
+      //  return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe","x')");
+    }
+
+
+
+
+    static int findEndOfExpr(final String s, final int i) {
         if (s.length() == 0) {
             return 0;
         } else if (s.length() == i) {
@@ -89,44 +123,11 @@ public class JavaScriptTranslationUtils {
         return ptr;
     }
 
-    public static String extractExpr(String s, int i) {
+    static String extractExpr(String s, int i) {
         return s.substring(i, findEndOfExpr(s, i));
     }
 
-    public static String translateExpression(String expr) {
-        List<DefnFragment> fragments = findExprRange(expr);
-        StringBuilder sb = new StringBuilder();
-        int ptr = 0;
-        for (DefnFragment d : fragments) {
-            final int defnStart = d.start;
-            final int start = d.exprStart;
-            final int end = d.exprEnd;
-            final String preamble = expr.substring(ptr, defnStart);
-            final String sym = expr.substring(defnStart, start);
-            final String expression = expr.substring(start, end);
-            sb.append(preamble);
-            sb.append("$eden_define('");
-            sb.append(sym.replaceAll("\\s*is\\s*","").replaceAll("^#",""));
-            sb.append("','");
-            final String escapedSlashes = expression.replaceAll("\\\\", "\\\\\\\\");
-            final String escapedQuotes = escapedSlashes.replaceAll("'", "\\\\'");
-            sb.append(escapedQuotes);
-            sb.append("')");
-            ptr = end;
-        }
-        final String remainingCode = expr.substring(ptr, expr.length());
-        sb.append(encodeObservation(remainingCode));
-        final String s = sb.toString();
-
-
-        return s;
-
-        //return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe\\('([^\\)']*)'\\)","$1\\$eden_observe(\\\\'$2\\\\')");
-
-      //  return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe","x')");
-    }
-
-    public static String encodeObservation(final String in) {
+    static String encodeObservation(final String in) {
         final StringBuilder sb = new StringBuilder();
         for (final String s: pullOutRegions(in)) {
             if (!s.isEmpty()) {
@@ -143,7 +144,7 @@ public class JavaScriptTranslationUtils {
         return sb.toString();
     }
 
-    public static List<String> pullOutRegions(final String s) {
+    static List<String> pullOutRegions(final String s) {
         List<String> list = new ArrayList<String>();
         int start = 0;
         int pos = 0;
@@ -185,8 +186,7 @@ public class JavaScriptTranslationUtils {
         return list;
     }
 
-
-    public static List<Integer[]> findStarts(final String input) {
+    static List<Integer[]> findStarts(final String input) {
         final List<String> regions = pullOutRegions(input);
         List<Integer[]> indexes = new ArrayList();
         int index = 0;
@@ -205,8 +205,7 @@ public class JavaScriptTranslationUtils {
         return indexes;
     }
 
-
-    public static List<DefnFragment> findExprRange(final String s) {
+    static List<DefnFragment> findExprRange(final String s) {
         final List<DefnFragment> list = new ArrayList<DefnFragment>();
         for (Integer[] i : findStarts(s)){
             final int start = i[1];
@@ -215,8 +214,7 @@ public class JavaScriptTranslationUtils {
         return list;
     }
 
-
-    public static class DefnFragment {
+    static class DefnFragment {
         public final int exprStart;
         public final int start;
         public final int exprEnd;
