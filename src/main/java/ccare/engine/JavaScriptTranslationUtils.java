@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
 public class JavaScriptTranslationUtils {
     
     static final Pattern DEFN = Pattern.compile("[\\w:/#_]+\\s*is(\\s+)");
-    static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern.compile("#\\{([^\\}]+)\\}(?<!\\s*is)");
-    static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([^#{][\\w:/#_]*)(?<!\\s+is)");
+    static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern.compile("#\\{([^\\}]+)\\}");
+    static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([^#{][\\w:/#_]*)");
     
     public static Set<String> extractSpecialSymbols(final String input) {
         Set<String> symbols = new HashSet<String>();
@@ -24,7 +24,7 @@ public class JavaScriptTranslationUtils {
         for (String region : regions) {
            if (region.length() > 0) {
                 final char c = region.charAt(0);
-                if (c != '\'' && c != '"') {
+                if (notStringDeliminator(c)) {
                     final String removedEscapedRegions = SPECIALNAME_ESCAPEDPATTERN.matcher(region).replaceAll("");
                     final Matcher m = SPECIALNAME_PATTERN.matcher(removedEscapedRegions);
 
@@ -198,7 +198,7 @@ public class JavaScriptTranslationUtils {
             if (region.length() > 0) {
                 final Matcher matcher = DEFN.matcher(region);
                 final char c = region.charAt(0);
-                if (c != '\'' && c != '"') {
+                if (notStringDeliminator(c)) {
                     while (matcher.find() == true)  {
                         final int exprStart = index + matcher.end();
                         indexes.add(new DefnFragment(index + matcher.start(), exprStart,  findEndOfExpr(input, exprStart) ) );
@@ -208,6 +208,10 @@ public class JavaScriptTranslationUtils {
             }
         }
         return indexes;
+    }
+
+    private static boolean notStringDeliminator(char c) {
+        return c != '\'' && c != '"';
     }
 
     /**
