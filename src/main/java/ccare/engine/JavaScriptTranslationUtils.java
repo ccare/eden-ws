@@ -21,11 +21,10 @@ public class JavaScriptTranslationUtils {
     static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([^#{][\\w:/#_]*)(?<!\\s+is)");
     
     public static Set<String> extractSpecialSymbols(final String input) {
-        Set<String> rtn = new HashSet<String>();
+        Set<String> symbols = new HashSet<String>();
         final List<String> regions = pullOutRegions(input);
         for (String region : regions) {
            if (region.length() > 0) {
-                final Matcher matcher = DEFN.matcher(region);
                 final char c = region.charAt(0);
                 if (c != '\'' && c != '"') {
                     final String removedEscapedRegions = SPECIALNAME_ESCAPEDPATTERN.matcher(region).replaceAll("");
@@ -33,19 +32,19 @@ public class JavaScriptTranslationUtils {
 
                     while (m.find()) {
                         final String s = m.group(0).replaceAll("^#", "");
-                        rtn.add(s);
+                        symbols.add(s);
                     }
 
                     final Matcher m2 = SPECIALNAME_ESCAPEDPATTERN.matcher(region);
                     while (m2.find()) {
                         final String s = m2.group(0).replaceAll("^#\\{", "");
-                        rtn.add(s.replaceAll("\\}$", ""));
+                        symbols.add(s.replaceAll("\\}$", ""));
                     }
                 }
             }
         }
 
-        return rtn;
+        return symbols;
     }
 
     public static String translateExpression(String expr) {
