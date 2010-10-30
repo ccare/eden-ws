@@ -124,15 +124,12 @@ public class JavaScriptTranslationUtils {
     static String encodeObservation(final String in) {
         final StringBuilder sb = new StringBuilder();
         for (final String s: pullOutRegions(in)) {
-            if (!s.isEmpty()) {
-                final char c = s.charAt(0);
-                if (c == '"' || c == '\'') {
-                    sb.append(s);
-                } else {
-                    final String translatedSimples = SPECIALNAME_PATTERN.matcher(s).replaceAll("\\$eden_observe('$1')");
-                    final String translatedEscaped = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedSimples).replaceAll("\\$eden_observe('$1')");
-                    sb.append(translatedEscaped);
-                }
+            if (processibleRegion(s)) {
+                final String translatedSimples = SPECIALNAME_PATTERN.matcher(s).replaceAll("\\$eden_observe('$1')");
+                final String translatedEscaped = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedSimples).replaceAll("\\$eden_observe('$1')");
+                sb.append(translatedEscaped);
+            } else {
+                sb.append(s);
             }
         }
         return sb.toString();
