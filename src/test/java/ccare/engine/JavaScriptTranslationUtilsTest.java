@@ -80,34 +80,32 @@ public class JavaScriptTranslationUtilsTest {
            assertEquals(1, findStarts("#a is b;").size());
            assertEquals(2, findStarts("#a is b; #c is d;").size());
 
-           assertEquals(0, (Object) findStarts("#a is b;").get(0)[0]);
-           assertEquals(0, (Object) findStarts("#a is b; #c is d;").get(0)[0]);
-           assertEquals(9, (Object) findStarts("#a is b; #c is d;").get(1)[0]);
+           assertEquals(0, (Object) findStarts("#a is b;").get(0).start);
+           assertEquals(0, (Object) findStarts("#a is b; #c is d;").get(0).start);
+           assertEquals(9, (Object) findStarts("#a is b; #c is d;").get(1).start);
        }
 
        @Test
        public void testFindStartsWhenIsExistsInString() {
-           final List<Integer[]> normal = findStarts("#a is b; #c is d;");
+           final List<DefnFragment> normal = findStarts("#a is b; #c is d;");
            assertEquals(2, normal.size());
 
-           final List<Integer[]> withSingleQuotes = findStarts("#a is b; a = '#c is d'");
+           final List<DefnFragment> withSingleQuotes = findStarts("#a is b; a = '#c is d'");
            assertEquals(1, withSingleQuotes.size());
-           assertEquals(0, (Object) withSingleQuotes.get(0)[0]);
-           assertEquals(6, (Object) withSingleQuotes.get(0)[1]);
+           assertEquals(0, (Object) withSingleQuotes.get(0).start);
+           assertEquals(6, (Object) withSingleQuotes.get(0).exprStart);
 
-           final List<Integer[]> withDoubleQuotes = findStarts("#a is b; a = \"#c is d\"");
+           final List<DefnFragment> withDoubleQuotes = findStarts("#a is b; a = \"#c is d\"");
            assertEquals(1, withDoubleQuotes.size());
-           assertEquals(0, (Object) withDoubleQuotes.get(0)[0]);
-           assertEquals(6, (Object) withDoubleQuotes.get(0)[1]);
+           assertEquals(0, (Object) withDoubleQuotes.get(0).start);
+           assertEquals(6, (Object) withDoubleQuotes.get(0).exprStart);
 
-           final List<Integer[]> withMultiple = findStarts("#a is b; #b is 2;");
+           final List<DefnFragment> withMultiple = findStarts("#a is b; #b is 2;");
            assertEquals(2, withMultiple.size());
-           assertEquals(0, (Object) withMultiple.get(0)[0]);
-           assertEquals(6, (Object) withMultiple.get(0)[1]);
-           assertEquals(9, (Object) withMultiple.get(1)[0]);
-           assertEquals(15, (Object) withMultiple.get(1)[1]);
-
-           //final List<Integer[]> withMultiple = findStarts("#a is b; a = \"#c is d\"; a = ({ a : '#a is'}); #b is 2; '#d is 5'");
+           assertEquals(0, (Object) withMultiple.get(0).start);
+           assertEquals(6, (Object) withMultiple.get(0).exprStart);
+           assertEquals(9, (Object) withMultiple.get(1).start);
+           assertEquals(15, (Object) withMultiple.get(1).exprStart);
 
        }
 

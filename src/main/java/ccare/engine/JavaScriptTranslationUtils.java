@@ -182,9 +182,14 @@ public class JavaScriptTranslationUtils {
         return list;
     }
 
-    static List<Integer[]> findStarts(final String input) {
+    /**
+     * Find definitions in an input string
+     * @param input
+     * @return
+     */
+    static List<DefnFragment> findStarts(final String input) {
         final List<String> regions = pullOutRegions(input);
-        List<Integer[]> indexes = new ArrayList();
+        List<DefnFragment> indexes = new ArrayList();
         int index = 0;
         for (String region : regions) {
             if (region.length() > 0) {
@@ -192,7 +197,7 @@ public class JavaScriptTranslationUtils {
                 final char c = region.charAt(0);
                 if (c != '\'' && c != '"') {
                     while (matcher.find() == true)  {
-                        indexes.add(new Integer[] {index + matcher.start(), index + matcher.end()} );
+                        indexes.add(new DefnFragment(index + matcher.start(), index + matcher.end()) );
                     }
                 }
                 index = index + region.length();
@@ -203,22 +208,30 @@ public class JavaScriptTranslationUtils {
 
     static List<DefnFragment> findExprRange(final String s) {
         final List<DefnFragment> list = new ArrayList<DefnFragment>();
-        for (Integer[] i : findStarts(s)){
-            final int start = i[1];
-            list.add(new DefnFragment(i[0], start, findEndOfExpr(s, start)));
+        for (DefnFragment i : findStarts(s)){
+            final int start = i.exprStart;
+            list.add(new DefnFragment(i.start, start, findEndOfExpr(s, start)));
         }
         return list;
     }
 
+    /**
+     * Tuple to represent the location of a Definition Fragment inside a bigger definition
+     */
     static class DefnFragment {
-        public final int exprStart;
-        public final int start;
-        public final int exprEnd;
+        public int exprStart;
+        public int start;
+        public int exprEnd;
 
         public DefnFragment(int start, int exprStart, int exprEnd) {
             this.start = start;
             this.exprStart = exprStart;
             this.exprEnd = exprEnd;
+        }
+
+        public DefnFragment(int start, int exprStart) {
+            this.start = start;
+            this.exprStart = exprStart;
         }
     }
 
