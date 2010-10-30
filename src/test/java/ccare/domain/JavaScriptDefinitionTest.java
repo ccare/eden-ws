@@ -3,12 +3,9 @@ package ccare.domain;
 import ccare.service.SymbolTableBean;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static ccare.domain.JavaScriptDefinition.*;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -39,6 +36,7 @@ public class JavaScriptDefinitionTest {
        assertEquals("b+foo", SPECIALNAME_PATTERN.matcher("b+#c").replaceAll("foo"));
     }
 
+    // TODO: Implement if needed
 //    @Test
 //    public void testFindBadDefnPattern() {
 //       assertFalse(isBadDefn("b+c"));
@@ -212,6 +210,34 @@ public class JavaScriptDefinitionTest {
         assertEquals(0, (Object) findStarts("#a is b; #c is d;").get(0)[0]);
         assertEquals(9, (Object) findStarts("#a is b; #c is d;").get(1)[0]);  
     }
+
+    @Test
+    public void testFindStartsWhenIsExistsInString() {
+        final List<Integer[]> normal = findStarts("#a is b; #c is d;");
+        assertEquals(2, normal.size());
+
+        final List<Integer[]> withSingleQuotes = findStarts("#a is b; a = '#c is d'");
+        assertEquals(1, withSingleQuotes.size());
+        assertEquals(0, (Object) withSingleQuotes.get(0)[0]);
+        assertEquals(6, (Object) withSingleQuotes.get(0)[1]);
+
+        final List<Integer[]> withDoubleQuotes = findStarts("#a is b; a = \"#c is d\"");
+        assertEquals(1, withDoubleQuotes.size());
+        assertEquals(0, (Object) withDoubleQuotes.get(0)[0]);
+        assertEquals(6, (Object) withDoubleQuotes.get(0)[1]);
+
+        final List<Integer[]> withMultiple = findStarts("#a is b; #b is 2;");
+        assertEquals(2, withMultiple.size());
+        assertEquals(0, (Object) withMultiple.get(0)[0]);
+        assertEquals(6, (Object) withMultiple.get(0)[1]);
+        assertEquals(9, (Object) withMultiple.get(1)[0]);
+        assertEquals(15, (Object) withMultiple.get(1)[1]);
+
+        //final List<Integer[]> withMultiple = findStarts("#a is b; a = \"#c is d\"; a = ({ a : '#a is'}); #b is 2; '#d is 5'");
+
+    }
+
+
 
 
 

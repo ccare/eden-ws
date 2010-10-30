@@ -26,7 +26,7 @@ public class JavaScriptDefinition implements SymbolDefinition {
 
     private final String expr;
     private final ExprType type;
-    public static final Pattern DEFN = Pattern.compile("#[\\w:/#_]+\\s*is(\\s+)");
+    public static final Pattern DEFN = Pattern.compile("[\\w:/#_]+\\s*is(\\s+)");
 
     private static final Pattern SPECIALNAME_DIFFICULT_DEFINITION_OBJECT = Pattern.compile("[^#]*#[\\w:/#_]+\\s*is[^\\{]*\\{.*");
     public static final Pattern SPECIALNAME_DIFFICULT_DEFINITION_SINGLEQUOTE = Pattern.compile("[^#]*#[\\w:/#_]+\\s*is[^']'.*");
@@ -92,10 +92,11 @@ public class JavaScriptDefinition implements SymbolDefinition {
         Context cx = Context.enter();
         try {
             final Scriptable scope = JavaScriptScopeFactory.getInstance().scopeFor(t);
+            final String expr = getExpr();
             if (isExecutable()) {
-                return cx.compileFunction(scope, getExpr(), "<func>", 1, null);
+                return cx.compileFunction(scope, expr, "<func>", 1, null);
             } else {
-                return cx.evaluateString(scope, getExpr(), "<cmd>", 1, null);
+                return cx.evaluateString(scope, expr, "<cmd>", 1, null);
             }
         } finally {
             Context.exit();
@@ -271,12 +272,22 @@ public class JavaScriptDefinition implements SymbolDefinition {
     }
 
 
-    static List<Integer[]> findStarts(String input) {
-        final Matcher matcher = JavaScriptDefinition.DEFN.matcher(input);
+    static List<Integer[]> findStarts(final String input) {
+        final List<String> regions = pullOutRegions(input);
         List<Integer[]> indexes = new ArrayList();
-        while (matcher.find() == true)  {
-            indexes.add(new Integer[] {matcher.start(), matcher.end()} );
-        }
+        int index = 0;
+        for (String region : regions) {
+            if (region.length() > 0) {
+                final Matcher matcher = JavaScriptDefinition.DEFN.matcher(region);
+                final char c = region.charAt(0);
+                if (c != '\'' && c != '"') {
+                    while (matcher.find() == true)  {
+                        indexes.add(new Integer[] {index + matcher.start(), index + matcher.end()} );
+                    }
+                }
+                index = index + region.length();
+            }
+        }            
         return indexes;
     }
 

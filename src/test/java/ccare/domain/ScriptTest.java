@@ -165,7 +165,8 @@ public class ScriptTest {
 
     // TODO: Switch these and implement handling
     //@Test(expected = IllegalDefinitionException.class)
-    @Test(expected = EvaluatorException.class)
+    //@Test(expected = EvaluatorException.class)
+    @Test
     public void testStringsContainingDependencyDefnAgainstNonObservable() {
         SymbolTable table = new SymbolTableBean();
 
@@ -180,8 +181,6 @@ public class ScriptTest {
         assertEquals("a is b", table.getValue(a));
     }
 
-    // Todo Implement this
-    @Ignore
     @Test
     public void test_Is_InsideAString2() {
         SymbolTable table = new SymbolTableBean();
@@ -197,15 +196,29 @@ public class ScriptTest {
         assertEquals("a is b", table.getValue(b));
     }
 
-//    @Test
-//    public void test_Is_InsideAComplexFunction() {
-//        SymbolTable table = new SymbolTableBean();
-//
-//        table.defineFunction(a, "function() { #b is  return 'a is b'}");
-//        table.define(b, "#a()");
-//
-//        assertEquals("a is b", table.getValue(b));   
-//    }
+    @Test
+    public void test_Is_InsideAComplexFunction() {
+        SymbolTable table = new SymbolTableBean();
+
+        table.defineFunction(a, "function() { #c is 4; return 'a is b'}");
+        table.define(b, "#a()");
+
+        assertEquals("a is b", table.getValue(b));
+        assertEquals(4, table.getValue(c));
+    }
+
+    @Test
+    public void test_Is_InsideAComplexFunction2() {
+        SymbolTable table = new SymbolTableBean();
+
+        table.defineFunction(f, "function() { #a is 'b'; var a = \"#c is d\"; var a = ({ a : '#a is'}); #b is 2; return '#d is 5'}");
+        table.define(c, "#f()");
+
+        assertEquals("#d is 5", table.getValue(c));
+        
+        assertEquals("b", table.getValue(a));
+        assertEquals(2, table.getValue(b));
+    }
 
     @Test
     public void testArrayValues() {
