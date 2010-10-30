@@ -1,10 +1,14 @@
 package ccare.domain;
 
+import ccare.domain.exceptions.IllegalDefinitionException;
 import ccare.service.SymbolTableBean;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Undefined;
 
+import static ccare.domain.JavaScriptDefinition.encodeObservation;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
@@ -103,7 +107,7 @@ public class ScriptTest {
     @Test
     public void testStringsContainingMagicChar() {
         SymbolTable table = new SymbolTableBean();
-
+        
         table.define(b, "'#a'");
 
         assertEquals("#a", table.getValue(b));
@@ -209,7 +213,7 @@ public class ScriptTest {
         table.define(c, "#f()");
 
         assertEquals("#d is 5", table.getValue(c));
-
+        
         assertEquals("b", table.getValue(a));
         assertEquals(2, table.getValue(b));
     }
@@ -318,7 +322,7 @@ public class ScriptTest {
         assertEquals(3, table.getValue(b));
         table.define(b, "2");
         assertEquals(2, table.getValue(b));
-        table.define(c, "'a'");
+        table.define(c, "'a'");         
         assertEquals(3, table.getValue(b));
 
         // Remove the trigger and verify that the linkage is broken
@@ -398,5 +402,6 @@ public class ScriptTest {
         assertEquals("bazzy", table.getValue(d));
     }
 
+    
 
 }

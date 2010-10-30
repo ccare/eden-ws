@@ -1,10 +1,13 @@
 package ccare.domain;
 
 import ccare.engine.JavaScriptScopeFactory;
+import org.apache.commons.lang.NotImplementedException;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static ccare.engine.JavaScriptTranslationUtils.extractSpecialSymbols;
 import static ccare.engine.JavaScriptTranslationUtils.translateExpression;
@@ -17,6 +20,8 @@ import static ccare.engine.JavaScriptTranslationUtils.translateExpression;
  * To change this template use File | Settings | File Templates.
  */
 public class JavaScriptDefinition implements SymbolDefinition {
+
+
 
     public enum ExprType {
         FUNCTION, EXPRESSION
@@ -47,6 +52,7 @@ public class JavaScriptDefinition implements SymbolDefinition {
     public String getExpr() {
         return translateExpression(expr);
     }
+    
 
     @Override
     public Collection<SymbolReference> getDependencies() {

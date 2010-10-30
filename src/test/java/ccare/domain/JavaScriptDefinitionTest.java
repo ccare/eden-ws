@@ -4,9 +4,15 @@ import ccare.service.SymbolTableBean;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static ccare.domain.JavaScriptDefinition.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,6 +22,23 @@ import static org.junit.Assert.assertEquals;
  * To change this template use File | Settings | File Templates.
  */
 public class JavaScriptDefinitionTest {
+//
+//    private static final Pattern BAD_DEFN = Pattern.compile("#\\w+\\s+is");
+
+
+
+    // TODO: Implement if needed
+//    @Test
+//    public void testFindBadDefnPattern() {
+//       assertFalse(isBadDefn("b+c"));
+//       assertFalse(isBadDefn("#a is b+c"));
+//       assertTrue(isBadDefn(" a is b+c"));
+//       assertTrue(isBadDefn("a is b+c"));
+//    }
+//
+//    private boolean isBadDefn(String s) {
+//        return BAD_DEFN.matcher(s).matches();
+//    }
 
     @Test
     public void testCreate() {
@@ -44,7 +67,7 @@ public class JavaScriptDefinitionTest {
 
     @Test
     public void testExpressionTranslationForCalculatedExpresions() {
-        validateExpr("$eden_observe('abc')", "#{abc}");
+       validateExpr("$eden_observe('abc')", "#{abc}");
     }
 
 
@@ -57,7 +80,7 @@ public class JavaScriptDefinitionTest {
     public void testExpressionTranslationForDefinitionWithDependency() {
         validateExpr("$eden_define('a','#b+c')", "#a is #b+c");
         validateExpr("$eden_define('a','#c')", "#a is #c");
-        validateExpr("$eden_define('a','f(#c)')", "#a is f(#c)");
+        validateExpr("$eden_define('a','f(#c)')", "#a is f(#c)");            
         validateExpr("$eden_define('a','#f(#c)')", "#a is #f(#c)");
     }
 
@@ -78,18 +101,18 @@ public class JavaScriptDefinitionTest {
                 "return $eden_observe('b')\n" +
                 "}",
                 "function() {" +
-                        "#a is 12;\n" +
-                        "#b is 5;\n" +
-                        "return #b\n}");
+                "#a is 12;\n" +
+                "#b is 5;\n" +
+                "return #b\n}");
         validateExpr("function() {" +
                 "$eden_define('a','12')\n" +
                 "$eden_define('b','5')\n" +
                 "return $eden_observe('b')\n" +
                 "}",
                 "function() {" +
-                        "#a is 12\n" +
-                        "#b is 5\n" +
-                        "return #b\n}");
+                "#a is 12\n" +
+                "#b is 5\n" +
+                "return #b\n}");
     }
 
     @Test
@@ -107,7 +130,7 @@ public class JavaScriptDefinitionTest {
     public void testExpressionTranslationForSingleQuoteStrings() {
         validateExpr("$eden_define('a','\\'...\\'')", "#a is '...'");
     }
-
+    
     @Test
     public void testExpressionTranslationForSingleQuoteStringsInFunctions() {
         validateExpr("function() {$eden_define('a','\\'b+c\\'')}", "function() {#a is 'b+c'}");
@@ -126,6 +149,7 @@ public class JavaScriptDefinitionTest {
     }
 
 
+
     private void validateExprUnchangedFor(final String expr) {
         validateExpr(expr, expr);
     }
@@ -134,7 +158,7 @@ public class JavaScriptDefinitionTest {
         final JavaScriptDefinition defn = new JavaScriptDefinition(expr);
         assertEquals(target, defn.getExpr());
     }
-
+    
     @Test
     public void testGetDependenciesAndTriggersForSimpleExpr() throws Exception {
         SymbolDefinition d = new JavaScriptDefinition("1 + 2");
@@ -246,6 +270,7 @@ public class JavaScriptDefinitionTest {
             }
         };
     }
+
 
 
 }

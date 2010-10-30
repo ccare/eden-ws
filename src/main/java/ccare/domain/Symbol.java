@@ -1,5 +1,7 @@
 package ccare.domain;
 
+import java.util.Set;
+
 /**
  * User: carecx
  * Date: 14-Oct-2010

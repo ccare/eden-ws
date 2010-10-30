@@ -2,8 +2,7 @@ package ccare.domain;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 /**
@@ -28,7 +27,7 @@ public class SymbolReferenceTest {
     @Test
     public void testEquals() {
         SymbolReference sr = new SymbolReference("foo");
-
+        
         assertFalse(sr.equals(null));
         assertFalse(sr.equals(new SymbolReference("foo2")));
         assertFalse(sr.equals(new SymbolReference()));
@@ -49,16 +48,16 @@ public class SymbolReferenceTest {
     }
 
     @Test
-    public void testToString() {
+    public void testToString(){
         SymbolReference sr = new SymbolReference("foo");
         assertThat(sr.toString(), is(equalTo("Ref<foo>")));
     }
 
     @Test
     public void testHashCode() throws Exception {
-        SymbolReference sr = new SymbolReference("foo");
-        assertEquals(sr.hashCode(), sr.hashCode());
-        assertEquals(sr.hashCode(), new SymbolReference("foo").hashCode());
+       SymbolReference sr = new SymbolReference("foo");
+       assertEquals(sr.hashCode(), sr.hashCode());
+       assertEquals(sr.hashCode(), new SymbolReference("foo").hashCode());        
     }
 
 }

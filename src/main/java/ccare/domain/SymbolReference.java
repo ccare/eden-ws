@@ -30,7 +30,7 @@ public class SymbolReference {
         if (n == null) {
             return false;
         } else if (n.equals(that.getName())) {
-            return true;
+           return true;
         } else {
             return false;
         }
