@@ -29,14 +29,12 @@ public class JavaScriptTranslationUtils {
                     final Matcher m = SPECIALNAME_PATTERN.matcher(removedEscapedRegions);
 
                     while (m.find()) {
-                        final String s = m.group(0).replaceAll("^#", "");
-                        symbols.add(s);
+                        symbols.add(m.group(1));
                     }
 
                     final Matcher m2 = SPECIALNAME_ESCAPEDPATTERN.matcher(region);
                     while (m2.find()) {
-                        final String s = m2.group(0).replaceAll("^#\\{", "");
-                        symbols.add(s.replaceAll("\\}$", ""));
+                        symbols.add(m2.group(1));
                     }
                 }
             }
