@@ -21,21 +21,28 @@ public class JavaScriptTranslationUtils {
     static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([^#{][\\w:/#_]*)(?<!\\s+is)");
     
     public static Set<String> extractSpecialSymbols(final String input) {
-        final String removedDblQuotedRegions = DOUBLE_QUOTE_REGION.matcher(input).replaceAll("");
-        final String removedSingleQuotedRegions = SINGLE_QUOTE_REGION.matcher(removedDblQuotedRegions).replaceAll("");
-        final String removedEscapedRegions = SPECIALNAME_ESCAPEDPATTERN.matcher(removedSingleQuotedRegions).replaceAll("");
-        final Matcher m = SPECIALNAME_PATTERN.matcher(removedEscapedRegions);
         Set<String> rtn = new HashSet<String>();
+        final List<String> regions = pullOutRegions(input);
+        for (String region : regions) {
+           if (region.length() > 0) {
+                final Matcher matcher = DEFN.matcher(region);
+                final char c = region.charAt(0);
+                if (c != '\'' && c != '"') {
+                    final String removedEscapedRegions = SPECIALNAME_ESCAPEDPATTERN.matcher(region).replaceAll("");
+                    final Matcher m = SPECIALNAME_PATTERN.matcher(removedEscapedRegions);
 
-        while (m.find()) {
-            final String s = m.group(0).replaceAll("^#", "");
-            rtn.add(s);
-        }
+                    while (m.find()) {
+                        final String s = m.group(0).replaceAll("^#", "");
+                        rtn.add(s);
+                    }
 
-        final Matcher m2 = SPECIALNAME_ESCAPEDPATTERN.matcher(removedSingleQuotedRegions);
-        while (m2.find()) {
-            final String s = m2.group(0).replaceAll("^#\\{", "");
-            rtn.add(s.replaceAll("\\}$", ""));
+                    final Matcher m2 = SPECIALNAME_ESCAPEDPATTERN.matcher(region);
+                    while (m2.find()) {
+                        final String s = m2.group(0).replaceAll("^#\\{", "");
+                        rtn.add(s.replaceAll("\\}$", ""));
+                    }
+                }
+            }
         }
 
         return rtn;
@@ -183,7 +190,7 @@ public class JavaScriptTranslationUtils {
     }
 
     /**
-     * Find definitions in an input string
+     * Find index bounds of definitions inside an input string
      * @param input
      * @return
      */
