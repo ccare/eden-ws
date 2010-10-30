@@ -197,7 +197,8 @@ public class JavaScriptTranslationUtils {
                 final char c = region.charAt(0);
                 if (c != '\'' && c != '"') {
                     while (matcher.find() == true)  {
-                        indexes.add(new DefnFragment(index + matcher.start(), index + matcher.end()) );
+                        final int exprStart = index + matcher.end();
+                        indexes.add(new DefnFragment(index + matcher.start(), exprStart,  findEndOfExpr(input, exprStart) ) );
                     }
                 }
                 index = index + region.length();
@@ -207,11 +208,7 @@ public class JavaScriptTranslationUtils {
     }
 
     static List<DefnFragment> findExprRange(final String s) {
-        final List<DefnFragment> list = new ArrayList<DefnFragment>();
-        for (DefnFragment i : findStarts(s)){
-            final int start = i.exprStart;
-            list.add(new DefnFragment(i.start, start, findEndOfExpr(s, start)));
-        }
+        final List<DefnFragment> list = findStarts(s);
         return list;
     }
 
@@ -219,19 +216,14 @@ public class JavaScriptTranslationUtils {
      * Tuple to represent the location of a Definition Fragment inside a bigger definition
      */
     static class DefnFragment {
-        public int exprStart;
-        public int start;
-        public int exprEnd;
+        public final int exprStart;
+        public final int start;
+        public final int exprEnd;
 
-        public DefnFragment(int start, int exprStart, int exprEnd) {
+        DefnFragment(int start, int exprStart, int exprEnd) {
             this.start = start;
             this.exprStart = exprStart;
             this.exprEnd = exprEnd;
-        }
-
-        public DefnFragment(int start, int exprStart) {
-            this.start = start;
-            this.exprStart = exprStart;
         }
     }
 
