@@ -23,16 +23,15 @@ public class JavaScriptTranslationUtils {
         final List<String> regions = pullOutRegions(input);
         for (String region : regions) {
            if (processibleRegion(region)) {
-                final String removedEscapedRegions = SPECIALNAME_ESCAPEDPATTERN.matcher(region).replaceAll("");
-                final Matcher m = SPECIALNAME_PATTERN.matcher(removedEscapedRegions);
-
-                while (m.find()) {
-                    symbols.add(m.group(1));
+                final Matcher escapedMatcher = SPECIALNAME_ESCAPEDPATTERN.matcher(region);
+                while (escapedMatcher.find()) {
+                    symbols.add(escapedMatcher.group(1));
                 }
-
-                final Matcher m2 = SPECIALNAME_ESCAPEDPATTERN.matcher(region);
-                while (m2.find()) {
-                    symbols.add(m2.group(1));
+                escapedMatcher.reset();
+                final String removedEscapedRegions = escapedMatcher.replaceAll("");
+                final Matcher normalMatcher = SPECIALNAME_PATTERN.matcher(removedEscapedRegions);
+                while (normalMatcher.find()) {
+                    symbols.add(normalMatcher.group(1));
                 }
             }
         }
