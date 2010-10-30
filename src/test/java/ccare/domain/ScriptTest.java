@@ -163,15 +163,13 @@ public class ScriptTest {
         assertEquals("1", table.getValue(a));
     }
 
-    // TODO: Switch these and implement handling
-    //@Test(expected = IllegalDefinitionException.class)
-    //@Test(expected = EvaluatorException.class)
     @Test
-    public void testStringsContainingDependencyDefnAgainstNonObservable() {
+    public void testStringsContainingDependencyDefnAgainst_A_defaultsTo_HashA() {
         SymbolTable table = new SymbolTableBean();
 
         table.defineFunction(b, "function() { a is '1' }");
         table.execute(b);
+        assertEquals("1", table.getValue(a));
     }
 
     @Test
