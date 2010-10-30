@@ -68,10 +68,6 @@ public class JavaScriptTranslationUtils {
 
 
         return s;
-
-        //return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe\\('([^\\)']*)'\\)","$1\\$eden_observe(\\\\'$2\\\\')");
-
-      //  return translatedEscaped.replaceAll("(\\$eden_define[^\\$]*)\\$eden_observe","x')");
     }
 
 
