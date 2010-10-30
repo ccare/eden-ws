@@ -52,12 +52,12 @@ import static org.junit.Assert.fail;
 public class SymbolImplTest {
 
     SymbolDefinition defn;
-    SymbolTableService symbolTable;
+    SymbolTable symbolTable;
 
     @Before
     public void setup() {
         defn = createMock(SymbolDefinition.class);
-        symbolTable = createMock(SymbolTableService.class);
+        symbolTable = createMock(SymbolTable.class);
     }
 
     @Test
@@ -171,7 +171,7 @@ public class SymbolImplTest {
 
     @Test
     public void testDependentValuesAreReEvaluated() {
-        final SymbolTableService table = new SymbolTableBean();
+        final SymbolTableBean table = new SymbolTableBean();
         final SymbolReference refA = new SymbolReference();
         final SymbolReference refB = new SymbolReference();
 
@@ -200,7 +200,7 @@ public class SymbolImplTest {
 
     @Test
     public void testDeepDependentValuesAreReEvaluated() {
-        final SymbolTableService table = new SymbolTableBean();
+        final SymbolTableBean table = new SymbolTableBean();
         final SymbolReference refA = new SymbolReference();
         final SymbolReference refB = new SymbolReference();
         final SymbolReference refC = new SymbolReference();
@@ -236,7 +236,7 @@ public class SymbolImplTest {
 
     @Test
     public void testForgetSymbolThrowsExceptionIfThereAreDependentValues() {
-        final SymbolTableService table = new SymbolTableBean();
+        final SymbolTableBean table = new SymbolTableBean();
         final SymbolReference refA = new SymbolReference();
         final SymbolReference refB = new SymbolReference();
         final SymbolReference refC = new SymbolReference();
@@ -279,7 +279,7 @@ public class SymbolImplTest {
     }
 
 
-    private void defineAsNumber(final SymbolTableService table, final Symbol b, final Integer val) {
+    private void defineAsNumber(final SymbolTable table, final Symbol b, final Integer val) {
         b.redefine(new SymbolDefinition() {
             @Override
             public Collection<SymbolReference> getDependencies() {
@@ -305,7 +305,7 @@ public class SymbolImplTest {
     }
 
 
-    private void defineAsIncrement(SymbolTableService table, final SymbolReference refB, Symbol a) {
+    private void defineAsIncrement(SymbolTable table, final SymbolReference refB, Symbol a) {
         a.redefine(new SymbolDefinition() {
             @Override
             public Collection<SymbolReference> getDependencies() {

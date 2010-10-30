@@ -40,7 +40,7 @@ import static javax.ejb.LockType.WRITE;
 
 @Singleton
 @Lock(READ)
-public class SymbolTableBean implements SymbolTableService {
+public class SymbolTableBean implements SymbolTableService, SymbolTable {
 
     private final UUID id = UUID.randomUUID();
     private Map<SymbolReference, Object> values = new HashMap<SymbolReference, Object>();

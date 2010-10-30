@@ -137,10 +137,6 @@ public class JavaScriptTranslationUtilsTest {
 
        }
 
-
-
-
-
        @Test
        public void testFindEndOfExprForSimpleInput() {
            assertEquals(0, findEndOfExpr("",0));
