@@ -47,23 +47,6 @@ import static org.junit.Assert.*;
  * To change this template use File | Settings | File Templates.
  */
 public class JavaScriptDefinitionTest {
-//
-//    private static final Pattern BAD_DEFN = Pattern.compile("#\\w+\\s+is");
-
-
-
-    // TODO: Implement if needed
-//    @Test
-//    public void testFindBadDefnPattern() {
-//       assertFalse(isBadDefn("b+c"));
-//       assertFalse(isBadDefn("#a is b+c"));
-//       assertTrue(isBadDefn(" a is b+c"));
-//       assertTrue(isBadDefn("a is b+c"));
-//    }
-//
-//    private boolean isBadDefn(String s) {
-//        return BAD_DEFN.matcher(s).matches();
-//    }
 
     @Test
     public void testCreate() {
