@@ -26,16 +26,16 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.domain;
+package ccare.engine;
 
 import ccare.engine.JavaScriptScopeFactory;
-import org.apache.commons.lang.NotImplementedException;
+import ccare.engine.SymbolDefinition;
+import ccare.engine.SymbolReference;
+import ccare.engine.SymbolTable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static ccare.engine.JavaScriptTranslationUtils.extractSpecialSymbols;
 import static ccare.engine.JavaScriptTranslationUtils.translateExpression;
@@ -115,7 +115,6 @@ public class JavaScriptDefinition implements SymbolDefinition {
     public boolean isExecutable() {
         return type == ExprType.FUNCTION;
     }
-
 
     @Override
     public String toString() {

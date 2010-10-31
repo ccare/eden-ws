@@ -28,9 +28,9 @@
 
 package ccare.engine;
 
-import ccare.domain.Symbol;
-import ccare.domain.SymbolReference;
-import ccare.domain.SymbolTable;
+import ccare.engine.Symbol;
+import ccare.engine.SymbolReference;
+import ccare.engine.SymbolTable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;

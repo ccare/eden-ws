@@ -26,21 +26,43 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.domain;
+package ccare.engine;
 
-import java.util.Collection;
+import ccare.domain.CannotForgetException;
+import ccare.engine.SymbolDefinition;
+import ccare.engine.SymbolReference;
+import ccare.engine.SymbolTable;
 
 /**
  * User: carecx
- * Date: 13-Oct-2010
- * Time: 22:25:05
+ * Date: 14-Oct-2010
+ * Time: 09:45:59
  */
-public interface SymbolDefinition {
-    public Collection<SymbolReference> getDependencies();
+public interface Symbol {
 
-    public Collection<SymbolReference> getTriggers();
+    SymbolReference getReference();
 
-    public Object evaluate(SymbolTable t);
+    void redefine(SymbolDefinition d, SymbolTable t);
 
-    boolean isExecutable();
+    void forget() throws CannotForgetException;
+
+    void expireValue();
+
+    Object getValue(SymbolTable t);
+
+    void registerDependent(Symbol s);
+
+    void unRegisterDependent(Symbol s);
+
+    void registerTrigger(Symbol s);
+
+    boolean isTriggeredBy(Symbol symbol);
+
+    void unRegisterTrigger(Symbol symbol);
+
+    boolean isDependentOn(Symbol symbol);
+
+    boolean isUpToDate();
+
+    SymbolDefinition getDefinition();
 }

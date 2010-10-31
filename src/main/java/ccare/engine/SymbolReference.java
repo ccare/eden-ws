@@ -26,66 +26,55 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.domain;
+package ccare.engine;
 
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import java.util.UUID;
 
 /**
  * User: carecx
- * Date: 27-Oct-2010
- * Time: 20:50:19
+ * Date: 13-Oct-2010
+ * Time: 22:24:49
  */
-public class SymbolReferenceTest {
+public class SymbolReference {
+    private final String name;
 
-    @Test
-    public void testGetName() {
-        SymbolReference sr = new SymbolReference("foo");
-        assertThat(sr.getName(), is(equalTo("foo")));
+    public SymbolReference() {
+        final UUID id = UUID.randomUUID();
+        name = id.toString();
     }
 
-    @Test
-    public void testGetNameNotNullForDefault() {
-        SymbolReference sr = new SymbolReference();
-        assertNotNull(sr.getName());
+    public SymbolReference(final String symbolName) {
+        name = symbolName;
     }
 
-    @Test
-    public void testEquals() {
-        SymbolReference sr = new SymbolReference("foo");
-        
-        assertFalse(sr.equals(null));
-        assertFalse(sr.equals(new SymbolReference("foo2")));
-        assertFalse(sr.equals(new SymbolReference()));
-        assertFalse(new SymbolReference().equals(new SymbolReference()));
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        assertTrue(sr.equals(sr));
-        assertTrue(sr.equals(new SymbolReference("foo")));
+        SymbolReference that = (SymbolReference) o;
 
-        SymbolReference extended = new SymbolReference() {
-            @Override
-            public String getName() {
-                return null;
-            }
-        };
-
-        assertFalse(sr.equals(extended));
-        assertFalse(extended.equals(sr));
+        final String n = getName();
+        if (n == null) {
+            return false;
+        } else if (n.equals(that.getName())) {
+           return true;
+        } else {
+            return false;
+        }
     }
 
-    @Test
-    public void testToString(){
-        SymbolReference sr = new SymbolReference("foo");
-        assertThat(sr.toString(), is(equalTo("Ref<foo>")));
+    @Override
+    public String toString() {
+        return "Ref<" + getName() + ">";
     }
 
-    @Test
-    public void testHashCode() throws Exception {
-       SymbolReference sr = new SymbolReference("foo");
-       assertEquals(sr.hashCode(), sr.hashCode());
-       assertEquals(sr.hashCode(), new SymbolReference("foo").hashCode());        
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
     }
 
+    public String getName() {
+        return name;
+    }
 }

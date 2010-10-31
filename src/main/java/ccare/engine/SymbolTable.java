@@ -26,55 +26,35 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.domain;
+package ccare.engine;
 
+import ccare.engine.Symbol;
+import ccare.engine.SymbolReference;
+
+import java.util.Set;
 import java.util.UUID;
 
 /**
  * User: carecx
- * Date: 13-Oct-2010
- * Time: 22:24:49
+ * Date: 26-Oct-2010
+ * Time: 15:24:19
  */
-public class SymbolReference {
-    private final String name;
+public interface SymbolTable {
+    UUID getId();
 
-    public SymbolReference() {
-        final UUID id = UUID.randomUUID();
-        name = id.toString();
-    }
+    Set<SymbolReference> listSymbols();
 
-    public SymbolReference(final String symbolName) {
-        name = symbolName;
-    }
+    Symbol get(SymbolReference reference);
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    void fireTriggers(Set<Symbol> triggers);
 
-        SymbolReference that = (SymbolReference) o;
+    void define(SymbolReference aRef, String s);
 
-        final String n = getName();
-        if (n == null) {
-            return false;
-        } else if (n.equals(that.getName())) {
-           return true;
-        } else {
-            return false;
-        }
-    }
+    Object getValue(SymbolReference bRef);
 
-    @Override
-    public String toString() {
-        return "Ref<" + getName() + ">";
-    }
+    void defineFunction(SymbolReference a, String s);
 
-    @Override
-    public int hashCode() {
-        return name != null ? name.hashCode() : 0;
-    }
+    void defineTriggeredProc(SymbolReference a, String s, String... triggers);
 
-    public String getName() {
-        return name;
-    }
+    void execute(SymbolReference a);
 }

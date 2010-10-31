@@ -29,9 +29,7 @@
 package ccare.service;
 
 import ccare.domain.Observable;
-import ccare.domain.Symbol;
-import ccare.domain.SymbolReference;
-import ccare.domain.SymbolTable;
+import ccare.engine.SymbolReference;
 
 import java.util.Set;
 import java.util.UUID;

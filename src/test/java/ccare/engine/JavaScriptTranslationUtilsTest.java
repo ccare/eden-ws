@@ -28,7 +28,6 @@
 
 package ccare.engine;
 
-import ccare.domain.JavaScriptDefinition;
 import org.junit.Test;
 
 import java.util.List;

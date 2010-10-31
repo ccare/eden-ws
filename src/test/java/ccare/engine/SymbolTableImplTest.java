@@ -26,27 +26,22 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.domain;
+package ccare.engine;
 
-import ccare.domain.exceptions.IllegalDefinitionException;
-import ccare.engine.SymbolTableImpl;
-import ccare.service.SymbolTableBean;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Undefined;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-
 /**
  * User: carecx
- * Date: 15-Oct-2010
- * Time: 20:10:42
+ * Date: 31-Oct-2010
+ * Time: 12:31:46
  */
-public class ScriptTest {
+public class SymbolTableImplTest {
+
 
     final SymbolReference a = new SymbolReference("a");
     final SymbolReference b = new SymbolReference("b");
@@ -135,7 +130,7 @@ public class ScriptTest {
     @Test
     public void testStringsContainingMagicChar() {
         SymbolTable table = new SymbolTableImpl();
-        
+
         table.define(b, "'#a'");
 
         assertEquals("#a", table.getValue(b));
@@ -241,7 +236,7 @@ public class ScriptTest {
         table.define(c, "#f()");
 
         assertEquals("#d is 5", table.getValue(c));
-        
+
         assertEquals("b", table.getValue(a));
         assertEquals(2, table.getValue(b));
     }
@@ -350,7 +345,7 @@ public class ScriptTest {
         assertEquals(3, table.getValue(b));
         table.define(b, "2");
         assertEquals(2, table.getValue(b));
-        table.define(c, "'a'");         
+        table.define(c, "'a'");
         assertEquals(3, table.getValue(b));
 
         // Remove the trigger and verify that the linkage is broken
@@ -430,6 +425,5 @@ public class ScriptTest {
         assertEquals("bazzy", table.getValue(d));
     }
 
-    
-
+         
 }

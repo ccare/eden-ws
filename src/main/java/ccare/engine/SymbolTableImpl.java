@@ -28,16 +28,7 @@
 
 package ccare.engine;
 
-import ccare.domain.*;
-import ccare.domain.Observable;
-import ccare.service.SymbolTableService;
-
-import javax.ejb.Lock;
-import javax.ejb.Singleton;
 import java.util.*;
-
-import static javax.ejb.LockType.READ;
-import static javax.ejb.LockType.WRITE;
 
 public class SymbolTableImpl implements SymbolTable {
 

@@ -26,32 +26,24 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.domain;
+package ccare.engine;
 
-import java.util.Set;
-import java.util.UUID;
+import ccare.engine.SymbolReference;
+import ccare.engine.SymbolTable;
+
+import java.util.Collection;
 
 /**
  * User: carecx
- * Date: 26-Oct-2010
- * Time: 15:24:19
+ * Date: 13-Oct-2010
+ * Time: 22:25:05
  */
-public interface SymbolTable {
-    UUID getId();
+public interface SymbolDefinition {
+    public Collection<SymbolReference> getDependencies();
 
-    Set<SymbolReference> listSymbols();
+    public Collection<SymbolReference> getTriggers();
 
-    Symbol get(SymbolReference reference);
+    public Object evaluate(SymbolTable t);
 
-    void fireTriggers(Set<Symbol> triggers);
-
-    void define(SymbolReference aRef, String s);
-
-    Object getValue(SymbolReference bRef);
-
-    void defineFunction(SymbolReference a, String s);
-
-    void defineTriggeredProc(SymbolReference a, String s, String... triggers);
-
-    void execute(SymbolReference a);
+    boolean isExecutable();
 }

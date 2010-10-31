@@ -26,11 +26,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.domain;
+package ccare.engine;
 
-import ccare.engine.SymbolTableImpl;
-import ccare.service.SymbolTableBean;
-import ccare.service.SymbolTableService;
+import ccare.domain.CannotForgetException;
+import ccare.engine.SymbolReference;
 import org.junit.Before;
 import org.junit.Test;
 
