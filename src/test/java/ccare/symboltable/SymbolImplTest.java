@@ -26,10 +26,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.engine;
+package ccare.symboltable;
 
 import ccare.domain.CannotForgetException;
-import ccare.engine.SymbolReference;
+import ccare.symboltable.SymbolReference;
 import org.junit.Before;
 import org.junit.Test;
 

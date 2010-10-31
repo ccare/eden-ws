@@ -26,10 +26,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.engine;
+package ccare.symboltable;
 
-import ccare.engine.Symbol;
-import ccare.engine.SymbolReference;
+import ccare.symboltable.Symbol;
+import ccare.symboltable.SymbolReference;
 
 import java.util.Set;
 import java.util.UUID;

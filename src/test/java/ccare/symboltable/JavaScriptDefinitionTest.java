@@ -26,9 +26,8 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.engine;
+package ccare.symboltable;
 
-import ccare.engine.*;
 import org.junit.Test;
 
 import java.util.Collection;

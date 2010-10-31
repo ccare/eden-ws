@@ -29,10 +29,10 @@
 package ccare.service;
 
 import ccare.domain.Observable;
-import ccare.engine.Symbol;
-import ccare.engine.SymbolReference;
-import ccare.engine.SymbolTable;
-import ccare.engine.SymbolTableImpl;
+import ccare.symboltable.Symbol;
+import ccare.symboltable.SymbolReference;
+import ccare.symboltable.SymbolTable;
+import ccare.symboltable.SymbolTableImpl;
 
 import javax.ejb.Lock;
 import javax.ejb.Singleton;

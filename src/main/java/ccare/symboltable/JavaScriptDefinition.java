@@ -26,19 +26,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.engine;
+package ccare.symboltable;
 
-import ccare.engine.JavaScriptScopeFactory;
-import ccare.engine.SymbolDefinition;
-import ccare.engine.SymbolReference;
-import ccare.engine.SymbolTable;
+import ccare.symboltable.JavaScriptScopeFactory;
+import ccare.symboltable.SymbolDefinition;
+import ccare.symboltable.SymbolReference;
+import ccare.symboltable.SymbolTable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
 import java.util.*;
 
-import static ccare.engine.JavaScriptTranslationUtils.extractSpecialSymbols;
-import static ccare.engine.JavaScriptTranslationUtils.translateExpression;
+import static ccare.symboltable.JavaScriptTranslationUtils.extractSpecialSymbols;
+import static ccare.symboltable.JavaScriptTranslationUtils.translateExpression;
 
 /**
  * Created by IntelliJ IDEA.

@@ -29,7 +29,7 @@
 package ccare.service;
 
 import ccare.domain.Observable;
-import ccare.engine.SymbolReference;
+import ccare.symboltable.SymbolReference;
 import org.junit.Test;
 
 import javax.naming.Context;
