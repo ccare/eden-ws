@@ -39,13 +39,9 @@ import java.util.*;
 import static javax.ejb.LockType.READ;
 import static javax.ejb.LockType.WRITE;
 
-@Singleton
-@Lock(READ)
-public class SymbolTableImpl implements SymbolTableService, SymbolTable {
+public class SymbolTableImpl implements SymbolTable {
 
     private final UUID id = UUID.randomUUID();
-    private Map<SymbolReference, Object> values = new HashMap<SymbolReference, Object>();
-    private Map<SymbolReference, String> defns = new HashMap<SymbolReference, String>();
     private Map<SymbolReference, Symbol> symbols = new HashMap<SymbolReference, Symbol>();
 
     @Override
@@ -53,24 +49,8 @@ public class SymbolTableImpl implements SymbolTableService, SymbolTable {
         return id;
     }
 
-    @Override
-    @Lock(WRITE)
-    public void define(SymbolReference reference, Observable d) {
-        defns.put(reference, d.getDefinition());
-        values.put(reference, d.getCurrentValue());
-    }
-
-    @Override
     public void add(Symbol sym) {
         symbols.put(sym.getReference(), sym);
-    }
-
-    @Override
-    public Observable observe(SymbolReference reference) {
-        Observable o = new Observable();
-        o.setDefinition(defns.get(reference));
-        o.setCurrentValue(values.get(reference));
-        return o;
     }
 
     @Override
@@ -83,7 +63,7 @@ public class SymbolTableImpl implements SymbolTableService, SymbolTable {
 
     @Override
     public Set<SymbolReference> listSymbols() {
-        return Collections.unmodifiableSet(values.keySet());
+        return Collections.unmodifiableSet(symbols.keySet());
     }
 
     @Override

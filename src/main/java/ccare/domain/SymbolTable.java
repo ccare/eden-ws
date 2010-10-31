@@ -29,6 +29,7 @@
 package ccare.domain;
 
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * User: carecx
@@ -36,6 +37,8 @@ import java.util.Set;
  * Time: 15:24:19
  */
 public interface SymbolTable {
+    UUID getId();
+
     Set<SymbolReference> listSymbols();
 
     Symbol get(SymbolReference reference);

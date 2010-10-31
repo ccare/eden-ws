@@ -49,8 +49,6 @@ import static ccare.engine.JavaScriptTranslationUtils.translateExpression;
  */
 public class JavaScriptDefinition implements SymbolDefinition {
 
-
-
     public enum ExprType {
         FUNCTION, EXPRESSION
     }
@@ -116,5 +114,11 @@ public class JavaScriptDefinition implements SymbolDefinition {
     @Override
     public boolean isExecutable() {
         return type == ExprType.FUNCTION;
+    }
+
+
+    @Override
+    public String toString() {
+        return expr;
     }
 }

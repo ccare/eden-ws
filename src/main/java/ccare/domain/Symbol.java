@@ -60,4 +60,6 @@ public interface Symbol {
     boolean isDependentOn(Symbol symbol);
 
     boolean isUpToDate();
+
+    SymbolDefinition getDefinition();
 }

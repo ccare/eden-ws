@@ -160,4 +160,9 @@ public class SymbolImpl implements Symbol {
             s.registerTrigger(this);
         }
     }
+
+    @Override
+    public SymbolDefinition getDefinition() {
+        return definition;
+    }
 }

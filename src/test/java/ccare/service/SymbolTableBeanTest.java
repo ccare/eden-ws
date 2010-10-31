@@ -64,11 +64,11 @@ public class SymbolTableBeanTest {
         InitialContext context = createContext();
         SymbolTableService serviceBean = (SymbolTableService) context.lookup("SymbolTableBeanLocal");
         Observable def = new Observable();
-        def.setDefinition("a+b");
+        def.setDefinition("#a+#b");
         SymbolReference r = new SymbolReference();
         serviceBean.define(r, def);
         Observable o = serviceBean.observe(r);
-        assertEquals(o.getDefinition(), "a+b");
+        assertEquals(o.getDefinition(), "#a+#b");
     }
 
     @Test

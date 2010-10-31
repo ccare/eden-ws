@@ -28,12 +28,14 @@
 
 package ccare.domain;
 
+import ccare.engine.SymbolTableImpl;
 import ccare.service.SymbolTableBean;
 import org.junit.Test;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static ccare.domain.JavaScriptDefinition.*;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -222,7 +224,7 @@ public class JavaScriptDefinitionTest {
 
     @Test
     public void testCallMagicObserveFunctionDelegatesCorrectly() throws Exception {
-        final SymbolTable table = new SymbolTableBean();
+        final SymbolTable table = new SymbolTableImpl();
         final Symbol s = new SymbolImpl(new SymbolReference());
         s.redefine(new JavaScriptDefinition("'abc'"), table);
         final SymbolDefinition d = new JavaScriptDefinition("$eden_observe('a')");
@@ -232,7 +234,7 @@ public class JavaScriptDefinitionTest {
 
     @Test
     public void testEvaluateDependency() throws Exception {
-        final SymbolTable table = new SymbolTableBean();
+        final SymbolTable table = new SymbolTableImpl();
         final Symbol s = new SymbolImpl(new SymbolReference());
         s.redefine(new JavaScriptDefinition("'abc'"), table);
         final SymbolDefinition d = new JavaScriptDefinition("#a");
@@ -242,7 +244,7 @@ public class JavaScriptDefinitionTest {
 
     @Test
     public void testEvaluateDependencyExpression() throws Exception {
-        final SymbolTable table = new SymbolTableBean();
+        final SymbolTable table = new SymbolTableImpl();
         final Symbol s = new SymbolImpl(new SymbolReference());
         s.redefine(new JavaScriptDefinition("'abc'"), table);
         final SymbolDefinition d1 = new JavaScriptDefinition("#a + 'def'");
@@ -256,8 +258,12 @@ public class JavaScriptDefinitionTest {
 
     private SymbolTable stubSymbolTable(final Symbol s) {
         return new SymbolTable() {
-
             @Override
+            public UUID getId() {
+                return null;
+            }
+
+            @Override     
             public Set<SymbolReference> listSymbols() {
                 return null;
             }

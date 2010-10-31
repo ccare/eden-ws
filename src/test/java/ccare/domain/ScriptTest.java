@@ -29,6 +29,7 @@
 package ccare.domain;
 
 import ccare.domain.exceptions.IllegalDefinitionException;
+import ccare.engine.SymbolTableImpl;
 import ccare.service.SymbolTableBean;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class ScriptTest {
 
     @Test
     public void testDependencyManagementUsingLowLevel() {
-        SymbolTableBean table = new SymbolTableBean();
+        SymbolTableImpl table = new SymbolTableImpl();
 
         Symbol sA = new SymbolImpl(a);
         Symbol sB = new SymbolImpl(b);
@@ -83,7 +84,7 @@ public class ScriptTest {
 
     @Test
     public void testScript() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
 
         table.define(a, "#b + #c");
         table.define(b, "1");
@@ -102,7 +103,7 @@ public class ScriptTest {
 
     @Test
     public void testDeepChaining() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
 
         table.define(a, "1");
         table.define(b, "#a + 1");
@@ -120,7 +121,7 @@ public class ScriptTest {
 
     @Test
     public void testStringConcat() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
 
         table.define(a, "1");
         table.define(b, "#a + '1'");
@@ -133,7 +134,7 @@ public class ScriptTest {
 
     @Test
     public void testStringsContainingMagicChar() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         
         table.define(b, "'#a'");
 
@@ -142,7 +143,7 @@ public class ScriptTest {
 
     @Test
     public void testStringsContainingMagicCharInsideProc() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
 
         table.defineFunction(b, "function() { #a is '#c' }");
         table.execute(b);
@@ -152,7 +153,7 @@ public class ScriptTest {
 
     @Test
     public void testStringsContainingMagicCharInsideProc_doubleQuotes() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
 
         table.defineFunction(b, "function() { #a is \"#c\" }");
         table.execute(b);
@@ -162,7 +163,7 @@ public class ScriptTest {
 
     @Test
     public void testStringsContainingMagicCharInsideProcAndEndedBySemiColon() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
 
         table.defineFunction(b, "function() { #a is '#c'; }");
         table.execute(b);
@@ -172,7 +173,7 @@ public class ScriptTest {
 
     @Test
     public void testStringsContainingMagicCharInsideProc_doubleQuotesAndEndedBySemiColon() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
 
         table.defineFunction(b, "function() { #a is \"#c\"; }");
         table.execute(b);
@@ -182,7 +183,7 @@ public class ScriptTest {
 
     @Test
     public void testStringsContainingDependencyDefnInsideProc() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
 
         table.defineFunction(b, "function() { #a is '1' }");
         table.execute(b);
@@ -192,7 +193,7 @@ public class ScriptTest {
 
     @Test
     public void testStringsContainingDependencyDefnAgainst_A_defaultsTo_HashA() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
 
         table.defineFunction(b, "function() { a is '1' }");
         table.execute(b);
@@ -201,21 +202,21 @@ public class ScriptTest {
 
     @Test
     public void test_Is_InsideAString() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(a, "'a is b'");
         assertEquals("a is b", table.getValue(a));
     }
 
     @Test
     public void test_Is_InsideAString2() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(a, "'#a is b'");
         assertEquals("#a is b", table.getValue(a));
     }
 
     @Test
     public void test_Is_InsideAFunction() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.defineFunction(a, "function() { return 'a is b'}");
         table.define(b, "#a()");
         assertEquals("a is b", table.getValue(b));
@@ -223,7 +224,7 @@ public class ScriptTest {
 
     @Test
     public void test_Is_InsideAComplexFunction() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
 
         table.defineFunction(a, "function() { #c is 4; return 'a is b'}");
         table.define(b, "#a()");
@@ -234,7 +235,7 @@ public class ScriptTest {
 
     @Test
     public void test_Is_InsideAComplexFunction2() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
 
         table.defineFunction(f, "function() { #a is 'b'; var a = \"#c is d\"; var a = ({ a : '#a is'}); #b is 2; return '#d is 5'}");
         table.define(c, "#f()");
@@ -247,7 +248,7 @@ public class ScriptTest {
 
     @Test
     public void testArrayValues() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(a, "1");
         table.define(b, "[#a]");
 
@@ -262,7 +263,7 @@ public class ScriptTest {
 
     @Test
     public void testArraysConcat() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(a, "[1,2,3]");
         table.define(b, "[4,5,6]");
         table.define(c, "#a.concat(#b)");
@@ -277,7 +278,7 @@ public class ScriptTest {
 
     @Test
     public void testSimpleFunctionCall() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.defineFunction(a, "function() { return 2; }");
         table.define(b, "#a()");
         assertEquals(2, table.getValue(b));
@@ -285,7 +286,7 @@ public class ScriptTest {
 
     @Test
     public void testDependencyFunctionCall() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(a, "15");
         table.defineFunction(b, "function() { return #a*2; }");
         table.define(c, "#b()");
@@ -296,7 +297,7 @@ public class ScriptTest {
 
     @Test
     public void testTrinery() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(a, "4");
         table.define(b, "(#a == 4) ? 1 : 2");
         assertEquals(1.0, table.getValue(b));
@@ -306,7 +307,7 @@ public class ScriptTest {
 
     @Test
     public void testFuncWithSideEffect() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.defineFunction(a, "function() { $eden_define('b','3'); }");
         table.define(c, "#a()");
         table.getValue(c);
@@ -315,7 +316,7 @@ public class ScriptTest {
 
     @Test
     public void testExecuteFuncWithSideEffect() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.defineFunction(a, "function() { $eden_define('b','3'); }");
         table.execute(a);
         assertEquals(3, table.getValue(b));
@@ -323,7 +324,7 @@ public class ScriptTest {
 
     @Test
     public void testExecuteFuncWithInnerDefinition() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.defineFunction(a, "function() { #b is 3; }");
         table.execute(a);
         assertEquals(3, table.getValue(b));
@@ -331,7 +332,7 @@ public class ScriptTest {
 
     @Test
     public void testExecuteFuncWithInnerDefinitionCreatingDependency() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(c, "45");
         table.defineFunction(a, "function() { #b is #c + 1; }");
         table.execute(a);
@@ -342,7 +343,7 @@ public class ScriptTest {
 
     @Test
     public void testTrigger() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.defineTriggeredProc(a, "function() { $eden_define('b','3');}", "#c");
         assertEquals(null, table.getValue(b));
         table.define(c, "101");
@@ -362,13 +363,13 @@ public class ScriptTest {
 
     @Test
     public void testDefineObject() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(a, "({})");
     }
 
     @Test
     public void testDefineObjectWithProp() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(a, "({a: 2})");
         table.define(b, "#a.a");
         assertEquals(2, table.getValue(b));
@@ -376,7 +377,7 @@ public class ScriptTest {
 
     @Test
     public void testObjectWithDependentFields() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(a, "'hi'");
         table.define(b, "'there'");
         table.define(c, "({a: #a, b: #b})");
@@ -395,7 +396,7 @@ public class ScriptTest {
 
     @Test
     public void testRedefinitionOfObjectBreaksDependency() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(a, "({a: 2})");
         table.define(b, "#a.a");
         assertEquals(2, table.getValue(b));
@@ -412,7 +413,7 @@ public class ScriptTest {
 
     @Test
     public void testE4X() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(a, "<xml><foo>bar</foo></xml>");
         table.define(b, "#a.foo.toString()");
         assertEquals("bar", table.getValue(b));
@@ -420,7 +421,7 @@ public class ScriptTest {
 
     @Test
     public void testE4XWithEmbeddedDependency() {
-        SymbolTable table = new SymbolTableBean();
+        SymbolTable table = new SymbolTableImpl();
         table.define(a, "'baz'");
         table.define(b, "<xml><foo>{#a}</foo><bar>{#{a} + 'zy'}</bar></xml>");
         table.define(c, "#b.foo.toString()");

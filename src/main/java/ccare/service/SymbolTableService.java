@@ -45,9 +45,7 @@ public interface SymbolTableService {
     public UUID getId();
 
     public void define(SymbolReference reference, Observable d);
-
-    public void add(Symbol sym);
-
+    
     public Observable observe(SymbolReference reference);
 
     public Set<SymbolReference> listSymbols();

@@ -28,6 +28,7 @@
 
 package ccare.domain;
 
+import ccare.engine.SymbolTableImpl;
 import ccare.service.SymbolTableBean;
 import ccare.service.SymbolTableService;
 import org.junit.Before;
@@ -171,7 +172,7 @@ public class SymbolImplTest {
 
     @Test
     public void testDependentValuesAreReEvaluated() {
-        final SymbolTableBean table = new SymbolTableBean();
+        final SymbolTableImpl table = new SymbolTableImpl();
         final SymbolReference refA = new SymbolReference();
         final SymbolReference refB = new SymbolReference();
 
@@ -200,7 +201,7 @@ public class SymbolImplTest {
 
     @Test
     public void testDeepDependentValuesAreReEvaluated() {
-        final SymbolTableBean table = new SymbolTableBean();
+        final SymbolTableImpl table = new SymbolTableImpl();
         final SymbolReference refA = new SymbolReference();
         final SymbolReference refB = new SymbolReference();
         final SymbolReference refC = new SymbolReference();
@@ -236,7 +237,7 @@ public class SymbolImplTest {
 
     @Test
     public void testForgetSymbolThrowsExceptionIfThereAreDependentValues() {
-        final SymbolTableBean table = new SymbolTableBean();
+        final SymbolTableImpl table = new SymbolTableImpl();
         final SymbolReference refA = new SymbolReference();
         final SymbolReference refB = new SymbolReference();
         final SymbolReference refC = new SymbolReference();
