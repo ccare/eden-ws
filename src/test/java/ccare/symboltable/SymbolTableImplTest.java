@@ -28,6 +28,7 @@
 
 package ccare.symboltable;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Undefined;
@@ -423,6 +424,83 @@ public class SymbolTableImplTest {
         table.define(d, "#b.bar.toString()");
         assertEquals("baz", table.getValue(c));
         assertEquals("bazzy", table.getValue(d));
+    }
+
+    @Test
+    public void testE4XWithIsInXML() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(b, "<xml><bar>is</bar></xml>");
+        table.define(d, "#b.bar.toString()");
+        assertEquals("is", table.getValue(d));
+    }
+
+    @Ignore
+    @Test
+    public void testE4XWithHash() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(b, "<xml><bar>#a</bar></xml>");
+        table.define(d, "#b.bar.toString()");
+        assertEquals("#a", table.getValue(d));
+    }
+
+    @Ignore
+    @Test
+    public void testE4XWithSupriousExprInXML() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(b, "<xml><bar>#a is</bar></xml>");
+        table.define(d, "#b.bar.toString()");
+        assertEquals("is", table.getValue(d));
+    }
+
+    @Ignore
+    @Test
+    public void testE4XWithSupriousExprInXML_2() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(e, "<xml><bar>#a is #b + #c;</bar></xml>");
+        table.define(d, "#e.bar.toString()");
+        assertEquals("#a is #b + #c;", table.getValue(d));
+    }
+
+    @Ignore
+    @Test
+    public void testE4XWithSupriousExprInXML_3() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(e, "<xml><bar>function() { c is a + b; }</bar></xml>");
+        table.define(d, "#e.bar.toString()");
+        assertEquals("function() { c is a + b; }", table.getValue(d));
+    }
+
+    @Test
+    public void testE4XWithSupriousExprInXML_4() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(e, "<xml><is>a</is></xml>");
+        table.define(d, "#e.is.toString()");
+        assertEquals("a", table.getValue(d));
+    }
+
+    @Test
+    public void testE4XWithSupriousExprInXML_5() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(e, "<xml><b is=''>a</b></xml>");
+        table.define(d, "#e.b.toString()");
+        assertEquals("a", table.getValue(d));
+    }
+
+    @Test
+    public void testE4XWithSupriousExprInXML_6() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(e, "<xml><b is='c'>a</b></xml>");
+        table.define(d, "#e.b.@is.toString()");
+        assertEquals("c", table.getValue(d));
+    }
+
+    @Ignore
+    @Test
+    public void testE4XWithSupriousExprInXML_7() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(e, "<xml><bar is='function() { c is a + b; }'></bar></xml>");
+        table.define(d, "#e.bar.@is.toString()");
+        assertEquals("function() { c is a + b; }", table.getValue(d));
     }
 
          
