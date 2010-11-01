@@ -66,7 +66,6 @@ public class JavaScriptDefinitionTest {
         validateExpr("a % $eden_observe('c_c_d')", "a % #c_c_d");
     }
 
-
     @Test
     public void testExpressionTranslationForExpressionWithEscapedObservables() {
         validateExpr("$eden_observe('abc')", "#{abc}");
@@ -77,7 +76,6 @@ public class JavaScriptDefinitionTest {
     public void testExpressionTranslationForCalculatedExpresions() {
        validateExpr("$eden_observe('abc')", "#{abc}");
     }
-
 
     @Test
     public void testExpressionTranslationForDefinition() {
@@ -133,7 +131,6 @@ public class JavaScriptDefinitionTest {
         validateExpr("function() {$eden_define('a','\"#b+c\"');}", "function() {#a is \"#b+c\";}");
     }
 
-
     @Test
     public void testExpressionTranslationForSingleQuoteStrings() {
         validateExpr("$eden_define('a','\\'...\\'')", "#a is '...'");
@@ -145,7 +142,6 @@ public class JavaScriptDefinitionTest {
         validateExpr("function() {$eden_define('a','\\'b+c\\'');}", "function() {#a is 'b+c';}");
     }
 
-
     @Test
     public void testExpressionTranslationForObjects() {
         validateExpr("$eden_define('a','({ a: 1})')", "#a is ({ a: 1})");
@@ -155,8 +151,6 @@ public class JavaScriptDefinitionTest {
     public void testExpressionTranslationForObjectsInFunctions() {
         validateExpr("function() { $eden_define('a','({ a: 1})'); }", "function() { #a is ({ a: 1}); }");
     }
-
-
 
     private void validateExprUnchangedFor(final String expr) {
         validateExpr(expr, expr);
@@ -232,8 +226,7 @@ public class JavaScriptDefinitionTest {
         assertEquals(target, d1.evaluate(t));
         assertEquals(target, d2.evaluate(t));
     }
-
-
+    
     private SymbolTable stubSymbolTable(final Symbol s) {
         return new SymbolTable() {
             @Override
