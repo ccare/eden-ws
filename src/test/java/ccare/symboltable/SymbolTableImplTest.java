@@ -494,9 +494,17 @@ public class SymbolTableImplTest {
         assertEquals("c", table.getValue(d));
     }
 
-    @Ignore
     @Test
     public void testE4XWithSupriousExprInXML_7() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(e, "<xml><b is='#a'>a</b></xml>");
+        table.define(d, "#e.b.@is.toString()");
+        assertEquals("#a", table.getValue(d));
+    }
+
+    @Ignore
+    @Test
+    public void testE4XWithSupriousExprInXML_8() {
         SymbolTable table = new SymbolTableImpl();
         table.define(e, "<xml><bar is='function() { c is a + b; }'></bar></xml>");
         table.define(d, "#e.bar.@is.toString()");
