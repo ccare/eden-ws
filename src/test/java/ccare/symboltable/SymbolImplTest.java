@@ -31,6 +31,7 @@ package ccare.symboltable;
 import ccare.domain.CannotForgetException;
 import org.junit.Before;
 import org.junit.Test;
+import org.mozilla.javascript.Undefined;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -272,9 +273,9 @@ public class SymbolImplTest {
         } catch (CannotForgetException e) {
             fail();
         }
-        assertNull(a.getValue(table));
-        assertNull(b.getValue(table));
-        assertNull(c.getValue(table));
+        assertEquals(Undefined.instance, a.getValue(table));
+        assertEquals(Undefined.instance, b.getValue(table));
+        assertEquals(Undefined.instance, c.getValue(table));
     }
 
 
