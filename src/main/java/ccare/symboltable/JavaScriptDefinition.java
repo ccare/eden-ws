@@ -29,12 +29,15 @@
 package ccare.symboltable;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 
 import java.util.*;
 
 import static ccare.symboltable.JavaScriptTranslationUtils.extractSpecialSymbols;
 import static ccare.symboltable.JavaScriptTranslationUtils.translateExpression;
+import static ccare.symboltable.JavaScriptUtils.compileFunction;
+import static ccare.symboltable.JavaScriptUtils.evalExpression;
 
 /**
  * Created by IntelliJ IDEA.
@@ -95,16 +98,22 @@ public class JavaScriptDefinition implements SymbolDefinition {
     public Object evaluate(final SymbolTable t) {
         Context cx = Context.enter();
         try {
-            final Scriptable scope = JavaScriptScopeFactory.getInstance().scopeFor(t);
+            final Scriptable scope = getScopeFactory().scopeFor(t);
             final String expr = getExpr();
             if (isExecutable()) {
-                return cx.compileFunction(scope, expr, "<func>", 1, null);
+                return compileFunction(cx, scope, expr);
             } else {
-                return cx.evaluateString(scope, expr, "<cmd>", 1, null);
+                return evalExpression(cx, scope, expr);
             }
         } finally {
             Context.exit();
         }
+    }
+
+
+
+    private JavaScriptScopeFactory getScopeFactory() {
+        return JavaScriptScopeFactory.getInstance();
     }
 
     @Override

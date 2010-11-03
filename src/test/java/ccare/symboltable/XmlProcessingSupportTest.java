@@ -39,6 +39,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import java.io.IOException;
 
+import static ccare.symboltable.JavaScriptUtils.evalExpression;
 import static ccare.symboltable.XmlProcessingSupport.createTransformFunction;
 import static ccare.symboltable.XmlProcessingSupport.removeProcessingInstruction;
 import static ccare.symboltable.XmlProcessingSupport.toXMLString;
@@ -116,7 +117,7 @@ public class XmlProcessingSupportTest {
         Context cx = Context.enter();
         try {
             Scriptable scope = cx.initStandardObjects();
-            final Object xml = cx.evaluateString(scope, "<foo><bar/></foo>", "", 0, null);
+            final Object xml = evalExpression(cx, scope, "<foo><bar/></foo>");
             final String xslString = "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n" +
                                         "    <xsl:template match=\"foo\">" +
                                         "<xml>bar</xml>" +
