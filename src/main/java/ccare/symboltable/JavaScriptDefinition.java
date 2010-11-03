@@ -28,7 +28,9 @@
 
 package ccare.symboltable;
 
+import ccare.symboltable.exceptions.EvaluationException;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.EcmaError;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 
@@ -38,6 +40,7 @@ import static ccare.symboltable.JavaScriptTranslationUtils.extractSpecialSymbols
 import static ccare.symboltable.JavaScriptTranslationUtils.translateExpression;
 import static ccare.symboltable.JavaScriptUtils.compileFunction;
 import static ccare.symboltable.JavaScriptUtils.evalExpression;
+import static java.lang.String.format;
 
 /**
  * Created by IntelliJ IDEA.
@@ -105,6 +108,8 @@ public class JavaScriptDefinition implements SymbolDefinition {
             } else {
                 return evalExpression(cx, scope, expr);
             }
+        } catch (EcmaError error) {
+            throw new EvaluationException(format("Could not evaluate %s", expr), error);  
         } finally {
             Context.exit();
         }

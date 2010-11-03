@@ -28,6 +28,10 @@
 
 package ccare.symboltable;
 
+import ccare.symboltable.exceptions.CannotDefineException;
+import ccare.symboltable.exceptions.SymbolTableException;
+import org.mozilla.javascript.Undefined;
+
 import java.util.*;
 
 public class SymbolTableImpl implements SymbolTable {
@@ -66,6 +70,9 @@ public class SymbolTableImpl implements SymbolTable {
 
     @Override
     public void define(SymbolReference ref, String defn) {
+        if (ref == null || defn == null) {
+            throw new CannotDefineException();
+        }
         final JavaScriptDefinition d = new JavaScriptDefinition(defn);
         Symbol s = get(ref);
         s.redefine(d, this);
@@ -74,7 +81,13 @@ public class SymbolTableImpl implements SymbolTable {
     @Override
     public Object getValue(SymbolReference ref) {
         Symbol s = get(ref);
-        return s.getValue(this);
+        try {
+            return  s.getValue(this);
+        } catch (SymbolTableException e) {
+            e.printStackTrace();
+            // TODO: Log these...
+        }
+        return Undefined.instance;
     }
 
     @Override

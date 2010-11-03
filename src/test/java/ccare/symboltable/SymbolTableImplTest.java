@@ -28,6 +28,7 @@
 
 package ccare.symboltable;
 
+import ccare.symboltable.exceptions.CannotDefineException;
 import org.junit.Test;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Undefined;
@@ -49,6 +50,7 @@ public class SymbolTableImplTest {
     final SymbolReference d = new SymbolReference("d");
     final SymbolReference e = new SymbolReference("e");
     final SymbolReference f = new SymbolReference("f");
+    private final Object undefined = Undefined.instance;
 
     @Test
     public void testDependencyManagementUsingLowLevel() {
@@ -340,7 +342,7 @@ public class SymbolTableImplTest {
     public void testTrigger() {
         SymbolTable table = new SymbolTableImpl();
         table.defineTriggeredProc(a, "function() { $eden_define('b','3');}", "#c");
-        assertEquals(null, table.getValue(b));
+        assertEquals(undefined, table.getValue(b));
         table.define(c, "101");
         assertEquals(3, table.getValue(b));
         table.define(b, "2");
@@ -396,7 +398,7 @@ public class SymbolTableImplTest {
         table.define(b, "#a.a");
         assertEquals(2, table.getValue(b));
         table.define(a, "({})");
-        assertEquals(Undefined.instance, table.getValue(b));
+        assertEquals(undefined, table.getValue(b));
         table.define(a, "({b:12, a: [1,2,3]})");
         final Object val = table.getValue(b);
         assertTrue(val instanceof NativeArray);
@@ -547,6 +549,48 @@ public class SymbolTableImplTest {
         assertEquals(target, table.getValue(f));
     }
 
+
+    @Test(expected = CannotDefineException.class)
+    public void testCannotDefineNullExpr() {
+       SymbolTable table = new SymbolTableImpl();
+       table.define(a, null);
+    }
+
+    @Test(expected = CannotDefineException.class)
+    public void testCannotDefineNullRef() {
+       SymbolTable table = new SymbolTableImpl();
+       table.define(null, "");
+    }
+
+    @Test
+    public void testUndefinedObservationDoesntKillRuntime() {
+       SymbolTable table = new SymbolTableImpl();
+       table.define(a, "#b");
+        assertEquals(undefined, table.getValue(a));
+    }
+
+    @Test
+    public void testUndefinedExecutionDoesntKillRuntime() {
+       SymbolTable table = new SymbolTableImpl();
+       table.define(a, "#b");
+        table.execute(a);
+    }
+
+    @Test
+    public void testUndefinedFuncCallDoesntKillRuntime() {
+       SymbolTable table = new SymbolTableImpl();
+       table.define(a, "#b()");
+       assertEquals(undefined, table.getValue(a));
+    }
+
+    @Test
+    public void testCallObjectAsFuncDoesntKillRuntime() {
+       SymbolTable table = new SymbolTableImpl();
+       table.define(a, "'hi'");
+       table.define(b, "#a()");
+       assertEquals("hi", table.getValue(a));
+       assertEquals(undefined, table.getValue(b));
+    }
     
 
 

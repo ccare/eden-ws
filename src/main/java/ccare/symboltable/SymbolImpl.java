@@ -29,6 +29,7 @@
 package ccare.symboltable;
 
 import ccare.domain.CannotForgetException;
+import org.mozilla.javascript.Undefined;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -87,7 +88,7 @@ public class SymbolImpl implements Symbol {
     @Override
     public Object getValue(SymbolTable t) {
         if (definition == null) {
-            return null;
+            return Undefined.instance;
         }
         if (!upToDate || value == null) {
             value = definition.evaluate(t);
