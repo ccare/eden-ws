@@ -447,6 +447,15 @@ public class JavaScriptTranslationUtilsTest {
     }
 
     @Test
+    public void testPullOutRegions_e4x2() {
+        final List<String> stringList = pullOutRegions("a <xml/> c");
+        assertEquals(3, stringList.size());
+        assertEquals("a ", stringList.get(0));
+        assertEquals("<xml/>", stringList.get(1));
+        assertEquals(" c", stringList.get(2));
+    }
+
+    @Test
     public void testPullOutRegions_e4XWithNestedExpr() {
         final List<String> stringList = pullOutRegions("<xml><foo>{#a}</foo><bar>{#{a} + 'zy'}</bar></xml>");
         assertEquals(1, stringList.size());

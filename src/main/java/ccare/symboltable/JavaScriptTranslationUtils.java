@@ -238,12 +238,15 @@ public class JavaScriptTranslationUtils {
         boolean inE4XStart = false;
         boolean inE4XEnd = false;
         boolean inAttrs = false;
+        boolean inSingletonNode = false;
         StringBuilder tag = null;
         Deque<String> tags = new ArrayDeque<String>();
         final int length = s.length();
         for (; pos < length; pos++) {
             char c = s.charAt(pos);
-            if (inE4XStart || inE4XEnd) {
+            if (inE4XStart && c == '/') {
+                inSingletonNode = true;
+            } else if (inE4XStart || inE4XEnd) {
                 if (inE4XStart && c == ' ') {
                     inAttrs = true;
                 }
@@ -252,9 +255,15 @@ public class JavaScriptTranslationUtils {
                     tag.append(c);
                 } else {
                     if (inE4XStart) {
-                        tags.push(tag.toString());
+                        if (inSingletonNode) {
+                            createRegion(s, list, start, pos + 1);
+                            start = pos + 1;
+                        } else {
+                            tags.push(tag.toString());
+                        }
                         tag = null;
                         inE4XStart = false;
+                        inSingletonNode = false;
                         inAttrs = false;
                     } else if (inE4XEnd) {
                         inE4XEnd = false;
