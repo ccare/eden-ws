@@ -28,6 +28,7 @@
 
 package ccare.symboltable;
 
+import ccare.symboltable.javascript.EmptyFunction;
 import org.apache.commons.io.IOUtils;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -76,7 +77,7 @@ public class XmlProcessingSupport {
 
     static Function createTransformerFactoryFunction() {
         final TransformerFactory factory = TransformerFactory.newInstance();
-        return new Function() {
+        return new EmptyFunction() {
 
             @Override
             public Object call(Context context, Scriptable scriptable, Scriptable scriptable1, Object[] objects) {
@@ -84,91 +85,6 @@ public class XmlProcessingSupport {
                     return createTransformFunction(factory, objects[0]);
                 }
                 return Undefined.instance;
-            }
-
-            @Override
-            public Scriptable construct(Context context, Scriptable scriptable, Object[] objects) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public String getClassName() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object get(String s, Scriptable scriptable) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object get(int i, Scriptable scriptable) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public boolean has(String s, Scriptable scriptable) {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public boolean has(int i, Scriptable scriptable) {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void put(String s, Scriptable scriptable, Object o) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void put(int i, Scriptable scriptable, Object o) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void delete(String s) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void delete(int i) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Scriptable getPrototype() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void setPrototype(Scriptable scriptable) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Scriptable getParentScope() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void setParentScope(Scriptable scriptable) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object[] getIds() {
-                return new Object[0];  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object getDefaultValue(Class<?> aClass) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public boolean hasInstance(Scriptable scriptable) {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
             }
         };
 
@@ -187,7 +103,7 @@ public class XmlProcessingSupport {
             throw new RuntimeException(e);
         }
 
-        return new Function() {
+        return new EmptyFunction() {
 
             @Override
             public Object call(Context context, Scriptable scope, Scriptable scriptable1, Object[] objects) {
@@ -226,90 +142,6 @@ public class XmlProcessingSupport {
                 return null;
             }
 
-            @Override
-            public Scriptable construct(Context context, Scriptable scriptable, Object[] objects) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public String getClassName() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object get(String s, Scriptable scriptable) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object get(int i, Scriptable scriptable) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public boolean has(String s, Scriptable scriptable) {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public boolean has(int i, Scriptable scriptable) {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void put(String s, Scriptable scriptable, Object o) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void put(int i, Scriptable scriptable, Object o) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void delete(String s) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void delete(int i) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Scriptable getPrototype() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void setPrototype(Scriptable scriptable) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Scriptable getParentScope() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void setParentScope(Scriptable scriptable) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object[] getIds() {
-                return new Object[0];  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object getDefaultValue(Class<?> aClass) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public boolean hasInstance(Scriptable scriptable) {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
-            }
         };
     }
 
