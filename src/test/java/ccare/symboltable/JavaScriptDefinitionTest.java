@@ -34,10 +34,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by IntelliJ IDEA.
@@ -74,7 +71,7 @@ public class JavaScriptDefinitionTest {
 
     @Test
     public void testExpressionTranslationForCalculatedExpresions() {
-       validateExpr("$eden_observe('abc')", "#{abc}");
+        validateExpr("$eden_observe('abc')", "#{abc}");
     }
 
     @Test
@@ -86,7 +83,7 @@ public class JavaScriptDefinitionTest {
     public void testExpressionTranslationForDefinitionWithDependency() {
         validateExpr("$eden_define('a','#b+c')", "#a is #b+c");
         validateExpr("$eden_define('a','#c')", "#a is #c");
-        validateExpr("$eden_define('a','f(#c)')", "#a is f(#c)");            
+        validateExpr("$eden_define('a','f(#c)')", "#a is f(#c)");
         validateExpr("$eden_define('a','#f(#c)')", "#a is #f(#c)");
     }
 
@@ -107,18 +104,18 @@ public class JavaScriptDefinitionTest {
                 "return $eden_observe('b')\n" +
                 "}",
                 "function() {" +
-                "#a is 12;\n" +
-                "#b is 5;\n" +
-                "return #b\n}");
+                        "#a is 12;\n" +
+                        "#b is 5;\n" +
+                        "return #b\n}");
         validateExpr("function() {" +
                 "$eden_define('a','12')\n" +
                 "$eden_define('b','5')\n" +
                 "return $eden_observe('b')\n" +
                 "}",
                 "function() {" +
-                "#a is 12\n" +
-                "#b is 5\n" +
-                "return #b\n}");
+                        "#a is 12\n" +
+                        "#b is 5\n" +
+                        "return #b\n}");
     }
 
     @Test
@@ -135,7 +132,7 @@ public class JavaScriptDefinitionTest {
     public void testExpressionTranslationForSingleQuoteStrings() {
         validateExpr("$eden_define('a','\\'...\\'')", "#a is '...'");
     }
-    
+
     @Test
     public void testExpressionTranslationForSingleQuoteStringsInFunctions() {
         validateExpr("function() {$eden_define('a','\\'b+c\\'')}", "function() {#a is 'b+c'}");
@@ -160,7 +157,7 @@ public class JavaScriptDefinitionTest {
         final JavaScriptDefinition defn = new JavaScriptDefinition(expr);
         assertEquals(target, defn.getExpr());
     }
-    
+
     @Test
     public void testGetDependenciesAndTriggersForSimpleExpr() throws Exception {
         SymbolDefinition d = new JavaScriptDefinition("1 + 2");
@@ -226,7 +223,7 @@ public class JavaScriptDefinitionTest {
         assertEquals(target, d1.evaluate(t));
         assertEquals(target, d2.evaluate(t));
     }
-    
+
     private SymbolTable stubSymbolTable(final Symbol s) {
         return new SymbolTable() {
             @Override
@@ -234,7 +231,7 @@ public class JavaScriptDefinitionTest {
                 return null;
             }
 
-            @Override     
+            @Override
             public Set<SymbolReference> listSymbols() {
                 return null;
             }
@@ -275,7 +272,6 @@ public class JavaScriptDefinitionTest {
             }
         };
     }
-
 
 
 }

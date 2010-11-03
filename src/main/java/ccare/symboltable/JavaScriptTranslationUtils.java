@@ -204,7 +204,7 @@ public class JavaScriptTranslationUtils {
     }
 
     static String translateE4XObservation(final String input) {
-        int levels =0;
+        int levels = 0;
         StringBuilder result = new StringBuilder();
         StringBuilder working = new StringBuilder();
         for (char c : input.toCharArray()) {
@@ -217,8 +217,8 @@ public class JavaScriptTranslationUtils {
             if (levels == 0) {
                 final String translated = translateObservationsInString(working);
                 result.append(translated);
-               working = new StringBuilder();
-            } 
+                working = new StringBuilder();
+            }
         }
         return result.toString();
     }

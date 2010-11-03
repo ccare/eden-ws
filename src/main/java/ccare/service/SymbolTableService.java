@@ -43,7 +43,7 @@ public interface SymbolTableService {
     public UUID getId();
 
     public void define(SymbolReference reference, Observable d);
-    
+
     public Observable observe(SymbolReference reference);
 
     public Set<SymbolReference> listSymbols();

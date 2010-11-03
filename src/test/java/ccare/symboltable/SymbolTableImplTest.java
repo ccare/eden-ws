@@ -28,7 +28,6 @@
 
 package ccare.symboltable;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Undefined;
@@ -516,5 +515,5 @@ public class SymbolTableImplTest {
         assertEquals("a", table.getValue(c));
     }
 
-         
+
 }

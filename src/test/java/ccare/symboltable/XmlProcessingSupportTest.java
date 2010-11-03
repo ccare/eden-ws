@@ -28,29 +28,19 @@
 
 package ccare.symboltable;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.xml.XMLObject;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import java.io.ByteArrayOutputStream;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.util.Map;
 
+import static ccare.symboltable.XmlProcessingSupport.createTransformFunction;
+import static ccare.symboltable.XmlProcessingSupport.removeProcessingInstruction;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
@@ -63,192 +53,69 @@ import static org.junit.Assert.assertEquals;
  */
 public class XmlProcessingSupportTest {
 
-
     private final String xsl = "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n" +
+            "<xsl:param name=\"myParam\" select=\"'Hi'\" />" +
             "    <xsl:template match=\"/\">" +
-            "<xml>Hi</xml>" +
+            "<xml><xsl:value-of select=\"$myParam\" /></xml>" +
             "</xsl:template>" +
             "</xsl:stylesheet>";
 
     private final TransformerFactory factory = TransformerFactory.newInstance();
     private final String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-                "<xml>Hi</xml>";
-
-    @Test
-    public void testTransform() throws IOException, SAXException, TransformerException {
-        String xml = "<xml/>";
-        String transformed = transformStringsIntoString(factory, xml, xsl);
-
-        assertNotNull(transformed);
-        assertEquals(result, transformed);
-    }
-
+            "<xml>Hi</xml>";
 
     @Test(expected = RuntimeException.class)
     public void testCreateTransform() throws IOException, SAXException, TransformerException {
-        Function f = createTransformFunction(factory,"");
+        Function f = createTransformFunction(factory, "");
         assertNotNull(f);
     }
 
     @Test
     public void testCreateAndRunTransform() throws IOException, SAXException, TransformerException {
-        Function f = createTransformFunction(factory,xsl);
-        Object transformed = f.call(null, null, null, new Object[] { "<xml/>" });  
+        Function f = createTransformFunction(factory, xsl);
+        Object transformed = f.call(null, null, null, new Object[]{"<xml/>"});
         assertEquals(result, transformed);
     }
 
-    private static String transformStringsIntoString(final TransformerFactory factory, final String inputString, final String xslString) throws TransformerException, MalformedURLException {
-        final StreamSource inputSource = new StreamSource(IOUtils.toInputStream(inputString));
-        final StreamSource transformSource = new StreamSource(IOUtils.toInputStream(xslString));
-        return transformSources(factory, inputSource, transformSource, null);
-    }
-
-    private static String transformSources(final TransformerFactory factory, StreamSource inputSource, StreamSource transformSource, Map<String, Object> m) throws TransformerException {
-        final Transformer transformer = factory.newTransformer(transformSource);
-        if (m != null) {
-            for (String k : m.keySet()) {
-                transformer.setParameter(k, m.get(k));
-            }
-        }
-        final OutputStream bos = new ByteArrayOutputStream();
-        final StreamResult result = new StreamResult(bos);
-        transformer.transform(inputSource, result);
-
-        final String transformedString = bos.toString();
-        return transformedString;
-    }
-
-    private static String doTransform(final Transformer transformer, StreamSource inputSource, Map<String, Object> m) throws TransformerException {
-        if (m != null) {
-            for (String k : m.keySet()) {
-                transformer.setParameter(k, m.get(k));
-            }
-        }
-        final OutputStream bos = new ByteArrayOutputStream();
-        final StreamResult result = new StreamResult(bos);
-        transformer.transform(inputSource, result);
-
-        final String transformedString = bos.toString();
-        return transformedString;
-    }
-
-    private Function createTransformFunction(final TransformerFactory factory, final String xslSource) {
-        final StreamSource src = new StreamSource(IOUtils.toInputStream(xslSource));
-        final Transformer trans;
+    @Test
+    public void testCreateAndRunTransformAsECMA() throws IOException, SAXException, TransformerException {
+        Function f = createTransformFunction(factory, xsl);
+        Context cx = Context.enter();
         try {
-            trans = factory.newTransformer(src);
-        } catch (TransformerConfigurationException e) {
-            throw new RuntimeException(e);
+            Scriptable scope = cx.initStandardObjects();
+            XMLObject transformed = (XMLObject) f.call(cx, scope, null, new Object[]{"<xml/>"});
+            final String target = "<xml>Hi</xml>";
+            assertEquals(target, XMLObject.callMethod(transformed, "toXMLString", null));
+        } finally {
+            Context.exit();
         }
-
-        return new Function() {
-
-            @Override
-            public Object call(Context context, Scriptable scope, Scriptable scriptable1, Object[] objects) {
-                final String input;
-                if (objects.length > 0) {
-                    input = objects[0].toString();
-                    final StreamSource inputSource = new StreamSource(IOUtils.toInputStream(input));
-                    String result;
-                    try {
-                        result = doTransform(trans, inputSource, null);
-                    } catch (TransformerException e) {
-                        throw new RuntimeException(e);
-                    }
-                    if (context != null && scope != null) {
-                        return context.evaluateString(scope, "XML(" + result + ")", "cmd", 0, null);                        
-                    } else {
-                        return result;
-                    }
-                }
-                return null;
-            }
-
-            @Override
-            public Scriptable construct(Context context, Scriptable scriptable, Object[] objects) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public String getClassName() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object get(String s, Scriptable scriptable) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object get(int i, Scriptable scriptable) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public boolean has(String s, Scriptable scriptable) {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public boolean has(int i, Scriptable scriptable) {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void put(String s, Scriptable scriptable, Object o) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void put(int i, Scriptable scriptable, Object o) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void delete(String s) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void delete(int i) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Scriptable getPrototype() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void setPrototype(Scriptable scriptable) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Scriptable getParentScope() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void setParentScope(Scriptable scriptable) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object[] getIds() {
-                return new Object[0];  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object getDefaultValue(Class<?> aClass) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public boolean hasInstance(Scriptable scriptable) {
-                return false;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-        };
     }
+
+    @Test
+    public void testCreateAndRunTransformAsECMAWithArgs() throws IOException, SAXException, TransformerException {
+
+        Function f = createTransformFunction(factory, xsl);
+        Context cx = Context.enter();
+        try {
+            Scriptable scope = cx.initStandardObjects();
+
+            final Scriptable params = cx.newObject(scope);
+            params.put("myParam", params, "hello there");
+
+            XMLObject transformed = (XMLObject) f.call(cx, scope, null, new Object[]{"<xml/>", params});
+            final String target = "<xml>hello there</xml>";
+            assertEquals(target, XMLObject.callMethod(transformed, "toXMLString", null));
+        } finally {
+            Context.exit();
+        }
+    }
+
+    @Test
+    public void testRemoveProcessingInstruction() {
+        final String target = "<xml>Hi</xml>";
+        assertEquals(target, removeProcessingInstruction(target));
+        assertEquals(target, removeProcessingInstruction(result));
+    }
+
 
 }

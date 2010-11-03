@@ -29,10 +29,6 @@
 package ccare.symboltable;
 
 import ccare.domain.CannotForgetException;
-import ccare.symboltable.SymbolReference;
-import ccare.symboltable.Symbol;
-import ccare.symboltable.SymbolDefinition;
-import ccare.symboltable.SymbolTable;
 
 import java.util.HashSet;
 import java.util.Set;

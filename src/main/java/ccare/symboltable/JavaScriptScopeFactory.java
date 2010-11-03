@@ -28,9 +28,6 @@
 
 package ccare.symboltable;
 
-import ccare.symboltable.Symbol;
-import ccare.symboltable.SymbolReference;
-import ccare.symboltable.SymbolTable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;

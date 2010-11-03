@@ -28,9 +28,6 @@
 
 package ccare.symboltable;
 
-import ccare.symboltable.SymbolReference;
-import ccare.symboltable.SymbolTable;
-
 import java.util.Collection;
 
 /**

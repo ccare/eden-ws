@@ -36,7 +36,8 @@ import ccare.symboltable.SymbolTableImpl;
 
 import javax.ejb.Lock;
 import javax.ejb.Singleton;
-import java.util.*;
+import java.util.Set;
+import java.util.UUID;
 
 import static javax.ejb.LockType.READ;
 import static javax.ejb.LockType.WRITE;

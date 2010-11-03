@@ -43,7 +43,6 @@
     <dependencies>
 
 
-
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
@@ -114,7 +113,6 @@
         </dependency>
 
 
-
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -136,26 +134,24 @@
                 </configuration>
             </plugin>
 
-<!--<plugin>-->
-    <!--<groupId>net.sf.grester</groupId>-->
-<!--<artifactId>grester</artifactId>-->
-<!--<version>1.0.1</version>-->
-<!--<configuration>-->
-<!--<codeSources>src/main/java/ccare/symboltable</codeSources>-->
-<!--<testSuiteClass>ccare.symboltable.SymbolTableImplTest</testSuiteClass>-->
-<!--</configuration>-->
-<!--<executions>-->
-<!--<execution>-->
-<!--<id>inspectSourcesCodeWithGrester</id>-->
-<!--<phase>test</phase>-->
-<!--<goals>-->
-<!--<goal>inspect</goal>-->
-<!--</goals>-->
-<!--</execution>-->
-<!--</executions>-->
-<!--</plugin>-->
-            
-                                       
+            <!--<plugin>-->
+            <!--<groupId>net.sf.grester</groupId>-->
+            <!--<artifactId>grester</artifactId>-->
+            <!--<version>1.0.1</version>-->
+            <!--<configuration>-->
+            <!--<codeSources>src/main/java/ccare/symboltable</codeSources>-->
+            <!--<testSuiteClass>ccare.symboltable.SymbolTableImplTest</testSuiteClass>-->
+            <!--</configuration>-->
+            <!--<executions>-->
+            <!--<execution>-->
+            <!--<id>inspectSourcesCodeWithGrester</id>-->
+            <!--<phase>test</phase>-->
+            <!--<goals>-->
+            <!--<goal>inspect</goal>-->
+            <!--</goals>-->
+            <!--</execution>-->
+            <!--</executions>-->
+            <!--</plugin>-->
 
 
         </plugins>

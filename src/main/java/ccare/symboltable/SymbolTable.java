@@ -28,9 +28,6 @@
 
 package ccare.symboltable;
 
-import ccare.symboltable.Symbol;
-import ccare.symboltable.SymbolReference;
-
 import java.util.Set;
 import java.util.UUID;
 

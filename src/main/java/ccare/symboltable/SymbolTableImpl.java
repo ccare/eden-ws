@@ -30,7 +30,7 @@ package ccare.symboltable;
 
 import java.util.*;
 
-    public class SymbolTableImpl implements SymbolTable {
+public class SymbolTableImpl implements SymbolTable {
 
     private final UUID id = UUID.randomUUID();
     private Map<SymbolReference, Symbol> symbols = new HashMap<SymbolReference, Symbol>();

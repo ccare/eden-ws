@@ -28,10 +28,6 @@
 
 package ccare.symboltable;
 
-import ccare.symboltable.JavaScriptScopeFactory;
-import ccare.symboltable.SymbolDefinition;
-import ccare.symboltable.SymbolReference;
-import ccare.symboltable.SymbolTable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
@@ -78,7 +74,7 @@ public class JavaScriptDefinition implements SymbolDefinition {
     public String getExpr() {
         return translateExpression(expr);
     }
-    
+
 
     @Override
     public Collection<SymbolReference> getDependencies() {

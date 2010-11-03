@@ -29,9 +29,6 @@
 package ccare.symboltable;
 
 import ccare.domain.CannotForgetException;
-import ccare.symboltable.SymbolDefinition;
-import ccare.symboltable.SymbolReference;
-import ccare.symboltable.SymbolTable;
 
 /**
  * User: carecx

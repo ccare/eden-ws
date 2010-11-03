@@ -29,7 +29,6 @@
 package ccare.symboltable;
 
 import ccare.domain.CannotForgetException;
-import ccare.symboltable.SymbolReference;
 import org.junit.Before;
 import org.junit.Test;
 
