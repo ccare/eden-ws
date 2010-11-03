@@ -26,20 +26,23 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.symboltable;
+package ccare.symboltable.impl.javascript;
 
+import ccare.symboltable.impl.javascript.ScopeFactory;
+import ccare.symboltable.SymbolDefinition;
+import ccare.symboltable.SymbolReference;
+import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.EvaluationException;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EcmaError;
-import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 
 import java.util.*;
 
-import static ccare.symboltable.JavaScriptTranslationUtils.extractSpecialSymbols;
-import static ccare.symboltable.JavaScriptTranslationUtils.translateExpression;
-import static ccare.symboltable.JavaScriptUtils.compileFunction;
-import static ccare.symboltable.JavaScriptUtils.evalExpression;
+import static ccare.symboltable.impl.javascript.RuntimeUtils.compileFunction;
+import static ccare.symboltable.impl.javascript.RuntimeUtils.evalExpression;
+import static ccare.symboltable.impl.javascript.TranslationUtils.extractSpecialSymbols;
+import static ccare.symboltable.impl.javascript.TranslationUtils.translateExpression;
 import static java.lang.String.format;
 
 /**
@@ -49,7 +52,7 @@ import static java.lang.String.format;
  * Time: 17:06:58
  * To change this template use File | Settings | File Templates.
  */
-public class JavaScriptDefinition implements SymbolDefinition {
+public class Definition implements SymbolDefinition {
 
     public enum ExprType {
         FUNCTION, EXPRESSION
@@ -60,11 +63,11 @@ public class JavaScriptDefinition implements SymbolDefinition {
 
     private List<SymbolReference> triggers;
 
-    public JavaScriptDefinition(String expr) {
+    public Definition(String expr) {
         this(expr, ExprType.EXPRESSION, null);
     }
 
-    public JavaScriptDefinition(String expr, ExprType type, String... triggers) {
+    public Definition(String expr, ExprType type, String... triggers) {
         this.expr = expr;
         this.type = type;
         if (triggers == null || triggers.length == 0) {
@@ -117,8 +120,8 @@ public class JavaScriptDefinition implements SymbolDefinition {
 
 
 
-    private JavaScriptScopeFactory getScopeFactory() {
-        return JavaScriptScopeFactory.getInstance();
+    private ScopeFactory getScopeFactory() {
+        return ScopeFactory.getInstance();
     }
 
     @Override

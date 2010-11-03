@@ -26,7 +26,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.symboltable;
+package ccare.symboltable.impl.javascript;
 
 import org.junit.Test;
 import org.mozilla.javascript.Context;
@@ -39,10 +39,10 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import java.io.IOException;
 
-import static ccare.symboltable.JavaScriptUtils.evalExpression;
-import static ccare.symboltable.XmlProcessingSupport.createTransformFunction;
-import static ccare.symboltable.XmlProcessingSupport.removeProcessingInstruction;
-import static ccare.symboltable.XmlProcessingSupport.toXMLString;
+import static ccare.symboltable.impl.javascript.RuntimeUtils.evalExpression;
+import static ccare.symboltable.impl.javascript.XmlProcessingSupport.createTransformFunction;
+import static ccare.symboltable.impl.javascript.XmlProcessingSupport.removeProcessingInstruction;
+import static ccare.symboltable.impl.javascript.XmlProcessingSupport.toXMLString;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 

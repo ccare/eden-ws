@@ -26,9 +26,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.symboltable;
+package ccare.symboltable.impl.javascript;
 
-import ccare.symboltable.javascript.EmptyFunction;
+import ccare.symboltable.impl.javascript.EmptyFunction;
 import org.apache.commons.io.IOUtils;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -89,8 +89,7 @@ public class XmlProcessingSupport {
         };
 
     }
-
-
+    
     static Function createTransformFunction(final TransformerFactory factory, final Object xsl) {
         notNull(xsl);
         String xslString = getXMLStringFromObject(xsl);

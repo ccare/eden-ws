@@ -26,10 +26,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.symboltable;
+package ccare.symboltable.impl;
 
+import ccare.symboltable.Symbol;
+import ccare.symboltable.SymbolReference;
+import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
 import ccare.symboltable.exceptions.SymbolTableException;
+import ccare.symboltable.impl.javascript.Definition;
 import org.mozilla.javascript.Undefined;
 
 import java.util.*;
@@ -73,7 +77,7 @@ public class SymbolTableImpl implements SymbolTable {
         if (ref == null || defn == null) {
             throw new CannotDefineException();
         }
-        final JavaScriptDefinition d = new JavaScriptDefinition(defn);
+        final Definition d = new Definition(defn);
         Symbol s = get(ref);
         s.redefine(d, this);
     }
@@ -92,14 +96,14 @@ public class SymbolTableImpl implements SymbolTable {
 
     @Override
     public void defineFunction(SymbolReference ref, String defn) {
-        final JavaScriptDefinition d = new JavaScriptDefinition(defn, JavaScriptDefinition.ExprType.FUNCTION);
+        final Definition d = new Definition(defn, Definition.ExprType.FUNCTION);
         Symbol s = get(ref);
         s.redefine(d, this);
     }
 
     @Override
     public void defineTriggeredProc(SymbolReference ref, String defn, String... triggers) {
-        final JavaScriptDefinition d = new JavaScriptDefinition(defn, JavaScriptDefinition.ExprType.FUNCTION, triggers);
+        final Definition d = new Definition(defn, Definition.ExprType.FUNCTION, triggers);
         Symbol s = get(ref);
         s.redefine(d, this);
     }

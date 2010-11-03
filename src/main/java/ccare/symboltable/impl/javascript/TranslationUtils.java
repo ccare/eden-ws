@@ -26,7 +26,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.symboltable;
+package ccare.symboltable.impl.javascript;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  * Date: 30-Oct-2010
  * Time: 16:18:58
  */
-public class JavaScriptTranslationUtils {
+public class TranslationUtils {
 
     static final Pattern DEFN = Pattern.compile("[\\w:/#_]+\\s*is(\\s+)");
     static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern.compile("#\\{([^\\}]+)\\}");

@@ -26,14 +26,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.symboltable;
+package ccare.symboltable.impl.javascript;
 
 import org.junit.Test;
 
 import java.util.List;
 import java.util.Set;
 
-import static ccare.symboltable.JavaScriptTranslationUtils.*;
+import static ccare.symboltable.impl.javascript.TranslationUtils.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -45,7 +45,7 @@ import static org.junit.Assert.assertEquals;
  * Date: 30-Oct-2010
  * Time: 16:19:41
  */
-public class JavaScriptTranslationUtilsTest {
+public class TranslationUtilsTest {
 
 
     @Test

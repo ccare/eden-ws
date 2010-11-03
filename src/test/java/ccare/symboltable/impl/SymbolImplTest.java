@@ -26,9 +26,15 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.symboltable;
+package ccare.symboltable.impl;
 
+import ccare.symboltable.Symbol;
+import ccare.symboltable.SymbolDefinition;
+import ccare.symboltable.SymbolReference;
+import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotForgetException;
+import ccare.symboltable.impl.SymbolImpl;
+import ccare.symboltable.impl.SymbolTableImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mozilla.javascript.Undefined;

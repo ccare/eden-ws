@@ -26,9 +26,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.symboltable;
+package ccare.symboltable.impl.javascript;
 
-import ccare.symboltable.javascript.EmptyFunction;
+import ccare.symboltable.Symbol;
+import ccare.symboltable.SymbolReference;
+import ccare.symboltable.SymbolTable;
+import ccare.symboltable.impl.javascript.EmptyFunction;
+import ccare.symboltable.impl.javascript.XmlProcessingSupport;
 import org.mozilla.javascript.*;
 
 /**
@@ -36,15 +40,15 @@ import org.mozilla.javascript.*;
  * Date: 27-Oct-2010
  * Time: 09:46:35
  */
-public class JavaScriptScopeFactory {
+public class ScopeFactory {
 
     Scriptable rootScope;
-    static JavaScriptScopeFactory instance;
+    static ScopeFactory instance;
 
-    public static JavaScriptScopeFactory getInstance() {
+    public static ScopeFactory getInstance() {
         if (instance == null) {
-            synchronized (JavaScriptScopeFactory.class) {
-                instance = new JavaScriptScopeFactory();
+            synchronized (ScopeFactory.class) {
+                instance = new ScopeFactory();
             }
         }
         return instance;

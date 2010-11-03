@@ -26,7 +26,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.symboltable;
+package ccare.symboltable.impl.javascript;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -39,7 +39,7 @@ import org.mozilla.javascript.Scriptable;
  * Time: 21:39:31
  * To change this template use File | Settings | File Templates.
  */
-class JavaScriptUtils {
+class RuntimeUtils {
     
     static Object evalExpression(Context cx, Scriptable scope, String expr) {
         return cx.evaluateString(scope, expr, "<cmd>", 1, null);

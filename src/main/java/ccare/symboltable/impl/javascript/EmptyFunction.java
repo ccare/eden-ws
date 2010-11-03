@@ -26,7 +26,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.symboltable.javascript;
+package ccare.symboltable.impl.javascript;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;

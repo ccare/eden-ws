@@ -26,9 +26,15 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.symboltable;
+package ccare.symboltable.impl;
 
+import ccare.symboltable.Symbol;
+import ccare.symboltable.SymbolReference;
+import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
+import ccare.symboltable.impl.SymbolImpl;
+import ccare.symboltable.impl.SymbolTableImpl;
+import ccare.symboltable.impl.javascript.Definition;
 import org.junit.Test;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Undefined;
@@ -64,18 +70,18 @@ public class SymbolTableImplTest {
         table.add(sB);
         table.add(sC);
 
-        table.get(a).redefine(new JavaScriptDefinition("#b + #c"), table);
-        table.get(b).redefine(new JavaScriptDefinition("1"), table);
-        table.get(c).redefine(new JavaScriptDefinition("2"), table);
+        table.get(a).redefine(new Definition("#b + #c"), table);
+        table.get(b).redefine(new Definition("1"), table);
+        table.get(c).redefine(new Definition("2"), table);
 
         assertEquals(1.0, table.get(b).getValue(table));
         assertEquals(2, table.get(c).getValue(table));
         assertEquals(3.0, table.get(a).getValue(table));
 
-        table.get(b).redefine(new JavaScriptDefinition("2"), table);
+        table.get(b).redefine(new Definition("2"), table);
         assertEquals(4.0, table.get(a).getValue(table));
 
-        table.get(b).redefine(new JavaScriptDefinition("3"), table);
+        table.get(b).redefine(new Definition("3"), table);
         assertEquals(5.0, table.get(a).getValue(table));
     }
 

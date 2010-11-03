@@ -26,8 +26,11 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.symboltable;
+package ccare.symboltable.impl.javascript;
 
+import ccare.symboltable.*;
+import ccare.symboltable.impl.SymbolImpl;
+import ccare.symboltable.impl.SymbolTableImpl;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -43,11 +46,11 @@ import static org.junit.Assert.assertEquals;
  * Time: 17:07:10
  * To change this template use File | Settings | File Templates.
  */
-public class JavaScriptDefinitionTest {
+public class DefinitionTest {
 
     @Test
     public void testCreate() {
-        new JavaScriptDefinition("a+b");
+        new Definition("a+b");
     }
 
     @Test
@@ -154,20 +157,20 @@ public class JavaScriptDefinitionTest {
     }
 
     private void validateExpr(final String target, final String expr) {
-        final JavaScriptDefinition defn = new JavaScriptDefinition(expr);
+        final Definition defn = new Definition(expr);
         assertEquals(target, defn.getExpr());
     }
 
     @Test
     public void testGetDependenciesAndTriggersForSimpleExpr() throws Exception {
-        SymbolDefinition d = new JavaScriptDefinition("1 + 2");
+        SymbolDefinition d = new Definition("1 + 2");
         assertEquals(0, d.getDependencies().size());
         assertEquals(0, d.getTriggers().size());
     }
 
     @Test
     public void testGetDependenciesForExpressionWithDependency() throws Exception {
-        SymbolDefinition d = new JavaScriptDefinition("1 + #x");
+        SymbolDefinition d = new Definition("1 + #x");
         final Collection<SymbolReference> dependencies = d.getDependencies();
         assertEquals(1, dependencies.size());
         assertEquals(0, d.getTriggers().size());
@@ -175,19 +178,19 @@ public class JavaScriptDefinitionTest {
 
     @Test
     public void testEvaluate() throws Exception {
-        SymbolDefinition d = new JavaScriptDefinition("1+2");
+        SymbolDefinition d = new Definition("1+2");
         assertEquals(3, d.evaluate(null));
     }
 
     @Test
     public void testEvaluateE4X() throws Exception {
-        SymbolDefinition d = new JavaScriptDefinition("<xml><foo>bar</foo></xml>.foo.toString()");
+        SymbolDefinition d = new Definition("<xml><foo>bar</foo></xml>.foo.toString()");
         assertEquals("bar", d.evaluate(null));
     }
 
     @Test
     public void testPrintln() throws Exception {
-        SymbolDefinition d = new JavaScriptDefinition("java.lang.System.out.println(3)");
+        SymbolDefinition d = new Definition("java.lang.System.out.println(3)");
         d.evaluate(null);
     }
 
@@ -195,8 +198,8 @@ public class JavaScriptDefinitionTest {
     public void testCallMagicObserveFunctionDelegatesCorrectly() throws Exception {
         final SymbolTable table = new SymbolTableImpl();
         final Symbol s = new SymbolImpl(new SymbolReference());
-        s.redefine(new JavaScriptDefinition("'abc'"), table);
-        final SymbolDefinition d = new JavaScriptDefinition("$eden_observe('a')");
+        s.redefine(new Definition("'abc'"), table);
+        final SymbolDefinition d = new Definition("$eden_observe('a')");
         final SymbolTable t = stubSymbolTable(s);
         assertEquals("abc", d.evaluate(t));
     }
@@ -205,8 +208,8 @@ public class JavaScriptDefinitionTest {
     public void testEvaluateDependency() throws Exception {
         final SymbolTable table = new SymbolTableImpl();
         final Symbol s = new SymbolImpl(new SymbolReference());
-        s.redefine(new JavaScriptDefinition("'abc'"), table);
-        final SymbolDefinition d = new JavaScriptDefinition("#a");
+        s.redefine(new Definition("'abc'"), table);
+        final SymbolDefinition d = new Definition("#a");
         final SymbolTable t = stubSymbolTable(s);
         assertEquals("abc", d.evaluate(t));
     }
@@ -215,9 +218,9 @@ public class JavaScriptDefinitionTest {
     public void testEvaluateDependencyExpression() throws Exception {
         final SymbolTable table = new SymbolTableImpl();
         final Symbol s = new SymbolImpl(new SymbolReference());
-        s.redefine(new JavaScriptDefinition("'abc'"), table);
-        final SymbolDefinition d1 = new JavaScriptDefinition("#a + 'def'");
-        final SymbolDefinition d2 = new JavaScriptDefinition("#{a} + 'def'");
+        s.redefine(new Definition("'abc'"), table);
+        final SymbolDefinition d1 = new Definition("#a + 'def'");
+        final SymbolDefinition d2 = new Definition("#{a} + 'def'");
         final SymbolTable t = stubSymbolTable(s);
         final String target = "abcdef";
         assertEquals(target, d1.evaluate(t));

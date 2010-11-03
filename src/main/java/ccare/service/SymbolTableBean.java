@@ -32,7 +32,7 @@ import ccare.domain.Observable;
 import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
-import ccare.symboltable.SymbolTableImpl;
+import ccare.symboltable.impl.SymbolTableImpl;
 
 import javax.ejb.Lock;
 import javax.ejb.Singleton;

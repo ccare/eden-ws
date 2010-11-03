@@ -140,7 +140,7 @@
             <!--<version>1.0.1</version>-->
             <!--<configuration>-->
             <!--<codeSources>src/main/java/ccare/symboltable</codeSources>-->
-            <!--<testSuiteClass>ccare.symboltable.SymbolTableImplTest</testSuiteClass>-->
+            <!--<testSuiteClass>ccare.symboltable.impl.SymbolTableImplTest</testSuiteClass>-->
             <!--</configuration>-->
             <!--<executions>-->
             <!--<execution>-->
