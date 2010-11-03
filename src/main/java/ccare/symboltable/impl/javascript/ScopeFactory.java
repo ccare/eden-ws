@@ -31,8 +31,6 @@ package ccare.symboltable.impl.javascript;
 import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
-import ccare.symboltable.impl.javascript.EmptyFunction;
-import ccare.symboltable.impl.javascript.XmlProcessingSupport;
 import org.mozilla.javascript.*;
 
 /**
@@ -124,7 +122,6 @@ public class ScopeFactory {
 
         };
     }
-    
 
 
 }

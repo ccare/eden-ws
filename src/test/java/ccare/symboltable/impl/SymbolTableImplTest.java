@@ -32,8 +32,6 @@ import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
-import ccare.symboltable.impl.SymbolImpl;
-import ccare.symboltable.impl.SymbolTableImpl;
 import ccare.symboltable.impl.javascript.Definition;
 import org.junit.Test;
 import org.mozilla.javascript.NativeArray;
@@ -527,13 +525,13 @@ public class SymbolTableImplTest {
     @Test
     public void testXSLT() {
         String xslString = "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n" +
-                                        "    <xsl:template match=\"foo\">" +
-                                        "<baz>bar</baz>" +
-                                        "</xsl:template>" +
-                                        "</xsl:stylesheet>";
+                "    <xsl:template match=\"foo\">" +
+                "<baz>bar</baz>" +
+                "</xsl:template>" +
+                "</xsl:stylesheet>";
 
-        String input =  "<foo>bar</foo>";
-        String target =  "<baz>bar</baz>";
+        String input = "<foo>bar</foo>";
+        String target = "<baz>bar</baz>";
 
 
         SymbolTable table = new SymbolTableImpl();
@@ -558,46 +556,45 @@ public class SymbolTableImplTest {
 
     @Test(expected = CannotDefineException.class)
     public void testCannotDefineNullExpr() {
-       SymbolTable table = new SymbolTableImpl();
-       table.define(a, null);
+        SymbolTable table = new SymbolTableImpl();
+        table.define(a, null);
     }
 
     @Test(expected = CannotDefineException.class)
     public void testCannotDefineNullRef() {
-       SymbolTable table = new SymbolTableImpl();
-       table.define(null, "");
+        SymbolTable table = new SymbolTableImpl();
+        table.define(null, "");
     }
 
     @Test
     public void testUndefinedObservationDoesntKillRuntime() {
-       SymbolTable table = new SymbolTableImpl();
-       table.define(a, "#b");
+        SymbolTable table = new SymbolTableImpl();
+        table.define(a, "#b");
         assertEquals(undefined, table.getValue(a));
     }
 
     @Test
     public void testUndefinedExecutionDoesntKillRuntime() {
-       SymbolTable table = new SymbolTableImpl();
-       table.define(a, "#b");
+        SymbolTable table = new SymbolTableImpl();
+        table.define(a, "#b");
         table.execute(a);
     }
 
     @Test
     public void testUndefinedFuncCallDoesntKillRuntime() {
-       SymbolTable table = new SymbolTableImpl();
-       table.define(a, "#b()");
-       assertEquals(undefined, table.getValue(a));
+        SymbolTable table = new SymbolTableImpl();
+        table.define(a, "#b()");
+        assertEquals(undefined, table.getValue(a));
     }
 
     @Test
     public void testCallObjectAsFuncDoesntKillRuntime() {
-       SymbolTable table = new SymbolTableImpl();
-       table.define(a, "'hi'");
-       table.define(b, "#a()");
-       assertEquals("hi", table.getValue(a));
-       assertEquals(undefined, table.getValue(b));
+        SymbolTable table = new SymbolTableImpl();
+        table.define(a, "'hi'");
+        table.define(b, "#a()");
+        assertEquals("hi", table.getValue(a));
+        assertEquals(undefined, table.getValue(b));
     }
-    
 
 
 }

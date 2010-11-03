@@ -39,7 +39,7 @@ import org.mozilla.javascript.Scriptable;
  * Time: 22:10:41
  * To change this template use File | Settings | File Templates.
  */
-public abstract class EmptyFunction implements Function {      
+public abstract class EmptyFunction implements Function {
 
     @Override
     public Scriptable construct(Context context, Scriptable scriptable, Object[] objects) {

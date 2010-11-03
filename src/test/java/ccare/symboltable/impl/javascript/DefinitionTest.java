@@ -28,7 +28,10 @@
 
 package ccare.symboltable.impl.javascript;
 
-import ccare.symboltable.*;
+import ccare.symboltable.Symbol;
+import ccare.symboltable.SymbolDefinition;
+import ccare.symboltable.SymbolReference;
+import ccare.symboltable.SymbolTable;
 import ccare.symboltable.impl.SymbolImpl;
 import ccare.symboltable.impl.SymbolTableImpl;
 import org.junit.Test;

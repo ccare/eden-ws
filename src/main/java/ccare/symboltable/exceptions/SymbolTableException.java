@@ -35,7 +35,7 @@ package ccare.symboltable.exceptions;
  * Time: 21:58:54
  * To change this template use File | Settings | File Templates.
  */
-public class SymbolTableException extends RuntimeException{
+public class SymbolTableException extends RuntimeException {
     public SymbolTableException(String msg, Throwable innerException) {
         super(msg, innerException);
     }

@@ -33,8 +33,6 @@ import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotForgetException;
-import ccare.symboltable.impl.SymbolImpl;
-import ccare.symboltable.impl.SymbolTableImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.mozilla.javascript.Undefined;

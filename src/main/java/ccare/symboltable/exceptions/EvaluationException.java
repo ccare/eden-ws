@@ -28,8 +28,6 @@
 
 package ccare.symboltable.exceptions;
 
-import org.mozilla.javascript.EcmaError;
-
 /**
  * Created by IntelliJ IDEA.
  * User: carecx

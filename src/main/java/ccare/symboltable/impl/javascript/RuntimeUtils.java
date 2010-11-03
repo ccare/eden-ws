@@ -40,7 +40,7 @@ import org.mozilla.javascript.Scriptable;
  * To change this template use File | Settings | File Templates.
  */
 class RuntimeUtils {
-    
+
     static Object evalExpression(Context cx, Scriptable scope, String expr) {
         return cx.evaluateString(scope, expr, "<cmd>", 1, null);
     }

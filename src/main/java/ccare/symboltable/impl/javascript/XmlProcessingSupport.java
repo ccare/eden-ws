@@ -28,7 +28,6 @@
 
 package ccare.symboltable.impl.javascript;
 
-import ccare.symboltable.impl.javascript.EmptyFunction;
 import org.apache.commons.io.IOUtils;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -89,7 +88,7 @@ public class XmlProcessingSupport {
         };
 
     }
-    
+
     static Function createTransformFunction(final TransformerFactory factory, final Object xsl) {
         notNull(xsl);
         String xslString = getXMLStringFromObject(xsl);
@@ -159,7 +158,7 @@ public class XmlProcessingSupport {
     static String removeProcessingInstruction(String xml) {
         return PROCESSING_INSTRUCT_PATTERN.matcher(xml).replaceFirst("");
     }
-          
+
     static String toXMLString(XMLObject transformed) {
         final Object o = XMLObject.callMethod(transformed, "toXMLString", null);
         if (o instanceof String) {

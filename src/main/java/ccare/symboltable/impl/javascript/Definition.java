@@ -28,7 +28,6 @@
 
 package ccare.symboltable.impl.javascript;
 
-import ccare.symboltable.impl.javascript.ScopeFactory;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
@@ -112,12 +111,11 @@ public class Definition implements SymbolDefinition {
                 return evalExpression(cx, scope, expr);
             }
         } catch (EcmaError error) {
-            throw new EvaluationException(format("Could not evaluate %s", expr), error);  
+            throw new EvaluationException(format("Could not evaluate %s", expr), error);
         } finally {
             Context.exit();
         }
     }
-
 
 
     private ScopeFactory getScopeFactory() {

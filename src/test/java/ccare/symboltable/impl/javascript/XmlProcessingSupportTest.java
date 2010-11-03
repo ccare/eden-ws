@@ -40,9 +40,7 @@ import javax.xml.transform.TransformerFactory;
 import java.io.IOException;
 
 import static ccare.symboltable.impl.javascript.RuntimeUtils.evalExpression;
-import static ccare.symboltable.impl.javascript.XmlProcessingSupport.createTransformFunction;
-import static ccare.symboltable.impl.javascript.XmlProcessingSupport.removeProcessingInstruction;
-import static ccare.symboltable.impl.javascript.XmlProcessingSupport.toXMLString;
+import static ccare.symboltable.impl.javascript.XmlProcessingSupport.*;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
@@ -119,10 +117,10 @@ public class XmlProcessingSupportTest {
             Scriptable scope = cx.initStandardObjects();
             final Object xml = evalExpression(cx, scope, "<foo><bar/></foo>");
             final String xslString = "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n" +
-                                        "    <xsl:template match=\"foo\">" +
-                                        "<xml>bar</xml>" +
-                                        "</xsl:template>" +
-                                        "</xsl:stylesheet>";
+                    "    <xsl:template match=\"foo\">" +
+                    "<xml>bar</xml>" +
+                    "</xsl:template>" +
+                    "</xsl:stylesheet>";
             final Object xsl = cx.evaluateString(scope, xslString, "", 0, null);
             final Function f = createTransformFunction(factory, xsl);
             XMLObject transformed = (XMLObject) f.call(cx, scope, null, new Object[]{xml});

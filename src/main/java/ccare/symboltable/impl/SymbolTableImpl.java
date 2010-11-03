@@ -86,7 +86,7 @@ public class SymbolTableImpl implements SymbolTable {
     public Object getValue(SymbolReference ref) {
         Symbol s = get(ref);
         try {
-            return  s.getValue(this);
+            return s.getValue(this);
         } catch (SymbolTableException e) {
             e.printStackTrace();
             // TODO: Log these...
