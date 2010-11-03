@@ -516,4 +516,36 @@ public class SymbolTableImplTest {
     }
 
 
+    @Test
+    public void testXSLT() {
+        String xslString = "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n" +
+                                        "    <xsl:template match=\"foo\">" +
+                                        "<baz>bar</baz>" +
+                                        "</xsl:template>" +
+                                        "</xsl:stylesheet>";
+
+        String input =  "<foo>bar</foo>";
+        String target =  "<baz>bar</baz>";
+
+
+        SymbolTable table = new SymbolTableImpl();
+        table.define(a, input);
+        table.define(b, xslString);
+        table.define(c, "XML(#a)");
+        table.define(d, "XML(#b)");
+        table.define(e, "XSL(#d)");
+        table.define(f, "#e(#c).toXMLString()");
+        assertEquals(target, table.getValue(f));
+
+        table.define(d, "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\" />");
+        assertEquals("bar", table.getValue(f));
+
+        table.define(e, "XSL(XML(#b))");
+        assertEquals(target, table.getValue(f));
+
+        table.define(e, "XSL(#b)");
+        assertEquals(target, table.getValue(f));
+    }
+
+
 }

@@ -41,6 +41,7 @@ import java.io.IOException;
 
 import static ccare.symboltable.XmlProcessingSupport.createTransformFunction;
 import static ccare.symboltable.XmlProcessingSupport.removeProcessingInstruction;
+import static ccare.symboltable.XmlProcessingSupport.toXMLString;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
@@ -85,7 +86,7 @@ public class XmlProcessingSupportTest {
             Scriptable scope = cx.initStandardObjects();
             XMLObject transformed = (XMLObject) f.call(cx, scope, null, new Object[]{"<xml/>"});
             final String target = "<xml>Hi</xml>";
-            assertEquals(target, XMLObject.callMethod(transformed, "toXMLString", null));
+            assertEquals(target, toXMLString(transformed));
         } finally {
             Context.exit();
         }
@@ -104,7 +105,28 @@ public class XmlProcessingSupportTest {
 
             XMLObject transformed = (XMLObject) f.call(cx, scope, null, new Object[]{"<xml/>", params});
             final String target = "<xml>hello there</xml>";
-            assertEquals(target, XMLObject.callMethod(transformed, "toXMLString", null));
+            assertEquals(target, toXMLString(transformed));
+        } finally {
+            Context.exit();
+        }
+    }
+
+    @Test
+    public void testCreateAndRunTransformAgainstE4XInput() throws IOException, SAXException, TransformerException {
+        Context cx = Context.enter();
+        try {
+            Scriptable scope = cx.initStandardObjects();
+            final Object xml = cx.evaluateString(scope, "<foo><bar/></foo>", "", 0, null);
+            final String xslString = "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n" +
+                                        "    <xsl:template match=\"foo\">" +
+                                        "<xml>bar</xml>" +
+                                        "</xsl:template>" +
+                                        "</xsl:stylesheet>";
+            final Object xsl = cx.evaluateString(scope, xslString, "", 0, null);
+            final Function f = createTransformFunction(factory, xsl);
+            XMLObject transformed = (XMLObject) f.call(cx, scope, null, new Object[]{xml});
+            final String target = "<xml>bar</xml>";
+            assertEquals(target, toXMLString(transformed));
         } finally {
             Context.exit();
         }

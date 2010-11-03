@@ -32,6 +32,8 @@ import org.apache.commons.io.IOUtils;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.Undefined;
+import org.mozilla.javascript.xml.XMLObject;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -44,6 +46,8 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import static org.apache.commons.lang.Validate.notNull;
 
 /**
  * Created by IntelliJ IDEA.
@@ -70,8 +74,112 @@ public class XmlProcessingSupport {
         return transformedString;
     }
 
-    static Function createTransformFunction(final TransformerFactory factory, final String xslSource) {
-        final StreamSource src = new StreamSource(IOUtils.toInputStream(xslSource));
+    static Function createTransformerFactoryFunction() {
+        final TransformerFactory factory = TransformerFactory.newInstance();
+        return new Function() {
+
+            @Override
+            public Object call(Context context, Scriptable scriptable, Scriptable scriptable1, Object[] objects) {
+                if (objects.length == 1) {
+                    return createTransformFunction(factory, objects[0]);
+                }
+                return Undefined.instance;
+            }
+
+            @Override
+            public Scriptable construct(Context context, Scriptable scriptable, Object[] objects) {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public String getClassName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public Object get(String s, Scriptable scriptable) {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public Object get(int i, Scriptable scriptable) {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public boolean has(String s, Scriptable scriptable) {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public boolean has(int i, Scriptable scriptable) {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void put(String s, Scriptable scriptable, Object o) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void put(int i, Scriptable scriptable, Object o) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void delete(String s) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void delete(int i) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public Scriptable getPrototype() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void setPrototype(Scriptable scriptable) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public Scriptable getParentScope() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void setParentScope(Scriptable scriptable) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public Object[] getIds() {
+                return new Object[0];  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public Object getDefaultValue(Class<?> aClass) {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public boolean hasInstance(Scriptable scriptable) {
+                return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        };
+
+    }
+
+
+    static Function createTransformFunction(final TransformerFactory factory, final Object xsl) {
+        notNull(xsl);
+        String xslString = getXMLStringFromObject(xsl);
+
+        final StreamSource src = new StreamSource(IOUtils.toInputStream(xslString));
         final Transformer trans;
         try {
             trans = factory.newTransformer(src);
@@ -85,7 +193,7 @@ public class XmlProcessingSupport {
             public Object call(Context context, Scriptable scope, Scriptable scriptable1, Object[] objects) {
                 final String input;
                 if (objects.length > 0) {
-                    input = objects[0].toString();
+                    input = getXMLStringFromObject(objects[0]);
                     final StreamSource inputSource = new StreamSource(IOUtils.toInputStream(input));
                     String result;
                     Map<String, Object> paramMap = null;
@@ -205,7 +313,30 @@ public class XmlProcessingSupport {
         };
     }
 
+    private static String getXMLStringFromObject(Object xsl) {
+        String xslString;
+        if (xsl instanceof String) {
+            xslString = (String) xsl;
+        } else if (xsl instanceof XMLObject) {
+            xslString = toXMLString((XMLObject) xsl);
+        } else {
+            xslString = xsl.toString();
+        }
+        return xslString;
+    }
+
     static String removeProcessingInstruction(String xml) {
         return PROCESSING_INSTRUCT_PATTERN.matcher(xml).replaceFirst("");
+    }
+          
+    static String toXMLString(XMLObject transformed) {
+        final Object o = XMLObject.callMethod(transformed, "toXMLString", null);
+        if (o instanceof String) {
+            return (String) o;
+        } else if (o == null) {
+            return Undefined.instance.toString();
+        } else {
+            return o.toString();
+        }
     }
 }

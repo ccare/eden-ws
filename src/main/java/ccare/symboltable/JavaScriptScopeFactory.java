@@ -28,10 +28,7 @@
 
 package ccare.symboltable;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.*;
 
 /**
  * User: carecx
@@ -87,6 +84,9 @@ public class JavaScriptScopeFactory {
         ScriptableObject.putProperty(scope, "$eden_observe", f);
         Function g = createDefineFunction(t);
         ScriptableObject.putProperty(scope, "$eden_define", g);
+        Function xsl = XmlProcessingSupport.createTransformerFactoryFunction();
+        ScriptableObject.putProperty(scope, "XSL", xsl);
+
         return scope;
     }
 
@@ -114,7 +114,7 @@ public class JavaScriptScopeFactory {
                     t.define(ref, defn.toString());
                     return null;
                 }
-                return null;
+                return Undefined.instance;
             }
 
             @Override
@@ -203,6 +203,7 @@ public class JavaScriptScopeFactory {
             }
         };
     }
+    
 
 
 }
