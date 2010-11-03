@@ -143,6 +143,9 @@ public class JavaScriptTranslationUtilsTest {
            assertEquals(1, findEndOfExpr("a",0));
        }
 
+
+
+
        @Test
        public void testExtractExprForSimpleInput() {
            assertEquals("", extractExpr("",0));
@@ -150,6 +153,11 @@ public class JavaScriptTranslationUtilsTest {
            assertEquals("a", extractExpr("a",0));
            assertEquals("a b c", extractExpr("a b c",0));
        }
+
+
+
+
+
 
        @Test
        public void testExtractExprTerminatedBySemiColonAndNewline() {
@@ -226,6 +234,21 @@ public class JavaScriptTranslationUtilsTest {
        @Test
        public void testExtractExprIgnoresClosingBracesInDoubleString() {
            assertEquals("{ + \"}\";...", extractExpr("{ + \"}\";...",0));
+       }
+
+        @Test
+       public void testExtractExprProcessesE4XString() {
+           assertEquals("a + <xml>d</xml>", extractExpr("a + <xml>d</xml>",0));
+       }
+
+        @Test
+       public void testExtractExprProcessesE4XStringTerminatedBySemi() {
+           assertEquals("a + <xml>d</xml>", extractExpr("a + <xml>d</xml>;",0));
+       }
+
+        @Test
+       public void testExtractExprProcessesE4XStringContainingSemi() {
+           assertEquals("a + <xml>;</xml>", extractExpr("a + <xml>;</xml>;",0));
        }
 
 
@@ -344,8 +367,7 @@ public class JavaScriptTranslationUtilsTest {
     @Test
     public void testPullOutRegions_baseCase() {
         final List<String> stringList = pullOutRegions("");
-        assertEquals(1, stringList.size());
-        assertEquals("", stringList.get(0));
+        assertEquals(0, stringList.size());
     }
 
     @Test
@@ -414,6 +436,43 @@ public class JavaScriptTranslationUtilsTest {
         assertEquals("a ", stringList.get(0));
         assertEquals("'b \\'b\\' b'", stringList.get(1));
         assertEquals(" c", stringList.get(2));
+    }
+
+    @Test
+    public void testPullOutRegions_xmlInString() {
+        final List<String> stringList = pullOutRegions("a '<xml>b</xml>' c");
+        assertEquals(3, stringList.size());
+        assertEquals("a ", stringList.get(0));
+        assertEquals("'<xml>b</xml>'", stringList.get(1));
+        assertEquals(" c", stringList.get(2));
+    }
+
+    @Test
+    public void testPullOutRegions_e4x() {
+        final List<String> stringList = pullOutRegions("a <xml>b</xml> c");
+        assertEquals(3, stringList.size());
+        assertEquals("a ", stringList.get(0));
+        assertEquals("<xml>b</xml>", stringList.get(1));
+        assertEquals(" c", stringList.get(2));
+    }
+
+    @Test
+    public void testPullOutRegions_e4XWithNestedExpr() {
+        final List<String> stringList = pullOutRegions("<xml><foo>{#a}</foo><bar>{#{a} + 'zy'}</bar></xml>");
+        assertEquals(1, stringList.size());
+    }
+
+    @Test
+    public void testTranslateE4XObservationWhenNoSubs() {
+       assertEquals("", translateE4XObservation(""));
+       assertEquals("abc", translateE4XObservation("abc"));
+       assertEquals("{abc}", translateE4XObservation("{abc}"));
+       assertEquals("#a + c", translateE4XObservation("#a + c"));
+    }
+
+    @Test
+    public void testTranslateE4XObservationTranslatesExpressions() {
+       assertEquals("{$eden_observe('a') + c}", translateE4XObservation("{#a + c}"));
     }
 
 

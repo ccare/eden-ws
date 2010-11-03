@@ -434,7 +434,6 @@ public class SymbolTableImplTest {
         assertEquals("is", table.getValue(d));
     }
 
-    @Ignore
     @Test
     public void testE4XWithHash() {
         SymbolTable table = new SymbolTableImpl();
@@ -443,16 +442,14 @@ public class SymbolTableImplTest {
         assertEquals("#a", table.getValue(d));
     }
 
-    @Ignore
     @Test
     public void testE4XWithSupriousExprInXML() {
         SymbolTable table = new SymbolTableImpl();
         table.define(b, "<xml><bar>#a is</bar></xml>");
         table.define(d, "#b.bar.toString()");
-        assertEquals("is", table.getValue(d));
+        assertEquals("#a is", table.getValue(d));
     }
 
-    @Ignore
     @Test
     public void testE4XWithSupriousExprInXML_2() {
         SymbolTable table = new SymbolTableImpl();
@@ -461,11 +458,10 @@ public class SymbolTableImplTest {
         assertEquals("#a is #b + #c;", table.getValue(d));
     }
 
-    @Ignore
     @Test
     public void testE4XWithSupriousExprInXML_3() {
         SymbolTable table = new SymbolTableImpl();
-        table.define(e, "<xml><bar>function() { c is a + b; }</bar></xml>");
+        table.define(e, "<xml><bar>function() &#x7B; c is a + b; &#x7D;</bar></xml>");
         table.define(d, "#e.bar.toString()");
         assertEquals("function() { c is a + b; }", table.getValue(d));
     }
@@ -502,7 +498,6 @@ public class SymbolTableImplTest {
         assertEquals("#a", table.getValue(d));
     }
 
-    @Ignore
     @Test
     public void testE4XWithSupriousExprInXML_8() {
         SymbolTable table = new SymbolTableImpl();

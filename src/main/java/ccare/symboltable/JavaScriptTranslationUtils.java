@@ -28,10 +28,7 @@
 
 package ccare.symboltable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,16 +38,16 @@ import java.util.regex.Pattern;
  * Time: 16:18:58
  */
 public class JavaScriptTranslationUtils {
-    
+
     static final Pattern DEFN = Pattern.compile("[\\w:/#_]+\\s*is(\\s+)");
     static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern.compile("#\\{([^\\}]+)\\}");
     static final Pattern SPECIALNAME_PATTERN = Pattern.compile("#([^#{][\\w:/#_]*)");
-    
+
     public static Set<String> extractSpecialSymbols(final String input) {
         Set<String> symbols = new HashSet<String>();
         final List<String> regions = pullOutRegions(input);
         for (String region : regions) {
-           if (processibleRegion(region)) {
+            if (processibleRegion(region)) {
                 final Matcher escapedMatcher = SPECIALNAME_ESCAPEDPATTERN.matcher(region);
                 while (escapedMatcher.find()) {
                     symbols.add(escapedMatcher.group(1));
@@ -79,7 +76,7 @@ public class JavaScriptTranslationUtils {
             final String expression = expr.substring(start, end);
             sb.append(preamble);
             sb.append("$eden_define('");
-            sb.append(sym.replaceAll("\\s*is\\s*","").replaceAll("^#",""));
+            sb.append(sym.replaceAll("\\s*is\\s*", "").replaceAll("^#", ""));
             sb.append("','");
             final String escapedSlashes = expression.replaceAll("\\\\", "\\\\\\\\");
             final String escapedQuotes = escapedSlashes.replaceAll("'", "\\\\'");
@@ -90,7 +87,7 @@ public class JavaScriptTranslationUtils {
         final String remainingCode = expr.substring(ptr, expr.length());
         sb.append(encodeObservation(remainingCode));
         final String s = sb.toString();
-        
+
         return s;
     }
 
@@ -103,36 +100,82 @@ public class JavaScriptTranslationUtils {
         int ptr = i;
         boolean inSingleQuote = false;
         boolean inDoubleQuote = false;
+        boolean inE4XStart = false;
+        boolean inE4XEnd = false;
+        StringBuilder tag = null;
+        Deque<String> tags = new ArrayDeque<String>();
         int braceLevel = 0;
         while (ptr < s.length()) {
             char c = s.charAt(ptr);
-            if (inSingleQuote) {
-                if (c == '\\' && s.charAt(ptr+1) == '\'') {
+            if (inE4XStart || inE4XEnd) {
+                if (c != '>') {
+                    tag.append(c);
+                } else {
+                    if (inE4XStart) {
+                        tags.push(tag.toString());
+                        inE4XStart = false;
+                    } else if (inE4XEnd) {
+                        inE4XEnd = false;
+                        if (tags.peek().equals(tag.toString())) {
+                            tags.pop();
+                        } else {
+                            throw new IllegalStateException("Shouldn't be here");
+                        }
+                    }
+                }
+            } else if (inSingleQuote) {
+                if (c == '\\' && s.charAt(ptr + 1) == '\'') {
                     ptr++;
                 } else if (c == '\'') {
                     inSingleQuote = false;
                 }
             } else if (inDoubleQuote) {
-                if (c == '\\' && s.charAt(ptr+1) == '"') {
+                if (c == '\\' && s.charAt(ptr + 1) == '"') {
                     ptr++;
                 } else if (c == '"') {
                     inDoubleQuote = false;
                 }
-            } else if (c == '{') {
-                braceLevel++;
-            } else if (braceLevel > 0) {
-                switch (c) {
-                    case '}' : braceLevel--; break;
-                    case '\'' : inSingleQuote = true; break;
-                    case '"' : inDoubleQuote = true; break;
+            } else if (c == '<') {
+                char cc = s.charAt(ptr + 1);
+                if (cc != ' ') {
+                    if (cc == '/') {
+                        inE4XEnd = true;
+                        ptr++;
+                    } else {
+                        inE4XStart = true;
+                    }
+                    tag = new StringBuilder();
                 }
-            } else if (braceLevel == 0) {
-                switch (c) {
-                    case '}' : return ptr;
-                    case ';' : return ptr;
-                    case '\n' : return ptr;
-                    case '\'' : inSingleQuote = true; break;
-                    case '"' : inDoubleQuote = true; break;
+            } else if (tags.isEmpty()) {
+                if (c == '{') {
+                    braceLevel++;
+                } else if (braceLevel > 0) {
+                    switch (c) {
+                        case '}':
+                            braceLevel--;
+                            break;
+                        case '\'':
+                            inSingleQuote = true;
+                            break;
+                        case '"':
+                            inDoubleQuote = true;
+                            break;
+                    }
+                } else if (braceLevel == 0) {
+                    switch (c) {
+                        case '}':
+                            return ptr;
+                        case ';':
+                            return ptr;
+                        case '\n':
+                            return ptr;
+                        case '\'':
+                            inSingleQuote = true;
+                            break;
+                        case '"':
+                            inDoubleQuote = true;
+                            break;
+                    }
                 }
             }
             ptr++;
@@ -146,9 +189,12 @@ public class JavaScriptTranslationUtils {
 
     static String encodeObservation(final String in) {
         final StringBuilder sb = new StringBuilder();
-        for (final String region: pullOutRegions(in)) {
+        for (final String region : pullOutRegions(in)) {
             if (processibleRegion(region)) {
                 final String translatedEscaped = translateObservationsInString(region);
+                sb.append(translatedEscaped);
+            } else if (e4XRegion(region)) {
+                final String translatedEscaped = translateE4XObservation(region);
                 sb.append(translatedEscaped);
             } else {
                 sb.append(region);
@@ -157,7 +203,27 @@ public class JavaScriptTranslationUtils {
         return sb.toString();
     }
 
-    private static String translateObservationsInString(final String input) {
+    static String translateE4XObservation(final String input) {
+        int levels =0;
+        StringBuilder result = new StringBuilder();
+        StringBuilder working = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            working.append(c);
+            if (c == '{') {
+                levels++;
+            } else if (c == '}') {
+                levels--;
+            }
+            if (levels == 0) {
+                final String translated = translateObservationsInString(working);
+                result.append(translated);
+               working = new StringBuilder();
+            } 
+        }
+        return result.toString();
+    }
+
+    private static String translateObservationsInString(final CharSequence input) {
         final String translatedNormalObservables = SPECIALNAME_PATTERN.matcher(input).replaceAll("\\$eden_observe('$1')");
         final String translatedEscapedObservables = SPECIALNAME_ESCAPEDPATTERN.matcher(translatedNormalObservables).replaceAll("\\$eden_observe('$1')");
         return translatedEscapedObservables;
@@ -169,44 +235,116 @@ public class JavaScriptTranslationUtils {
         int pos = 0;
         boolean inDblString = false;
         boolean inSingleString = false;
+        boolean inE4XStart = false;
+        boolean inE4XEnd = false;
+        boolean inAttrs = false;
+        StringBuilder tag = null;
+        Deque<String> tags = new ArrayDeque<String>();
         final int length = s.length();
         for (; pos < length; pos++) {
             char c = s.charAt(pos);
-            if (!inSingleString && !inDblString && c == '"') {
-               list.add(s.substring(start, pos));
-               start = pos;
-               inDblString = true;
-            } else if (inDblString && c == '"') {
-               list.add(s.substring(start, pos+1));
-               pos++;
-               start = pos;
-               inDblString= false;
-            } else if (inDblString && c == '\\') {
-               pos++;
-            } else if (inSingleString && c == '\\') {
-               pos++;
-            } else if (!inDblString && !inSingleString && c == '\'') {
-               list.add(s.substring(start, pos));
-               start = pos;
-               inSingleString = true;
-            } else if (inSingleString && c == '\'') {
-               list.add(s.substring(start, pos+1));
-               pos++;
-               start = pos;
-               inSingleString= false;
+            if (inE4XStart || inE4XEnd) {
+                if (inE4XStart && c == ' ') {
+                    inAttrs = true;
+                }
+
+                if (!inAttrs && c != '>') {
+                    tag.append(c);
+                } else {
+                    if (inE4XStart) {
+                        tags.push(tag.toString());
+                        tag = null;
+                        inE4XStart = false;
+                        inAttrs = false;
+                    } else if (inE4XEnd) {
+                        inE4XEnd = false;
+                        final String nextTagOnStack = tags.peek();
+                        final String current = tag.toString();
+                        if (nextTagOnStack.equals(current)) {
+                            tag = null;
+                            tags.pop();
+                            if (tags.isEmpty()) {
+                                createRegion(s, list, start, pos + 1);
+                                start = pos + 1;
+                            }
+                        } else {
+                            throw new IllegalStateException("Shouldn't be here");
+                        }
+                    }
+                }
+            } else if (c == '<' && tags.isEmpty() && !inSingleString && !inDblString) {
+                char cc = s.charAt(pos + 1);
+                if (cc != ' ') {
+                    if (cc == '/') {
+                        inE4XEnd = true;
+                        pos++;
+                    } else {
+                        inE4XStart = true;
+                        createRegion(s, list, start, pos);
+                        start = pos;
+                    }
+                    tag = new StringBuilder();
+                }
+            } else if (c == '<' && !tags.isEmpty()) {
+                char cc = s.charAt(pos + 1);
+                if (cc != ' ') {
+                    if (cc == '/') {
+                        inE4XEnd = true;
+                        pos++;
+                    } else {
+                        inE4XStart = true;
+                    }
+                    tag = new StringBuilder();
+                }
+            } else if (!tags.isEmpty()) {
+                continue;
+            } else {
+                if (!inSingleString && !inDblString && c == '"') {
+                    createRegion(s, list, start, pos);
+                    start = pos;
+                    inDblString = true;
+                } else if (inDblString && c == '"') {
+                    createRegion(s, list, start, pos + 1);
+                    pos++;
+                    start = pos;
+                    inDblString = false;
+                } else if (inDblString && c == '\\') {
+                    pos++;
+                } else if (inSingleString && c == '\\') {
+                    pos++;
+                } else if (!inDblString && !inSingleString && c == '\'') {
+                    createRegion(s, list, start, pos);
+                    start = pos;
+                    inSingleString = true;
+                } else if (inSingleString && c == '\'') {
+                    createRegion(s, list, start, pos + 1);
+                    pos++;
+                    start = pos;
+                    inSingleString = false;
+                }
             }
 
         }
         if (pos < length) {
-            list.add(s.substring(start, pos));
+            createRegion(s, list, start, pos);
         } else {
-            list.add(s.substring(start, length));
+            createRegion(s, list, start, length);
         }
         return list;
     }
 
+    private static void createRegion(String string, List<String> regionList, int startIndex, int endIndex) {
+        if (endIndex > startIndex) {
+            regionList.add(string.substring(startIndex, endIndex));
+        } else if (endIndex != startIndex) {
+            throw new IllegalArgumentException("Bad substring range");
+        }
+    }
+
+
     /**
      * Find index bounds of definitions inside an input string
+     *
      * @param input
      * @return
      */
@@ -217,9 +355,9 @@ public class JavaScriptTranslationUtils {
         for (String region : regions) {
             if (processibleRegion(region)) {
                 final Matcher matcher = DEFN.matcher(region);
-                while (matcher.find() == true)  {
+                while (matcher.find() == true) {
                     final int exprStart = index + matcher.end();
-                    indexes.add(new DefnFragment(index + matcher.start(), exprStart,  findEndOfExpr(input, exprStart) ) );
+                    indexes.add(new DefnFragment(index + matcher.start(), exprStart, findEndOfExpr(input, exprStart)));
                 }
             }
             index = index + region.length();
@@ -232,7 +370,16 @@ public class JavaScriptTranslationUtils {
             return false;
         } else {
             final char c = region.charAt(0);
-            return c != '\'' && c != '"';                            
+            return c != '\'' && c != '"' && c != '<';
+        }
+    }
+
+    private static boolean e4XRegion(String region) {
+        if (region.isEmpty()) {
+            return false;
+        } else {
+            final char c = region.charAt(0);
+            return c == '<';
         }
     }
 
