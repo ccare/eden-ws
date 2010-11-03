@@ -506,5 +506,15 @@ public class SymbolTableImplTest {
         assertEquals("function() { c is a + b; }", table.getValue(d));
     }
 
+
+    @Test
+    public void testCastStringToE4X() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(a, "'<xml><bar>a</bar></xml>'");
+        table.define(b, "XML(#a)");
+        table.define(c, "#b.bar.toString()");
+        assertEquals("a", table.getValue(c));
+    }
+
          
 }
