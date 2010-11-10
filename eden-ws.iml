@@ -33,6 +33,7 @@
     <orderEntry type="library" exported="" name="Maven: com.sun.jersey:jersey-server:1.5-ea03" level="project" />
     <orderEntry type="library" exported="" name="Maven: com.sun.jersey:jersey-core:1.5-ea03" level="project" />
     <orderEntry type="library" exported="" name="Maven: asm:asm:3.1" level="project" />
+    <orderEntry type="library" exported="" name="Maven: com.sun.jersey:jersey-client:1.5-ea03" level="project" />
     <orderEntry type="library" exported="" name="Maven: com.sun.jersey.contribs:jersey-spring:1.5-ea03" level="project" />
     <orderEntry type="library" exported="" name="Maven: org.springframework:spring-core:2.5.6" level="project" />
     <orderEntry type="library" exported="" name="Maven: commons-logging:commons-logging:1.1" level="project" />

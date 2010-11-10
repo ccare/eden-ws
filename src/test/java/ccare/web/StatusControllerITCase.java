@@ -28,29 +28,38 @@
 
 package ccare.web;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import org.junit.Ignore;
+import org.junit.Test;
 
+import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
+
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 /**
  * User: carecx
  * Date: 13-Oct-2010
  * Time: 14:50:23
- */
-@Ignore
+ */ 
 public class StatusControllerITCase {
-//        extends JerseyTest {
-//
-//
-//    WebResource webResource = resource();
-//
-//    public StatusControllerITCase() throws Exception {
-//        super("ccare.web");
-//    }
-//
-//    @Test
-//    public void testGetStatus() throws Exception {
-//        String responseMsg = webResource.path("status").get(String.class);
-//        assertEquals("Running and fine", responseMsg);
-//    }
+    @Test
+    public void testGetStatus() throws Exception {
+        ClientConfig config = new DefaultClientConfig();
+        Client client = Client.create(config);
+        WebResource resource = client.resource(getBaseURI());
+        String msg = resource.get(String.class);
+
+        assertEquals("Running and fine", msg);
+    }
+
+    private static URI getBaseURI() {
+		return UriBuilder.fromUri(
+				"http://localhost:8080/services/status").build();
+	}
+
 }

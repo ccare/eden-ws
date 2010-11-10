@@ -28,6 +28,9 @@
 
 package ccare.web;
 
+import com.sun.jersey.api.core.InjectParam;
+import com.sun.jersey.spi.inject.Inject;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -35,10 +38,19 @@ import javax.ws.rs.Produces;
 @Path("status")
 public class StatusController {
 
+    @InjectParam("testBean")
+    Object testBean;
+
     @GET
     @Produces("text/plain")
     public String getStatus() {
         return "Running and fine";
+    }
+
+    @GET
+    @Path("bean")
+    public Object getTestObj() {
+        return testBean;
     }
 }
 
