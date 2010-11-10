@@ -40,6 +40,7 @@ import java.util.*;
 
 public class SymbolTableImpl implements SymbolTable {
 
+    private String name;
     private final UUID id = UUID.randomUUID();
     private Map<SymbolReference, Symbol> symbols = new HashMap<SymbolReference, Symbol>();
 
@@ -113,5 +114,15 @@ public class SymbolTableImpl implements SymbolTable {
         final SymbolReference r = new SymbolReference("____DUMMY_REF");
         define(r, "#{" + a.getName() + "}()");
         getValue(r);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
     }
 }

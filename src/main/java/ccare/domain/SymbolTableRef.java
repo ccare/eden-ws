@@ -26,27 +26,20 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.service;
+package ccare.domain;
 
-import ccare.domain.Observable;
-import ccare.symboltable.SymbolReference;
-
-import java.util.Set;
-import java.util.UUID;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
+ * Created by IntelliJ IDEA.
  * User: carecx
- * Date: 13-Oct-2010
- * Time: 22:20:08
+ * Date: 03-Nov-2010
+ * Time: 23:12:28
+ * To change this template use File | Settings | File Templates.
  */
-public interface SymbolTableService {
-    public UUID getId();
+@XmlRootElement
+public class SymbolTableRef {
 
-    public void define(SymbolReference reference, Observable d);
+    public String name;
 
-    public Observable observe(SymbolReference reference);
-
-    public Set<SymbolReference> listSymbols();
-
-    public void createSpace(String name);
 }

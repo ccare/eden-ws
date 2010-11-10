@@ -26,27 +26,64 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package ccare.service;
+package ccare.web;
 
 import ccare.domain.Observable;
-import ccare.symboltable.SymbolReference;
+import ccare.domain.SecurityDescriptor;
+import ccare.domain.SpaceSummary;
+import ccare.domain.SymbolTableRef;
+import ccare.service.SymbolTableBean;
+import ccare.service.SymbolTableService;
 
-import java.util.Set;
-import java.util.UUID;
+import javax.ejb.EJB;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-/**
- * User: carecx
- * Date: 13-Oct-2010
- * Time: 22:20:08
- */
-public interface SymbolTableService {
-    public UUID getId();
+@Path("spaces")
+public class SymbolTableController {
 
-    public void define(SymbolReference reference, Observable d);
+    @EJB
+    SymbolTableBean symbolTableBean;
 
-    public Observable observe(SymbolReference reference);
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public SpaceSummary getSpaces() {
+        final SpaceSummary s = new SpaceSummary();           
+        return s;
+    }
 
-    public Set<SymbolReference> listSymbols();
+    @POST
+    public void createSpace() {
+        System.out.println("...");
+    }
 
-    public void createSpace(String name);
+//    @GET
+//    @Produces("application/xml")
+//    @Path("{symbolName: [^:]+[:value]*}")
+//    public Object getSymbolValue(@PathParam("symbolName") String symbolName) {
+//        Observable o = new Observable();
+//        o.setDefinition("B + C");
+//        return o.getCurrentValue();
+//    }
+//
+//    @GET
+//    @Produces("application/xml")
+//    @Path("{symbolName}:definition")
+//    public Observable getSymbolDefn(@PathParam("symbolName") String symbolName) {
+//        Observable o = new Observable();
+//        o.setDefinition("B + C");
+//        return o;
+//    }
+//
+//    @GET
+//    @Produces("application/xml")
+//    @Path("{symbolName}:access")
+//    public SecurityDescriptor getSecurityDescriptor(@PathParam("symbolName") String symbolName) {
+//        return SecurityDescriptor.ALLOW_ALL;
+//    }
+
+
 }

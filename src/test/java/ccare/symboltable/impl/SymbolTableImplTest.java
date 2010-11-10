@@ -46,8 +46,7 @@ import static org.junit.Assert.assertEquals;
  * Time: 12:31:46
  */
 public class SymbolTableImplTest {
-
-
+    
     final SymbolReference a = new SymbolReference("a");
     final SymbolReference b = new SymbolReference("b");
     final SymbolReference c = new SymbolReference("c");

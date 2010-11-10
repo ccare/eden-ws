@@ -276,6 +276,16 @@ public class DefinitionTest {
             public void execute(SymbolReference a) {
 
             }
+
+            @Override
+            public String getName() {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void setName(String name) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
         };
     }
 

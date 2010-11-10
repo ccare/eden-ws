@@ -54,4 +54,8 @@ public interface SymbolTable {
     void defineTriggeredProc(SymbolReference a, String s, String... triggers);
 
     void execute(SymbolReference a);
+
+    String getName();
+
+    void setName(String name);
 }

@@ -36,6 +36,7 @@ import ccare.symboltable.impl.SymbolTableImpl;
 
 import javax.ejb.Lock;
 import javax.ejb.Singleton;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,6 +49,7 @@ public class SymbolTableBean implements SymbolTableService {
 
     private final UUID id = UUID.randomUUID();
     private SymbolTable table = new SymbolTableImpl();
+    private Set<SymbolTable> tables = new HashSet<SymbolTable>();
 
     @Override
     public UUID getId() {
@@ -72,5 +74,12 @@ public class SymbolTableBean implements SymbolTableService {
     @Override
     public Set<SymbolReference> listSymbols() {
         return table.listSymbols();
+    }
+
+    @Override
+    public void createSpace(final String name) {
+        SymbolTable table = new SymbolTableImpl();
+        table.setName(name);
+        tables.add(table);
     }
 }
