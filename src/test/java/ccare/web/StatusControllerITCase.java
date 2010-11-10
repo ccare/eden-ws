@@ -29,7 +29,6 @@
 package ccare.web;
 
 import org.junit.Ignore;
-import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
@@ -39,13 +38,13 @@ import static org.junit.Assert.assertEquals;
  * Time: 14:50:23
  */
 @Ignore
-public class StatusControllerTest  {
+public class StatusControllerITCase {
 //        extends JerseyTest {
 //
 //
 //    WebResource webResource = resource();
 //
-//    public StatusControllerTest() throws Exception {
+//    public StatusControllerITCase() throws Exception {
 //        super("ccare.web");
 //    }
 //
