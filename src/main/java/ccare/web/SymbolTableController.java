@@ -65,6 +65,13 @@ public class SymbolTableController {
         service.createSpace(spaceName);
     }
 
+    @DELETE
+    @Path("{spaceName: [^/]+[/]{0,1}}")
+    public void deleteSpace(final @PathParam("spaceName") String spaceName) {
+        logger.debug(format("Creating space request for %s", spaceName));
+        service.deleteSpace(spaceName);
+    }
+
 
 //    @GET
 //    @Produces("application/xml")

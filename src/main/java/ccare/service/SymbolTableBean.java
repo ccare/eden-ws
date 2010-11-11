@@ -87,6 +87,17 @@ public class SymbolTableBean implements SymbolTableService {
     }
 
     @Override
+    public void deleteSpace(final String name) {
+        for (SymbolTable t : tables) {
+            final UUID id = t.getId();
+            final String tableName = t.getName();
+            if (tableName.equals(name)) {
+                tables.remove(t);
+            }
+        }
+    }
+
+    @Override
     public List<TableReference> allSpaces() {
         List<TableReference> l = new ArrayList<TableReference>();
         for (SymbolTable t : tables) {

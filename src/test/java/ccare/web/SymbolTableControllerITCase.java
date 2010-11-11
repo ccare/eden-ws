@@ -69,4 +69,14 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         final TableReference ref = spaces.get(0);
         assertEquals("abc", ref.getName());
     }
+
+    @Test
+    public void testDeleteSpace() throws Exception {
+        final WebResource resource = resource("spaces");
+        List<TableReference> spaces = resource.get(new GenericType<List<TableReference>>() {});
+        int size = spaces.size();
+        resource.path("abc").delete();
+        spaces = resource.get(new GenericType<List<TableReference>>() {});
+        assertEquals(size - 1, spaces.size());
+    }
 }
