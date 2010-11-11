@@ -89,6 +89,8 @@
             <version>1.5-ea03</version>
         </dependency>
 
+        
+
         <!--<dependency>-->
             <!--<groupId>org.glassfish</groupId>-->
             <!--<artifactId>javax.ejb</artifactId>-->
@@ -143,6 +145,24 @@
             <scope>provided</scope>
         </dependency>
 
+
+<!--<dependency>-->
+  <!--<groupId>org.apache.openejb</groupId>-->
+  <!--<artifactId>openejb-core</artifactId>-->
+  <!--<version>3.1.2</version>-->
+<!--</dependency>-->
+<!--<dependency>-->
+  <!--<groupId>org.apache.openejb</groupId>-->
+  <!--<artifactId>openejb-spring</artifactId>-->
+  <!--<version>3.1.2</version>-->
+  <!--<exclusions>-->
+    <!--<exclusion>-->
+      <!--<groupId>org.springframework</groupId>-->
+      <!--<artifactId>spring</artifactId>-->
+    <!--</exclusion>-->
+  <!--</exclusions>-->
+<!--</dependency>-->
+        
         
 
 

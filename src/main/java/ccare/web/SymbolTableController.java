@@ -34,6 +34,7 @@ import ccare.domain.SpaceSummary;
 import ccare.domain.SymbolTableRef;
 import ccare.service.SymbolTableBean;
 import ccare.service.SymbolTableService;
+import com.sun.jersey.api.core.InjectParam;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -45,8 +46,8 @@ import java.util.List;
 @Path("spaces")
 public class SymbolTableController {
 
-    @EJB
-    SymbolTableBean symbolTableBean;
+    @InjectParam("service")
+    SymbolTableBean service;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})

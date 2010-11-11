@@ -43,13 +43,13 @@ import static org.junit.Assert.assertEquals;
 @Ignore
 public class SymbolControllerITCase extends IntegrationSupport {
 
-    @Test
-    public void testGetStatus() throws Exception {
-        WebResource resource = resource("spaces");
-        SpaceSummary spaces = resource.get(SpaceSummary.class);
-        spaces.setCount(1);
-        assertEquals(new Integer(1), spaces.getCount());
-    }
+//    @Test
+//    public void testGetStatus() throws Exception {
+//        WebResource resource = resource("spaces");
+//        SpaceSummary spaces = resource.get(SpaceSummary.class);
+//        spaces.setCount(1);
+//        assertEquals(new Integer(1), spaces.getCount());
+//    }
 //
 //
 //    WebResource webResource = resource();

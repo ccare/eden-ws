@@ -28,9 +28,11 @@
 
 package ccare.web;
 
+import ccare.service.SymbolTableBean;
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.spi.inject.Inject;
 
+import javax.ejb.EJB;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -40,6 +42,7 @@ public class StatusController {
 
     @InjectParam("testBean")
     Object testBean;
+
 
     @GET
     @Produces("text/plain")
@@ -52,6 +55,8 @@ public class StatusController {
     public Object getTestObj() {
         return testBean;
     }
+
+
 }
 
 
