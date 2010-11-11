@@ -61,14 +61,20 @@ public class SymbolTableController {
     @PUT
     @Path("{spaceName: [^/]+[/]{0,1}}")
     public void createSpace(final @PathParam("spaceName") String spaceName) {
-        logger.debug(format("Creating space request for %s", spaceName));         
+        logger.debug(format("Received PUT space request for %s", spaceName));
         service.createSpace(spaceName);
+    }
+
+    @PUT
+    public void submitSpace(final TableReference reference) {
+        logger.debug(format("Recieved POST space request for %s", reference.getName()));         
+        service.createSpace(reference.getName());
     }
 
     @DELETE
     @Path("{spaceName: [^/]+[/]{0,1}}")
     public void deleteSpace(final @PathParam("spaceName") String spaceName) {
-        logger.debug(format("Creating space request for %s", spaceName));
+        logger.debug(format("Deleting space request for %s", spaceName));
         service.deleteSpace(spaceName);
     }
 

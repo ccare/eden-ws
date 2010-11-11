@@ -40,7 +40,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static junit.framework.Assert.assertNotNull;
+import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by IntelliJ IDEA.
@@ -59,15 +61,34 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
     }
 
     @Test
+    public void testCreateViaPost() throws Exception {
+        final WebResource resource = resource("spaces");
+        List<TableReference> spaces = resource.get(new GenericType<List<TableReference>>() {});
+        int size = spaces.size();
+        resource.put(new TableReference("myname"));
+        spaces = resource.get(new GenericType<List<TableReference>>() {});
+        assertEquals(size + 1, spaces.size());
+        containsName(spaces, "myname");
+    }
+
+    @Test
     public void testCreateViaPut() throws Exception {
         final WebResource resource = resource("spaces");
         List<TableReference> spaces = resource.get(new GenericType<List<TableReference>>() {});
         int size = spaces.size();
-        resource.path("abc").put();
+        final String newName = "abc";
+        resource.path(newName).put();
         spaces = resource.get(new GenericType<List<TableReference>>() {});
         assertEquals(size + 1, spaces.size());
-        final TableReference ref = spaces.get(0);
-        assertEquals("abc", ref.getName());
+        containsName(spaces, newName);
+    }
+
+    private void containsName(List<TableReference> spaces, String newName) {
+        final List<String> allNames = new ArrayList<String>(spaces.size());
+        for (TableReference ref : spaces) {
+            allNames.add(ref.getName());
+        }
+        assertThat(allNames, hasItem(newName));
     }
 
     @Test
@@ -78,5 +99,6 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         resource.path("abc").delete();
         spaces = resource.get(new GenericType<List<TableReference>>() {});
         assertEquals(size - 1, spaces.size());
+        
     }
 }

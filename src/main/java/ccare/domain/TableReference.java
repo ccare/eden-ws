@@ -54,6 +54,10 @@ public class TableReference {
         this.id = id;
     }
 
+    public TableReference(String name) {
+        this.name = name;
+    }
+
     public TableReference(UUID id, String name) {
         this.id = id;
         this.name = name;
