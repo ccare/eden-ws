@@ -55,10 +55,33 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
     public void testGetSpaces() throws Exception {
         WebResource resource = resource("spaces");
         List<TableReference> spaces = resource.get(new GenericType<List<TableReference>>() {});
+        assertNotNull(spaces);
     }
     
     @Test
-    public void testCreate() throws Exception {
-        resource("spaces").post();
+    public void testCreateViaPost() throws Exception {
+        final WebResource resource = resource("spaces");
+        List<TableReference> spaces = resource.get(new GenericType<List<TableReference>>() {});
+        int size = spaces.size();
+        resource.post();
+        spaces = resource.get(new GenericType<List<TableReference>>() {});
+        assertEquals(size + 1, spaces.size());
+        resource.post();
+        resource.post();
+        resource.post();
+        resource.post();
+        resource.post();
+        spaces = resource.get(new GenericType<List<TableReference>>() {});
+        assertEquals(size + 6, spaces.size());     
+    }
+
+    @Test
+    public void testCreateViaPut() throws Exception {
+        final WebResource resource = resource("spaces");
+        List<TableReference> spaces = resource.get(new GenericType<List<TableReference>>() {});
+        int size = spaces.size();
+        resource.path("abc").put();
+        spaces = resource.get(new GenericType<List<TableReference>>() {});
+        assertEquals(size + 1, spaces.size());
     }
 }

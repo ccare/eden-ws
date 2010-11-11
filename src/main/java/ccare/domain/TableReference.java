@@ -29,6 +29,7 @@
 package ccare.domain;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.UUID;
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,15 +42,25 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class TableReference {
 
     private String name;
+    private UUID id;
 
     public TableReference() {
     }
 
-    public TableReference(String name) {
+    public TableReference(UUID id) {
+        this.id = id;
+    }
+
+    public TableReference(UUID id, String name) {
+        this.id = id;
         this.name = name;
     }
 
     public String getName() {
         return name;
+    }
+
+    public UUID getID() {
+        return id;
     }
 }

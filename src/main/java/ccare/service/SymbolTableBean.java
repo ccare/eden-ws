@@ -54,7 +54,7 @@ public class SymbolTableBean implements SymbolTableService {
 
     @Override
 //    @Lock(WRITE)
-public void define(SymbolReference reference, Observable d) {
+    public void define(SymbolReference reference, Observable d) {
         table.define(reference, d.getDefinition());
     }
 
@@ -73,17 +73,25 @@ public void define(SymbolReference reference, Observable d) {
     }
 
     @Override
-    public void createSpace(final String name) {
+    public TableReference createSpace(final String name) {
         SymbolTable table = new SymbolTableImpl();
         table.setName(name);
         tables.add(table);
+        return new TableReference(table.getId(), name);
+    }
+
+    @Override
+    public TableReference createSpace() {
+        SymbolTable table = new SymbolTableImpl();
+        tables.add(table);
+        return new TableReference(table.getId());
     }
 
     @Override
     public List<TableReference> allSpaces() {
         List<TableReference> l = new ArrayList<TableReference>();
         for (SymbolTable t : tables) {
-            TableReference s = new TableReference(t.getName());
+            TableReference s = new TableReference(t.getId(), t.getName());
             l.add(s);
         }
         return l;
