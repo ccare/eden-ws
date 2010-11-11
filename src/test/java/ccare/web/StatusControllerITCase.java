@@ -51,7 +51,6 @@ public class StatusControllerITCase extends IntegrationSupport {
         assertEquals("Running and fine", msg);
     }      
 
-
     @Test
     public void testGetId() throws Exception {
         WebResource resource = resource("status/id");

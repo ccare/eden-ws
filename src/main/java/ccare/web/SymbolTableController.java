@@ -29,6 +29,7 @@
 package ccare.web;
 
 import ccare.domain.SpaceSummary;
+import ccare.domain.TableReference;
 import ccare.service.SymbolTableBean;
 import com.sun.jersey.api.core.InjectParam;
 
@@ -37,6 +38,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 import java.util.UUID;
 
 @Path("spaces")
@@ -47,14 +49,14 @@ public class SymbolTableController {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public SpaceSummary getSpaces() {
-        final SpaceSummary s = new SpaceSummary();
-        return s;
+    public List<TableReference> getSpaces() {
+        final List<TableReference> all = service.allSpaces();
+        return all;
     }
 
     @POST
     public void createSpace() {
-        System.out.println("...");
+        service.createSpace("foo");
     }
 
 //    @GET

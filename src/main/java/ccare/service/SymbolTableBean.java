@@ -29,14 +29,14 @@
 package ccare.service;
 
 import ccare.domain.Observable;
+import ccare.domain.SpaceSummary;
+import ccare.domain.TableReference;
 import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.impl.SymbolTableImpl;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 //@Singleton
 
@@ -78,4 +78,16 @@ public void define(SymbolReference reference, Observable d) {
         table.setName(name);
         tables.add(table);
     }
+
+    @Override
+    public List<TableReference> allSpaces() {
+        List<TableReference> l = new ArrayList<TableReference>();
+        for (SymbolTable t : tables) {
+            TableReference s = new TableReference(t.getName());
+            l.add(s);
+        }
+        return l;
+    }
+
+
 }

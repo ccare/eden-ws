@@ -29,8 +29,11 @@
 package ccare.service;
 
 import ccare.domain.Observable;
+import ccare.domain.SpaceSummary;
+import ccare.domain.TableReference;
 import ccare.symboltable.SymbolReference;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -49,4 +52,6 @@ public interface SymbolTableService {
     public Set<SymbolReference> listSymbols();
 
     public void createSpace(String name);
+
+    public List<TableReference> allSpaces();
 }
