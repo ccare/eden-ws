@@ -52,17 +52,16 @@ import static org.junit.Assert.assertThat;
  */
 public class SymbolTableControllerITCase extends IntegrationSupport {
     private static final GenericType<List<TableReference>> TABLE_REF_COLLECTION_TYPE = new GenericType<List<TableReference>>() {};
+    private final WebResource resource = resource("spaces");
 
     @Test
     public void testGetSpaces() throws Exception {
-        WebResource resource = resource("spaces");
         Collection<TableReference> spaces = resource.get(TABLE_REF_COLLECTION_TYPE);
         assertNotNull(spaces);
     }
 
     @Test
     public void testCreateViaPost() throws Exception {
-        final WebResource resource = resource("spaces");
         int size = spaceCount(resource);
         final String newName = "myname";
         TableReference newRef = resource.post(TableReference.class, new TableReference(newName));
@@ -81,7 +80,6 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
 
     @Test
     public void testCreateViaPut() throws Exception {
-        final WebResource resource = resource("spaces");
         int size = spaceCount(resource);
         final String newName = "abc";
         resource.path(newName).put();
@@ -100,12 +98,15 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
 
     @Test
     public void testDeleteSpace() throws Exception {
-        final WebResource resource = resource("spaces");
         Collection<TableReference> spaces = resource.get(TABLE_REF_COLLECTION_TYPE);
         int size = spaces.size();
         resource.path("abc").delete();
         spaces = resource.get(TABLE_REF_COLLECTION_TYPE);
-        assertEquals(size - 1, spaces.size());
-        
+        assertEquals(size - 1, spaces.size());        
     }
+
+//    @Test
+//    public void testCreateTableAndSymbol() {
+//
+//    }
 }
