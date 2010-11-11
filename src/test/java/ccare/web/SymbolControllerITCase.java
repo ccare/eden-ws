@@ -28,8 +28,8 @@
 
 package ccare.web;
 
-import ccare.domain.Observable;
-import ccare.domain.SecurityDescriptor;
+import ccare.domain.SpaceSummary;
+import com.sun.jersey.api.client.WebResource;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -41,14 +41,21 @@ import static org.junit.Assert.assertEquals;
  * Time: 12:59:36
  */
 @Ignore
-public class SymbolControllerTest {
-//        extends JerseyTest {
+public class SymbolControllerITCase extends IntegrationSupport {
+
+    @Test
+    public void testGetStatus() throws Exception {
+        WebResource resource = resource("spaces");
+        SpaceSummary spaces = resource.get(SpaceSummary.class);
+        spaces.setCount(1);
+        assertEquals(new Integer(1), spaces.getCount());
+    }
 //
 //
 //    WebResource webResource = resource();
 //
 //
-//    public SymbolControllerTest() throws Exception {
+//    public SymbolControllerITCase() throws Exception {
 //        super("ccare.web");
 //    }
 //
