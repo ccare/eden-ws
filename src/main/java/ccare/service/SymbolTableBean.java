@@ -43,8 +43,8 @@ import java.util.UUID;
 import static javax.ejb.LockType.READ;
 import static javax.ejb.LockType.WRITE;
 
-@Singleton
-@Lock(READ)
+//@Singleton
+//@Lock(READ)
 public class SymbolTableBean implements SymbolTableService {
 
     private final UUID id = UUID.randomUUID();
@@ -57,7 +57,7 @@ public class SymbolTableBean implements SymbolTableService {
     }
 
     @Override
-    @Lock(WRITE)
+//    @Lock(WRITE)
     public void define(SymbolReference reference, Observable d) {
         table.define(reference, d.getDefinition());
     }

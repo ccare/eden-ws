@@ -30,6 +30,7 @@ package ccare.service;
 
 import ccare.domain.Observable;
 import ccare.symboltable.SymbolReference;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.naming.Context;
@@ -46,21 +47,22 @@ import static org.junit.Assert.assertEquals;
  * Date: 13-Oct-2010
  * Time: 22:33:38
  */
+
 public class SymbolTableBeanTest {
+
+    private SymbolTableService service = new SymbolTableBean();
 
     @Test
     public void testBeanIsSingleton() throws NamingException {
-        InitialContext context = createContext();
-        SymbolTableService serviceBean = (SymbolTableService) context.lookup("SymbolTableBeanLocal");
+        SymbolTableService serviceBean = service();
         assertNotNull(serviceBean);
-        SymbolTableService serviceBean2 = (SymbolTableService) context.lookup("SymbolTableBeanLocal");
+        SymbolTableService serviceBean2 = service();
         assertEquals(serviceBean.getId(), serviceBean2.getId());
     }
 
     @Test
     public void testSetAndGetSymbol() throws NamingException {
-        InitialContext context = createContext();
-        SymbolTableService serviceBean = (SymbolTableService) context.lookup("SymbolTableBeanLocal");
+        SymbolTableService serviceBean = service();
         Observable def = new Observable();
         def.setDefinition("#a+#b");
         SymbolReference r = new SymbolReference();
@@ -71,8 +73,7 @@ public class SymbolTableBeanTest {
 
     @Test
     public void testListSymbol() throws NamingException {
-        InitialContext context = createContext();
-        SymbolTableService serviceBean = (SymbolTableService) context.lookup("SymbolTableBeanLocal");
+        SymbolTableService serviceBean = service();
         Observable def = new Observable();
         def.setDefinition("a+b");
         SymbolReference r = new SymbolReference();
@@ -80,16 +81,22 @@ public class SymbolTableBeanTest {
         assertTrue(serviceBean.listSymbols().contains(r));
     }
 
-    private InitialContext createContext() {
-        Properties props = new Properties();
-        props.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.openejb.client.LocalInitialContextFactory");
-        InitialContext context = null;
-        try {
-            context = new InitialContext(props);
-        } catch (NamingException e) {
-            throw new RuntimeException(e);
-        }
-        return context;
+//    private InitialContext createContext() {
+//        Properties props = new Properties();
+//        props.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.openejb.client.LocalInitialContextFactory");
+//        InitialContext context = null;
+//        try {
+//            context = new InitialContext(props);
+//        } catch (NamingException e) {
+//            throw new RuntimeException(e);
+//        }
+//        return context;
+//    }
+
+    private SymbolTableService service() throws NamingException {
+        return service;
+        //InitialContext context = createContext();
+        //return (SymbolTableService) context.lookup("SymbolTableBeanLocal");
     }
 
 }
