@@ -65,10 +65,11 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         final WebResource resource = resource("spaces");
         List<TableReference> spaces = resource.get(new GenericType<List<TableReference>>() {});
         int size = spaces.size();
-        resource.put(new TableReference("myname"));
+        final String newName = "myname";
+        resource.post(new TableReference(newName));
         spaces = resource.get(new GenericType<List<TableReference>>() {});
         assertEquals(size + 1, spaces.size());
-        containsName(spaces, "myname");
+        containsName(spaces, newName);
     }
 
     @Test
