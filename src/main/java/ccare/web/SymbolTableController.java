@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -70,7 +71,7 @@ public class SymbolTableController {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public TableReference submitSpace(final TableReference reference) {
         logger.debug(format("Recieved POST space request for %s", reference.getName()));         
-        return service.createSpace(reference.getName());
+        return service.createSpace(reference);
     }
 
     @DELETE

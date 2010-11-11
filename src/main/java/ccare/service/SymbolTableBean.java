@@ -30,11 +30,13 @@ package ccare.service;
 
 import ccare.domain.Observable;
 import ccare.domain.SpaceSummary;
+import ccare.domain.SymbolTableRef;
 import ccare.domain.TableReference;
 import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.impl.SymbolTableImpl;
+import com.sun.jersey.api.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +53,9 @@ public class SymbolTableBean implements SymbolTableService {
 
     private final UUID id = UUID.randomUUID();
     private SymbolTable table = new SymbolTableImpl();
-    private Set<SymbolTable> tables = new HashSet<SymbolTable>();
+    private Map<TableReference,SymbolTable> tables = new HashMap<TableReference,SymbolTable>();
+    private List<SymbolTable> recycleBin = new ArrayList<SymbolTable>();
+    private List<TableReference> keys;
 
     @Override
     public UUID getId() {
@@ -79,35 +83,55 @@ public class SymbolTableBean implements SymbolTableService {
     }
 
     @Override
-    public TableReference createSpace(final String name) {
-        SymbolTable table = new SymbolTableImpl();
-        table.setName(name);
-        tables.add(table);
-        return new TableReference(table.getId(), name);
+    public TableReference createSpace(final TableReference ref) {
+        return createSpace(ref.getName());
     }
 
     @Override
-    public void deleteSpace(final String name) {
-        for (SymbolTable t : tables) {
-            final UUID id = t.getId();
-            final String tableName = t.getName();
-            if (tableName.equals(name)) {
-                tables.remove(t);
-            }
+    public TableReference createSpace(final String name) {
+        return doCreate(name);
+    }
+
+    @Override
+    public void deleteSpace(final String name) { 
+        deleteSpace(new TableReference(name));
+    }
+
+    @Override
+    public void deleteSpace(final TableReference reference) {
+        doDelete(reference);
+    }
+
+    private TableReference doCreate(String name) {
+        final SymbolTable table = new SymbolTableImpl();
+        if (name != null) {
+            table.setName(name);
+        }
+        final TableReference newRef = new TableReference(table.getId(), name);
+        tables.put(newRef, table);
+        keys.add(newRef);
+        return newRef;
+    }
+
+    private void doDelete(TableReference reference) {
+        logger.debug(format("Deleting %s", reference));
+        final SymbolTable table = tables.remove(reference);
+        if (table == null) {
+            throw new NotFoundException();
+        } else {
+            recycleBin.add(table);
+            keys = null;
         }
     }
 
     @Override
     public List<TableReference> allSpaces() {
-        List<TableReference> l = new ArrayList<TableReference>();
-        for (SymbolTable t : tables) {
-            final UUID id = t.getId();
-            final String name = t.getName();
-            logger.debug(format("Creating reference for %s, %s", id, name));
-            TableReference s = new TableReference(id, name);
-            l.add(s);
+        if (keys == null) {
+            final Set<TableReference> keyset = tables.keySet();
+            keys = new ArrayList<TableReference>(keyset.size());
+            keys.addAll(keyset);
         }
-        return l;
+        return keys;
     }
 
 

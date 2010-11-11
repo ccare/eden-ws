@@ -28,16 +28,15 @@
 
 package ccare.web;
 
-import ccare.domain.SpaceSummary;
 import ccare.domain.TableReference;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.Matchers.hasItem;
@@ -52,39 +51,46 @@ import static org.junit.Assert.assertThat;
  * To change this template use File | Settings | File Templates.
  */
 public class SymbolTableControllerITCase extends IntegrationSupport {
+    private static final GenericType<List<TableReference>> TABLE_REF_COLLECTION_TYPE = new GenericType<List<TableReference>>() {};
 
     @Test
     public void testGetSpaces() throws Exception {
         WebResource resource = resource("spaces");
-        List<TableReference> spaces = resource.get(new GenericType<List<TableReference>>() {});
+        Collection<TableReference> spaces = resource.get(TABLE_REF_COLLECTION_TYPE);
         assertNotNull(spaces);
     }
 
     @Test
     public void testCreateViaPost() throws Exception {
         final WebResource resource = resource("spaces");
-        List<TableReference> spaces = resource.get(new GenericType<List<TableReference>>() {});
-        int size = spaces.size();
+        int size = spaceCount(resource);
         final String newName = "myname";
-        resource.post(new TableReference(newName));
-        spaces = resource.get(new GenericType<List<TableReference>>() {});
+        TableReference newRef = resource.post(TableReference.class, new TableReference(newName));
+        assertEquals(newName, newRef.getName());
+        assertNotNull(newRef.getID());        
+        Collection<TableReference> spaces = resource.get(TABLE_REF_COLLECTION_TYPE);
         assertEquals(size + 1, spaces.size());
         containsName(spaces, newName);
+    }
+
+    private int spaceCount(WebResource resource) {
+        Collection<TableReference> spaces = resource.get(TABLE_REF_COLLECTION_TYPE);
+        int size = spaces.size();
+        return size;
     }
 
     @Test
     public void testCreateViaPut() throws Exception {
         final WebResource resource = resource("spaces");
-        List<TableReference> spaces = resource.get(new GenericType<List<TableReference>>() {});
-        int size = spaces.size();
+        int size = spaceCount(resource);
         final String newName = "abc";
         resource.path(newName).put();
-        spaces = resource.get(new GenericType<List<TableReference>>() {});
+        Collection<TableReference> spaces = resource.get(TABLE_REF_COLLECTION_TYPE);
         assertEquals(size + 1, spaces.size());
         containsName(spaces, newName);
     }
 
-    private void containsName(List<TableReference> spaces, String newName) {
+    private void containsName(Collection<TableReference> spaces, String newName) {
         final List<String> allNames = new ArrayList<String>(spaces.size());
         for (TableReference ref : spaces) {
             allNames.add(ref.getName());
@@ -95,10 +101,10 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
     @Test
     public void testDeleteSpace() throws Exception {
         final WebResource resource = resource("spaces");
-        List<TableReference> spaces = resource.get(new GenericType<List<TableReference>>() {});
+        Collection<TableReference> spaces = resource.get(TABLE_REF_COLLECTION_TYPE);
         int size = spaces.size();
         resource.path("abc").delete();
-        spaces = resource.get(new GenericType<List<TableReference>>() {});
+        spaces = resource.get(TABLE_REF_COLLECTION_TYPE);
         assertEquals(size - 1, spaces.size());
         
     }
