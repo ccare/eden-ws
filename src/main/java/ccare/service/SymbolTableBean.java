@@ -34,16 +34,12 @@ import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.impl.SymbolTableImpl;
 
-import javax.ejb.Lock;
-import javax.ejb.Singleton;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static javax.ejb.LockType.READ;
-import static javax.ejb.LockType.WRITE;
-
 //@Singleton
+
 //@Lock(READ)
 public class SymbolTableBean implements SymbolTableService {
 
@@ -58,7 +54,7 @@ public class SymbolTableBean implements SymbolTableService {
 
     @Override
 //    @Lock(WRITE)
-    public void define(SymbolReference reference, Observable d) {
+public void define(SymbolReference reference, Observable d) {
         table.define(reference, d.getDefinition());
     }
 

@@ -28,20 +28,15 @@
 
 package ccare.web;
 
-import ccare.domain.Observable;
-import ccare.domain.SecurityDescriptor;
 import ccare.domain.SpaceSummary;
-import ccare.domain.SymbolTableRef;
 import ccare.service.SymbolTableBean;
-import ccare.service.SymbolTableService;
 import com.sun.jersey.api.core.InjectParam;
 
-import javax.ejb.EJB;
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Path("spaces")
 public class SymbolTableController {
@@ -52,7 +47,7 @@ public class SymbolTableController {
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public SpaceSummary getSpaces() {
-        final SpaceSummary s = new SpaceSummary();           
+        final SpaceSummary s = new SpaceSummary();
         return s;
     }
 
