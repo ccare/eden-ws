@@ -33,6 +33,9 @@ import com.sun.jersey.api.client.WebResource;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.UUID;
+
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -51,7 +54,7 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         spaces.setCount(1);
         assertEquals(new Integer(1), spaces.getCount());
     }
-
+    
     @Test
     public void testCreate() throws Exception {
         resource("spaces").post();

@@ -28,17 +28,19 @@
 
 package ccare.web;
 
+import ccare.service.SymbolTableBean;
 import com.sun.jersey.api.core.InjectParam;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import java.util.UUID;
 
 @Path("status")
 public class StatusController {
 
-    @InjectParam("testBean")
-    Object testBean;
+    @InjectParam("service")
+    SymbolTableBean service;
 
 
     @GET
@@ -47,10 +49,11 @@ public class StatusController {
         return "Running and fine";
     }
 
+
     @GET
-    @Path("bean")
-    public Object getTestObj() {
-        return testBean;
+    @Path("id")
+    public String getId() {
+        return service.getId().toString();
     }
 
 

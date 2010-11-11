@@ -31,6 +31,9 @@ package ccare.web;
 import com.sun.jersey.api.client.WebResource;
 import org.junit.Test;
 
+import java.util.UUID;
+
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
@@ -46,6 +49,15 @@ public class StatusControllerITCase extends IntegrationSupport {
         WebResource resource = resource("status");
         String msg = resource.get(String.class);
         assertEquals("Running and fine", msg);
+    }      
+
+
+    @Test
+    public void testGetId() throws Exception {
+        WebResource resource = resource("status/id");
+        String id = resource.get(String.class);
+        assertNotNull(id);
     }
+
 
 }

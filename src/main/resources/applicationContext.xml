@@ -33,11 +33,6 @@
 
     <context:annotation-config/>
 
-
-    <bean id="testBean" scope="prototype" class="java.lang.String">
-        <constructor-arg value="Hi there" type="java.lang.String"/>
-    </bean>
-
     <bean id="service" scope="singleton" class="ccare.service.SymbolTableBean">
     </bean>
 
