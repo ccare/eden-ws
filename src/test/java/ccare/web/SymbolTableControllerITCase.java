@@ -29,6 +29,7 @@
 package ccare.web;
 
 import ccare.domain.SpaceSummary;
+import com.sun.jersey.api.client.WebResource;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -41,25 +42,18 @@ import static org.junit.Assert.assertEquals;
  * Time: 23:14:11
  * To change this template use File | Settings | File Templates.
  */
-@Ignore
-public class SymbolTableControllerTest {
-//    extends JerseyTest {
-//
-//    WebResource webResource = resource();
-//
-//    public SymbolTableControllerTest() throws Exception {
-//        super("ccare.web");
-//    }
-//
-//    @Test
-//    public void testGetSummary() throws Exception {
-//        SpaceSummary spaces = webResource.path("spaces").get(SpaceSummary.class);
-//        spaces.setCount(1);
-//        assertEquals(new Integer(1), spaces.getCount());
-//    }
-//
-//    @Test
-//    public void testCreate() throws Exception {
-//        webResource.path("spaces").post();
-//    }
+public class SymbolTableControllerITCase extends IntegrationSupport {
+
+    @Test
+    public void testGetStatus() throws Exception {
+        WebResource resource = resource("spaces");
+        SpaceSummary spaces = resource.get(SpaceSummary.class);
+        spaces.setCount(1);
+        assertEquals(new Integer(1), spaces.getCount());
+    }
+
+    @Test
+    public void testCreate() throws Exception {
+        resource("spaces").post();
+    }
 }
