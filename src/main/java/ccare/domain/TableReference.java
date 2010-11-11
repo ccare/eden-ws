@@ -28,6 +28,7 @@
 
 package ccare.domain;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.UUID;
 
@@ -41,7 +42,9 @@ import java.util.UUID;
 @XmlRootElement
 public class TableReference {
 
+    @XmlElement
     private String name;
+    @XmlElement
     private UUID id;
 
     public TableReference() {

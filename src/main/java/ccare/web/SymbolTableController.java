@@ -32,34 +32,37 @@ import ccare.domain.SpaceSummary;
 import ccare.domain.TableReference;
 import ccare.service.SymbolTableBean;
 import com.sun.jersey.api.core.InjectParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.UUID;
 
+import static java.lang.String.format;
+
 @Path("spaces")
 public class SymbolTableController {
 
+    private static final Logger logger = LoggerFactory.getLogger(SymbolTableController.class);
+    
     @InjectParam("service")
     SymbolTableBean service;
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<TableReference> getSpaces() {
+        logger.debug(format("Get all spaces"));   
         final List<TableReference> all = service.allSpaces();
         return all;
     }
 
-    @POST
-    public void createSpace() {
-        service.createSpace();
-    }
-
     @PUT
-    @Path("{spaceName: [^:]+[:value]*}")
-    public void createSpace(@PathParam("spaceName") String spaceName) {
-        service.createSpace("foo");
+    @Path("{spaceName: [^/]+[/]{0,1}}")
+    public void createSpace(final @PathParam("spaceName") String spaceName) {
+        logger.debug(format("Creating space request for %s", spaceName));         
+        service.createSpace(spaceName);
     }
 
 

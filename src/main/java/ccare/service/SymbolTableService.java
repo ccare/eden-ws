@@ -53,7 +53,5 @@ public interface SymbolTableService {
 
     public TableReference createSpace(String name);
 
-    public TableReference createSpace();
-
     public List<TableReference> allSpaces();
 }

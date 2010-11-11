@@ -35,13 +35,19 @@ import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.impl.SymbolTableImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
+
+import static java.lang.String.format;
 
 //@Singleton
 
 //@Lock(READ)
 public class SymbolTableBean implements SymbolTableService {
+
+    private static final Logger logger = LoggerFactory.getLogger(SymbolTableBean.class);
 
     private final UUID id = UUID.randomUUID();
     private SymbolTable table = new SymbolTableImpl();
@@ -81,17 +87,13 @@ public class SymbolTableBean implements SymbolTableService {
     }
 
     @Override
-    public TableReference createSpace() {
-        SymbolTable table = new SymbolTableImpl();
-        tables.add(table);
-        return new TableReference(table.getId());
-    }
-
-    @Override
     public List<TableReference> allSpaces() {
         List<TableReference> l = new ArrayList<TableReference>();
         for (SymbolTable t : tables) {
-            TableReference s = new TableReference(t.getId(), t.getName());
+            final UUID id = t.getId();
+            final String name = t.getName();
+            logger.debug(format("Creating reference for %s, %s", id, name));
+            TableReference s = new TableReference(id, name);
             l.add(s);
         }
         return l;

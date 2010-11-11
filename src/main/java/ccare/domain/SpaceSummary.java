@@ -42,6 +42,7 @@ import java.util.Set;
 @XmlRootElement
 public class SpaceSummary {
 
+    
     private Integer count;
     private Set<Space> spaces;
 
