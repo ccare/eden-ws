@@ -119,6 +119,7 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         isOk(resource, objectName);
         String o = resource.path(objectName).get(String.class);
         assertEquals("12", o);
+        //assertEquals("12", resource.path("abc/a:value").get(String.class));
     }
 
     private void isOk(final WebResource resource, String pth) {

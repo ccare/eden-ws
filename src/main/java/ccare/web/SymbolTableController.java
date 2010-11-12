@@ -98,7 +98,20 @@ public class SymbolTableController {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Object observeSymbol(final @PathParam("spaceName") String spaceName,
                                         final @PathParam("symbolName") String symbolName) {
-        logger.debug(format("Received GET space request for %s.%s", spaceName, symbolName));
+        logger.debug(format("Received GET (observe symbol) for %s.%s", spaceName, symbolName));
+        return doGetValue(spaceName, symbolName);
+    }
+
+//    @GET
+//    @Path("{spaceName: [^/]+}/{symbolName: [^:/]+}:value")
+//    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+//    public Object observeSymbolValue(final @PathParam("spaceName") String spaceName,
+//                                        final @PathParam("symbolName") String symbolName) {
+//        logger.debug(format("Received GET (observe symbol value) for %s.%s", spaceName, symbolName));
+//        return doGetValue(spaceName, symbolName);
+//    }
+
+    private Object doGetValue(String spaceName, String symbolName) {
         final SymbolTable table = service.getSpace(spaceName);
         if (table == null) {
             throw new NotFoundException();
