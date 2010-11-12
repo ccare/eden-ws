@@ -147,6 +147,8 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         assertEquals("13", resource.path("foo").queryParam("evaluate","14 - 1").get(String.class));
         resource.path("foo/a").put("2");
         assertEquals("1.0", resource.path("foo").queryParam("evaluate","#a - 1").get(String.class));
+        resource.path("foo/a").put("3");
+        assertEquals("2.0", resource.path("foo").queryParam("evaluate","#a - 1").get(String.class));
     }
 
     private void isOk(final WebResource resource, String pth) {
