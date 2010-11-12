@@ -106,20 +106,39 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
     }
 
     @Test
-    public void testCreateTableAndSymbol() {
+    public void testCreateTableAndSymbolsWithDependencies() {
+        // Paths
         final String spaceName = "abc";
-        final String objectName = "abc/a";
+        final String refA = "abc/a";
+        final String refB = "abc/b";
+        final String refC = "abc/c";
+        // Check service is ok
         assertEquals(ClientResponse.Status.OK, resource.head().getClientResponseStatus());
+        // Assert that we start with no space, and that a symbol with that space returns 404
         isNotFound(resource, spaceName);
-        isNotFound(resource, objectName);
+        isNotFound(resource, refA);
+        // Create the space and assert it's there, check that the symbol inside still returns 404
         resource.path(spaceName).put();
         isOk(resource, spaceName);
-        isNotFound(resource, objectName);
-        resource.path(objectName).put("12");
-        isOk(resource, objectName);
-        String o = resource.path(objectName).get(String.class);
+        isNotFound(resource, refA);
+        // Define the symbol
+        resource.path(refA).put("12");
+        isOk(resource, refA);
+        // Get the value and assert ok
+        String o = resource.path(refA).get(String.class);
         assertEquals("12", o);
-        //assertEquals("12", resource.path("abc/a:value").get(String.class));
+
+        // Create dependent definitions and assert values
+        resource.path(refB).put("#a");
+        assertEquals("12", resource.path(refB).get(String.class));
+        resource.path(refB).put("#a + 8");
+        assertEquals("20.0", resource.path(refB).get(String.class));
+        resource.path(refC).put("#b + 'aaa'");
+        assertEquals("20aaa", resource.path(refC).get(String.class));
+
+        // Change a source observable, and check dependent is updated
+        resource.path(refA).put("2");
+        assertEquals("10aaa", resource.path(refC).get(String.class));
     }
 
     private void isOk(final WebResource resource, String pth) {
