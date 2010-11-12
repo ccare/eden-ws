@@ -29,6 +29,7 @@
 package ccare.web;
 
 import ccare.domain.TableReference;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import org.junit.Test;
@@ -36,7 +37,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.Matchers.hasItem;
@@ -66,7 +66,7 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         final String newName = "myname";
         TableReference newRef = resource.post(TableReference.class, new TableReference(newName));
         assertEquals(newName, newRef.getName());
-        assertNotNull(newRef.getID());        
+        assertNotNull(newRef.getId());
         Collection<TableReference> spaces = resource.get(TABLE_REF_COLLECTION_TYPE);
         assertEquals(size + 1, spaces.size());
         containsName(spaces, newName);
@@ -105,8 +105,27 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         assertEquals(size - 1, spaces.size());        
     }
 
-//    @Test
-//    public void testCreateTableAndSymbol() {
-//
-//    }
+    @Test
+    public void testCreateTableAndSymbol() {
+        final String spaceName = "abc";
+        final String objectName = "abc/a";
+        assertEquals(ClientResponse.Status.OK, resource.head().getClientResponseStatus());
+        isNotFound(resource, spaceName);
+        isNotFound(resource, objectName);
+        resource.path(spaceName).put();
+        isOk(resource, spaceName);
+        isNotFound(resource, objectName);
+        resource.path(objectName).put("12");
+        isOk(resource, objectName);
+        String o = resource.path(objectName).get(String.class);
+        assertEquals("12", o);
+    }
+
+    private void isOk(final WebResource resource, String pth) {
+        assertEquals(ClientResponse.Status.OK, resource.path(pth).head().getClientResponseStatus());
+    }
+
+    private void isNotFound(final WebResource resource, String pth) {
+        assertEquals(ClientResponse.Status.NOT_FOUND, resource.path(pth).head().getClientResponseStatus());
+    }
 }

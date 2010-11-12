@@ -67,9 +67,9 @@ public class TableReference {
         return name;
     }
 
-    public UUID getID() {
+    public UUID getId() {
         return id;
-    }
+    }  
 
     @Override
     public String toString() {

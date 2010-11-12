@@ -31,6 +31,10 @@ package ccare.web;
 import ccare.domain.SpaceSummary;
 import ccare.domain.TableReference;
 import ccare.service.SymbolTableBean;
+import ccare.symboltable.Symbol;
+import ccare.symboltable.SymbolReference;
+import ccare.symboltable.SymbolTable;
+import com.sun.jersey.api.NotFoundException;
 import com.sun.jersey.api.core.InjectParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,32 +57,72 @@ public class SymbolTableController {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<TableReference> getSpaces() {
+    public List<TableReference> allSpaces() {
         logger.debug(format("Get all spaces"));   
         final List<TableReference> all = service.allSpaces();
         return all;
     }
 
+    @POST
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public TableReference submitSpace(final TableReference reference) {
+        logger.debug(format("Recieved POST space request for %s", reference.getName()));
+        return service.createSpace(reference);
+    }
+
+    @GET
+    @Path("{spaceName: [^/]+}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public TableReference getSpace(final @PathParam("spaceName") String spaceName) {
+        logger.debug(format("Received GET space request for %s", spaceName));
+        return service.getSpaceSummary(spaceName);
+    }
+
     @PUT
-    @Path("{spaceName: [^/]+[/]{0,1}}")
+    @Path("{spaceName: [^/]+}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public TableReference createSpace(final @PathParam("spaceName") String spaceName) {
         logger.debug(format("Received PUT space request for %s", spaceName));
         return service.createSpace(spaceName);
     }
 
-    @POST
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public TableReference submitSpace(final TableReference reference) {
-        logger.debug(format("Recieved POST space request for %s", reference.getName()));         
-        return service.createSpace(reference);
-    }
-
     @DELETE
-    @Path("{spaceName: [^/]+[/]{0,1}}")
+    @Path("{spaceName: [^/]+}")
     public void deleteSpace(final @PathParam("spaceName") String spaceName) {
         logger.debug(format("Deleting space request for %s", spaceName));
         service.deleteSpace(spaceName);
+    }
+
+    @GET
+    @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Object observeSymbol(final @PathParam("spaceName") String spaceName,
+                                        final @PathParam("symbolName") String symbolName) {
+        logger.debug(format("Received GET space request for %s.%s", spaceName, symbolName));
+        final SymbolTable table = service.getSpace(spaceName);
+        if (table == null) {
+            throw new NotFoundException();
+        }
+        final SymbolReference ref = new SymbolReference(symbolName);
+        if (table.listSymbols().contains(ref)) {
+            return table.getValue(ref).toString();
+        } else {
+            throw new NotFoundException();
+        }
+    }
+
+    @PUT
+    @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public void defineSymbol(final @PathParam("spaceName") String spaceName,
+                                        final @PathParam("symbolName") String symbolName,
+                                        final String definition) {
+        logger.debug(format("Received PUT space request for %s.%s", spaceName, symbolName));
+        final SymbolTable table = service.getSpace(spaceName);
+        if (table == null) {
+            throw new NotFoundException();
+        }
+        table.define(new SymbolReference(symbolName), definition.toString());
     }
 
 

@@ -29,8 +29,6 @@
 package ccare.service;
 
 import ccare.domain.Observable;
-import ccare.domain.SpaceSummary;
-import ccare.domain.SymbolTableRef;
 import ccare.domain.TableReference;
 import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolReference;
@@ -134,5 +132,24 @@ public class SymbolTableBean implements SymbolTableService {
         return keys;
     }
 
+    public TableReference getSpaceSummary(String spaceName) {
+        final TableReference ref = new TableReference(spaceName);
+        return getSpaceSummary(ref);
+    }
 
+    public TableReference getSpaceSummary(TableReference ref) {
+        final SymbolTable space = getSpace(ref);
+        if (space == null) {
+            throw new NotFoundException();
+        }
+        return new TableReference(space.getId(), ref.getName());
+    }
+
+    public SymbolTable getSpace(String spaceName) {
+        return getSpace(new TableReference(spaceName));
+    }
+
+    public SymbolTable getSpace(TableReference ref) {
+        return tables.get(ref);
+    }
 }
