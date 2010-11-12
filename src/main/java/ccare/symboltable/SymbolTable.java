@@ -58,4 +58,6 @@ public interface SymbolTable {
     String getName();
 
     void setName(String name);
+
+    Object evaluate(String s);
 }

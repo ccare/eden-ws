@@ -57,10 +57,14 @@ public class SymbolTableController {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<TableReference> allSpaces() {
-        logger.debug(format("Get all spaces"));   
-        final List<TableReference> all = service.allSpaces();
-        return all;
+    public List<TableReference> allSpaces(@QueryParam("evaluate") List<String> evals) {
+        if (evals == null || evals.isEmpty()) {
+            logger.debug(format("Get all spaces"));   
+            final List<TableReference> all = service.allSpaces();
+            return all;
+        } else {
+            throw new RuntimeException("ouch");
+        }
     }
 
     @POST
@@ -73,9 +77,13 @@ public class SymbolTableController {
     @GET
     @Path("{spaceName: [^/]+}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public TableReference getSpace(final @PathParam("spaceName") String spaceName) {
-        logger.debug(format("Received GET space request for %s", spaceName));
-        return service.getSpaceSummary(spaceName);
+    public Object getSpace(final @PathParam("spaceName") String spaceName, @QueryParam("evaluate") List<String> evals) {
+        if (evals == null || evals.isEmpty()) {
+            logger.debug(format("Received GET space request for %s", spaceName));
+            return service.getSpaceSummary(spaceName);
+        } else {
+            return service.getSpace(spaceName).evaluate(evals.get(0)).toString();
+        }
     }
 
     @PUT

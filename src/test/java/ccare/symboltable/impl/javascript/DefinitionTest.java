@@ -286,6 +286,11 @@ public class DefinitionTest {
             public void setName(String name) {
                 //To change body of implemented methods use File | Settings | File Templates.
             }
+
+            @Override
+            public Object evaluate(String s) {
+                return null;  //To change body of implemented methods use File | Settings | File Templates.
+            }
         };
     }
 

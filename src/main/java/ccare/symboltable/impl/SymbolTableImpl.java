@@ -125,4 +125,11 @@ public class SymbolTableImpl implements SymbolTable {
     public void setName(final String name) {
         this.name = name;
     }
+
+    @Override
+    public Object evaluate(String s) {
+        final SymbolReference r = new SymbolReference("____DUMMY_REF");
+        define(r, s);
+        return getValue(r);
+    }
 }

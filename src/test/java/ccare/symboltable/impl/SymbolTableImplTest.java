@@ -595,5 +595,20 @@ public class SymbolTableImplTest {
         assertEquals(undefined, table.getValue(b));
     }
 
+    @Test
+    public void testEvaluate() {
+        SymbolTableImpl table = new SymbolTableImpl();
+        assertEquals(12, table.evaluate("12"));
+        assertEquals(13, table.evaluate("12 + 1"));
+        assertEquals("121", table.evaluate("'12' + 1"));
+    }
+
+    @Test
+    public void testEvaluateBasedOnDependency() {
+        SymbolTableImpl table = new SymbolTableImpl();
+        table.define(a, "'hi'");
+        assertEquals("12hi", table.evaluate("12 + #{a}"));
+    }
+
 
 }
