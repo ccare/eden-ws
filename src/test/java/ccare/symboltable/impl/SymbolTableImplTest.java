@@ -609,6 +609,16 @@ public class SymbolTableImplTest {
         table.define(a, "'hi'");
         assertEquals("12hi", table.evaluate("12 + #{a}"));
     }
+    
+    @Test
+    public void testDefineFunctionViaDefine() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(a, "function() { $eden_define('b','3'); }");
+        table.define(c, "#a()");
+        table.getValue(c);
+        assertEquals(3, table.getValue(b));
+    }
+    
 
 
 }

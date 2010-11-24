@@ -78,9 +78,13 @@ public class SymbolTableImpl implements SymbolTable {
         if (ref == null || defn == null) {
             throw new CannotDefineException();
         }
-        final Definition d = new Definition(defn);
-        Symbol s = get(ref);
-        s.redefine(d, this);
+        if (defn.trim().startsWith("function")) {
+        	defineFunction(ref, defn);
+        } else {
+	        final Definition d = new Definition(defn);
+	        Symbol s = get(ref);
+	        s.redefine(d, this);
+        }
     }
 
     @Override
