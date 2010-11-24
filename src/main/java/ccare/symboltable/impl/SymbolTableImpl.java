@@ -123,8 +123,22 @@ public class SymbolTableImpl implements SymbolTable {
     @Override
     public Object execute(SymbolReference a, Object... params) {
         final SymbolReference r = new SymbolReference("____DUMMY_REF");
-        define(r, "#{" + a.getName() + "}(" + params[0] + ")");
+        define(r, "#{" + a.getName() + "}(" + encodeParams(params) + ")");
         return getValue(r);
+    }
+    
+    private String encodeParams(Object... params) {
+    	if (params.length == 0) {
+    		return "";
+    	} else {
+        	StringBuilder sb = new StringBuilder();
+        	sb.append(params[0]);
+        	for (int i=1; i<params.length; i++) {
+        		sb.append(",");
+        		sb.append(params[i]);
+        	}
+        	return sb.toString();
+    	}
     }
 
     @Override

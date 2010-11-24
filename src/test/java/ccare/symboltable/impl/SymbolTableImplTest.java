@@ -634,6 +634,14 @@ public class SymbolTableImplTest {
         assertEquals(4, table.execute(a, 4));
     }
     
+    @Test
+    public void testExecuteFunctionPassesMultipleParams() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(a, "function(p1, p2) { return p1 + p2 }");
+        assertEquals(4.0, table.execute(a, 2, 2));
+        assertEquals(5.0, table.execute(a, 4, 1));
+    }
+    
     
     
 
