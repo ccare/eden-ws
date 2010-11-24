@@ -119,6 +119,13 @@ public class SymbolTableImpl implements SymbolTable {
         define(r, "#{" + a.getName() + "}()");
         return getValue(r);
     }
+    
+    @Override
+    public Object execute(SymbolReference a, Object... params) {
+        final SymbolReference r = new SymbolReference("____DUMMY_REF");
+        define(r, "#{" + a.getName() + "}(" + params[0] + ")");
+        return getValue(r);
+    }
 
     @Override
     public String getName() {

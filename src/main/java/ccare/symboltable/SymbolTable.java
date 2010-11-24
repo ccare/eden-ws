@@ -55,6 +55,8 @@ public interface SymbolTable {
 
     Object execute(SymbolReference a);
 
+    Object execute(SymbolReference a, Object... params);
+
     String getName();
 
     void setName(String name);

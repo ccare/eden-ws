@@ -277,6 +277,13 @@ public class DefinitionTest {
 		return null;
             }
 
+
+            @Override
+            public Object execute(SymbolReference a, Object... params) {
+                return null;
+            }
+
+
             @Override
             public String getName() {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.

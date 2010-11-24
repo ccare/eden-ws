@@ -619,6 +619,23 @@ public class SymbolTableImplTest {
         assertEquals(3, table.getValue(b));
     }
     
+    @Test
+    public void testExecuteFunction() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(a, "function() { return 2 }");
+        assertEquals(2, table.execute(a));
+    }
+    
+    @Test
+    public void testExecuteFunctionPassesParams() {
+        SymbolTable table = new SymbolTableImpl();
+        table.define(a, "function(p1) { return p1 }");
+        assertEquals(2, table.execute(a, 2));
+        assertEquals(4, table.execute(a, 4));
+    }
+    
+    
+    
 
 
 }
