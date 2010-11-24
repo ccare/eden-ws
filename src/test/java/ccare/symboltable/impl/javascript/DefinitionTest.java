@@ -273,8 +273,8 @@ public class DefinitionTest {
             }
 
             @Override
-            public void execute(SymbolReference a) {
-
+            public Object execute(SymbolReference a) {
+		return null;
             }
 
             @Override

@@ -53,7 +53,7 @@ public interface SymbolTable {
 
     void defineTriggeredProc(SymbolReference a, String s, String... triggers);
 
-    void execute(SymbolReference a);
+    Object execute(SymbolReference a);
 
     String getName();
 

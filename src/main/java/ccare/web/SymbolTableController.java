@@ -109,6 +109,15 @@ public class SymbolTableController {
         logger.debug(format("Received GET (observe symbol) for %s.%s", spaceName, symbolName));
         return doGetValue(spaceName, symbolName);
     }
+    
+    @POST
+    @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Object executeSymbol(final @PathParam("spaceName") String spaceName,
+                                        final @PathParam("symbolName") String symbolName) {
+        logger.debug(format("Received POST (observe symbol) for %s.%s", spaceName, symbolName));
+        return doPostValue(spaceName, symbolName);
+    }
 
 //    @GET
 //    @Path("{spaceName: [^/]+}/{symbolName: [^:/]+}:value")
@@ -127,6 +136,19 @@ public class SymbolTableController {
         final SymbolReference ref = new SymbolReference(symbolName);
         if (table.listSymbols().contains(ref)) {
             return table.getValue(ref).toString();
+        } else {
+            throw new NotFoundException();
+        }
+    }
+    
+    private Object doPostValue(String spaceName, String symbolName) {
+        final SymbolTable table = service.getSpace(spaceName);
+        if (table == null) {
+            throw new NotFoundException();
+        }
+        final SymbolReference ref = new SymbolReference(symbolName);
+        if (table.listSymbols().contains(ref)) {
+            return table.execute(ref);
         } else {
             throw new NotFoundException();
         }
