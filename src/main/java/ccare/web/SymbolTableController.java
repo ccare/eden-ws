@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.*;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -112,12 +112,37 @@ public class SymbolTableController {
     
     @POST
     @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
+    @Consumes("application/x-www-form-urlencoded")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Object executeSymbolForPostData(final @PathParam("spaceName") String spaceName,
+                                        final @PathParam("symbolName") String symbolName,
+                                        final @Context UriInfo ui) {
+        logger.debug(format("Received POST with post data (execute) for %s.%s", spaceName, symbolName));
+        MultivaluedMap<String, String> queryParams = ui.getQueryParameters();
+        return doPostValue(spaceName, symbolName, extractExecParams(queryParams));
+    }
+    
+    @POST
+    @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Object executeSymbol(final @PathParam("spaceName") String spaceName,
                                         final @PathParam("symbolName") String symbolName) {
-        logger.debug(format("Received POST (observe symbol) for %s.%s", spaceName, symbolName));
+        logger.debug(format("Received POST (execute) for %s.%s", spaceName, symbolName));
         return doPostValue(spaceName, symbolName);
     }
+    
+    private Object[] extractExecParams(MultivaluedMap<String, String> map) {
+    	Object[] params = new Object[map.size()];
+    	int i = 0;
+    	for (String p : map.keySet() ) {
+    		params[i] = map.getFirst(p);
+    		i++;
+    	}
+    	return params;
+    }
+    
+    
+
 
 //    @GET
 //    @Path("{spaceName: [^/]+}/{symbolName: [^:/]+}:value")
@@ -141,7 +166,7 @@ public class SymbolTableController {
         }
     }
     
-    private Object doPostValue(String spaceName, String symbolName) {
+    private Object doPostValue(String spaceName, String symbolName, Object... params) {
         final SymbolTable table = service.getSpace(spaceName);
         if (table == null) {
             throw new NotFoundException();
