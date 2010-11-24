@@ -1,0 +1,7 @@
+* Add specific handlers for json to go directly into javascript
+* Support accessing values as text, xml or jsonp
+* Support postdata as params
+* Support posting xml as single param
+* Support posting single string (text/plain) as single param
+* Support posting json as param (do lists become params?)
+
