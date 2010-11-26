@@ -29,7 +29,6 @@
 package ccare.service;
 
 import ccare.domain.Observable;
-import ccare.domain.SpaceSummary;
 import ccare.domain.TableReference;
 import ccare.symboltable.SymbolReference;
 
@@ -52,7 +51,7 @@ public interface SymbolTableService {
     public Set<SymbolReference> listSymbols();
 
     public TableReference createSpace(TableReference reference) throws CannotCreateException;
-    
+
     public TableReference createSpace(String name) throws CannotCreateException;
 
     public void deleteSpace(TableReference reference);

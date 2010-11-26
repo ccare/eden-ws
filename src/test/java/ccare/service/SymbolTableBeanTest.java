@@ -30,13 +30,9 @@ package ccare.service;
 
 import ccare.domain.Observable;
 import ccare.symboltable.SymbolReference;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import java.util.Properties;
 
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;

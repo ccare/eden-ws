@@ -274,7 +274,7 @@ public class DefinitionTest {
 
             @Override
             public Object execute(SymbolReference a) {
-		return null;
+                return null;
             }
 
 

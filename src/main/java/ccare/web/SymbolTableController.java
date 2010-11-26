@@ -28,23 +28,22 @@
 
 package ccare.web;
 
-import ccare.domain.SpaceSummary;
 import ccare.domain.TableReference;
 import ccare.service.CannotCreateException;
 import ccare.service.SymbolTableBean;
-import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
-import com.sun.jersey.api.*;
+import com.sun.jersey.api.NotFoundException;
 import com.sun.jersey.api.core.InjectParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 import static java.lang.String.format;
 
@@ -52,7 +51,7 @@ import static java.lang.String.format;
 public class SymbolTableController {
 
     private static final Logger logger = LoggerFactory.getLogger(SymbolTableController.class);
-    
+
     @InjectParam("service")
     SymbolTableBean service;
 
@@ -60,7 +59,7 @@ public class SymbolTableController {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public List<TableReference> allSpaces(@QueryParam("evaluate") List<String> evals) {
         if (evals == null || evals.isEmpty()) {
-            logger.debug(format("Get all spaces"));   
+            logger.debug(format("Get all spaces"));
             final List<TableReference> all = service.allSpaces();
             return all;
         } else {
@@ -114,43 +113,41 @@ public class SymbolTableController {
     @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Object observeSymbol(final @PathParam("spaceName") String spaceName,
-                                        final @PathParam("symbolName") String symbolName) {
+                                final @PathParam("symbolName") String symbolName) {
         logger.debug(format("Received GET (observe symbol) for %s.%s", spaceName, symbolName));
         return doGetValue(spaceName, symbolName);
     }
-    
+
     @POST
     @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
     @Consumes("application/x-www-form-urlencoded")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Object executeSymbolForPostData(final @PathParam("spaceName") String spaceName,
-                                        final @PathParam("symbolName") String symbolName,
-                                        final @Context UriInfo ui) {
+                                           final @PathParam("symbolName") String symbolName,
+                                           final @Context UriInfo ui) {
         logger.debug(format("Received POST with post data (execute) for %s.%s", spaceName, symbolName));
         MultivaluedMap<String, String> queryParams = ui.getQueryParameters();
         return doPostValue(spaceName, symbolName, extractExecParams(queryParams));
     }
-    
+
     @POST
     @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Object executeSymbol(final @PathParam("spaceName") String spaceName,
-                                        final @PathParam("symbolName") String symbolName) {
+                                final @PathParam("symbolName") String symbolName) {
         logger.debug(format("Received POST (execute) for %s.%s", spaceName, symbolName));
         return doPostValue(spaceName, symbolName);
     }
-    
+
     private Object[] extractExecParams(MultivaluedMap<String, String> map) {
-    	Object[] params = new Object[map.size()];
-    	int i = 0;
-    	for (String p : map.keySet() ) {
-    		params[i] = map.getFirst(p);
-    		i++;
-    	}
-    	return params;
+        Object[] params = new Object[map.size()];
+        int i = 0;
+        for (String p : map.keySet()) {
+            params[i] = map.getFirst(p);
+            i++;
+        }
+        return params;
     }
-    
-    
 
 
 //    @GET
@@ -174,7 +171,7 @@ public class SymbolTableController {
             throw new NotFoundException();
         }
     }
-    
+
     private Object doPostValue(String spaceName, String symbolName, Object... params) {
         final SymbolTable table = service.getSpace(spaceName);
         if (table == null) {
@@ -192,8 +189,8 @@ public class SymbolTableController {
     @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public void defineSymbol(final @PathParam("spaceName") String spaceName,
-                                        final @PathParam("symbolName") String symbolName,
-                                        final String definition) {
+                             final @PathParam("symbolName") String symbolName,
+                             final String definition) {
         logger.debug(format("Received PUT space request for %s.%s", spaceName, symbolName));
         final SymbolTable table = service.getSpace(spaceName);
         if (table == null) {

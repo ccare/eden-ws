@@ -69,7 +69,7 @@ public class TableReference {
 
     public UUID getId() {
         return id;
-    }  
+    }
 
     @Override
     public String toString() {

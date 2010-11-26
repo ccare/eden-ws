@@ -79,11 +79,11 @@ public class SymbolTableImpl implements SymbolTable {
             throw new CannotDefineException();
         }
         if (defn.trim().startsWith("function")) {
-        	defineFunction(ref, defn);
+            defineFunction(ref, defn);
         } else {
-	        final Definition d = new Definition(defn);
-	        Symbol s = get(ref);
-	        s.redefine(d, this);
+            final Definition d = new Definition(defn);
+            Symbol s = get(ref);
+            s.redefine(d, this);
         }
     }
 
@@ -119,26 +119,26 @@ public class SymbolTableImpl implements SymbolTable {
         define(r, "#{" + a.getName() + "}()");
         return getValue(r);
     }
-    
+
     @Override
     public Object execute(SymbolReference a, Object... params) {
         final SymbolReference r = new SymbolReference("____DUMMY_REF");
         define(r, "#{" + a.getName() + "}(" + encodeParams(params) + ")");
         return getValue(r);
     }
-    
+
     private String encodeParams(Object... params) {
-    	if (params.length == 0) {
-    		return "";
-    	} else {
-        	StringBuilder sb = new StringBuilder();
-        	sb.append(params[0]);
-        	for (int i=1; i<params.length; i++) {
-        		sb.append(",");
-        		sb.append(params[i]);
-        	}
-        	return sb.toString();
-    	}
+        if (params.length == 0) {
+            return "";
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(params[0]);
+            for (int i = 1; i < params.length; i++) {
+                sb.append(",");
+                sb.append(params[i]);
+            }
+            return sb.toString();
+        }
     }
 
     @Override

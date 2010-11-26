@@ -51,7 +51,7 @@ public class SymbolTableBean implements SymbolTableService {
 
     private final UUID id = UUID.randomUUID();
     private SymbolTable table = new SymbolTableImpl();
-    private Map<TableReference,SymbolTable> tables = new HashMap<TableReference,SymbolTable>();
+    private Map<TableReference, SymbolTable> tables = new HashMap<TableReference, SymbolTable>();
     private List<SymbolTable> recycleBin = new ArrayList<SymbolTable>();
     private List<TableReference> keys;
 
@@ -62,7 +62,7 @@ public class SymbolTableBean implements SymbolTableService {
 
     @Override
 //    @Lock(WRITE)
-    public void define(SymbolReference reference, Observable d) {
+public void define(SymbolReference reference, Observable d) {
         table.define(reference, d.getDefinition());
     }
 
@@ -91,7 +91,7 @@ public class SymbolTableBean implements SymbolTableService {
     }
 
     @Override
-    public void deleteSpace(final String name) { 
+    public void deleteSpace(final String name) {
         deleteSpace(new TableReference(name));
     }
 

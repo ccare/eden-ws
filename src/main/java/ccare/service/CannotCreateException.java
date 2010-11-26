@@ -37,6 +37,6 @@ package ccare.service;
  */
 public class CannotCreateException extends Throwable {
     public CannotCreateException(String s) {
-        
+
     }
 }

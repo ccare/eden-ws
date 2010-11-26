@@ -46,7 +46,7 @@ import static org.junit.Assert.assertEquals;
  * Time: 12:31:46
  */
 public class SymbolTableImplTest {
-    
+
     final SymbolReference a = new SymbolReference("a");
     final SymbolReference b = new SymbolReference("b");
     final SymbolReference c = new SymbolReference("c");
@@ -609,7 +609,7 @@ public class SymbolTableImplTest {
         table.define(a, "'hi'");
         assertEquals("12hi", table.evaluate("12 + #{a}"));
     }
-    
+
     @Test
     public void testDefineFunctionViaDefine() {
         SymbolTable table = new SymbolTableImpl();
@@ -618,14 +618,14 @@ public class SymbolTableImplTest {
         table.getValue(c);
         assertEquals(3, table.getValue(b));
     }
-    
+
     @Test
     public void testExecuteFunction() {
         SymbolTable table = new SymbolTableImpl();
         table.define(a, "function() { return 2 }");
         assertEquals(2, table.execute(a));
     }
-    
+
     @Test
     public void testExecuteFunctionPassesParams() {
         SymbolTable table = new SymbolTableImpl();
@@ -633,7 +633,7 @@ public class SymbolTableImplTest {
         assertEquals(2, table.execute(a, 2));
         assertEquals(4, table.execute(a, 4));
     }
-    
+
     @Test
     public void testExecuteFunctionPassesMultipleParams() {
         SymbolTable table = new SymbolTableImpl();
@@ -641,9 +641,6 @@ public class SymbolTableImplTest {
         assertEquals(4.0, table.execute(a, 2, 2));
         assertEquals(5.0, table.execute(a, 4, 1));
     }
-    
-    
-    
 
 
 }

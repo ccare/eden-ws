@@ -28,12 +28,7 @@
 
 package ccare.web;
 
-import ccare.domain.SpaceSummary;
-import com.sun.jersey.api.client.WebResource;
 import org.junit.Ignore;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * User: carecx

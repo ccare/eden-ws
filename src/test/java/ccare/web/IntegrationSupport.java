@@ -53,6 +53,6 @@ public class IntegrationSupport {
 
     private static URI getBaseURI(final String resourcePath) {
         return UriBuilder.fromUri(
-				"http://localhost:8080/services/" + resourcePath).build();
-	}
+                "http://localhost:8080/services/" + resourcePath).build();
+    }
 }

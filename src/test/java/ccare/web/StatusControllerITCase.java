@@ -31,17 +31,14 @@ package ccare.web;
 import com.sun.jersey.api.client.WebResource;
 import org.junit.Test;
 
-import java.util.UUID;
-
 import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 /**
  * User: carecx
  * Date: 13-Oct-2010
  * Time: 14:50:23
- */ 
+ */
 public class StatusControllerITCase extends IntegrationSupport {
 
     @Test
@@ -49,7 +46,7 @@ public class StatusControllerITCase extends IntegrationSupport {
         WebResource resource = resource("status");
         String msg = resource.get(String.class);
         assertEquals("Running and fine", msg);
-    }      
+    }
 
     @Test
     public void testGetId() throws Exception {

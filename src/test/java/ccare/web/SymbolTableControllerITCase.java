@@ -44,9 +44,7 @@ import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -56,7 +54,8 @@ import static org.junit.Assert.fail;
  * To change this template use File | Settings | File Templates.
  */
 public class SymbolTableControllerITCase extends IntegrationSupport {
-    private static final GenericType<List<TableReference>> TABLE_REF_COLLECTION_TYPE = new GenericType<List<TableReference>>() {};
+    private static final GenericType<List<TableReference>> TABLE_REF_COLLECTION_TYPE = new GenericType<List<TableReference>>() {
+    };
     private final WebResource resource = resource("spaces");
 
     @Test
@@ -103,7 +102,7 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
             fail("Expected an exception to be thrown");
         } catch (UniformInterfaceException e) {
             assertThat(e.getResponse().getClientResponseStatus().getStatusCode(), is(equalTo(400)));
-        } 
+        }
     }
 
     private void containsName(Collection<TableReference> spaces, String newName) {
@@ -120,7 +119,7 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         int size = spaces.size();
         resource.path("abc").delete();
         spaces = resource.get(TABLE_REF_COLLECTION_TYPE);
-        assertEquals(size - 1, spaces.size());        
+        assertEquals(size - 1, spaces.size());
     }
 
     @Test
@@ -162,11 +161,11 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
     @Test
     public void testEvaluate() {
         resource.path("foo").put();
-        assertEquals("13", resource.path("foo").queryParam("evaluate","14 - 1").get(String.class));
+        assertEquals("13", resource.path("foo").queryParam("evaluate", "14 - 1").get(String.class));
         resource.path("foo/a").put("2");
-        assertEquals("1.0", resource.path("foo").queryParam("evaluate","#a - 1").get(String.class));
+        assertEquals("1.0", resource.path("foo").queryParam("evaluate", "#a - 1").get(String.class));
         resource.path("foo/a").put("3");
-        assertEquals("2.0", resource.path("foo").queryParam("evaluate","#a - 1").get(String.class));
+        assertEquals("2.0", resource.path("foo").queryParam("evaluate", "#a - 1").get(String.class));
     }
 
 
@@ -178,11 +177,11 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         final String refFn2 = spaceName + "/fn2";
         resource.path(spaceName).put();
         resource.path(refFn).put("function() { return 'hi'; }");
-        assertEquals("hi", resource.path(spaceName).queryParam("evaluate","#fn()").get(String.class));
+        assertEquals("hi", resource.path(spaceName).queryParam("evaluate", "#fn()").get(String.class));
         resource.path(refFn).put("function() { return 2*2; }");
-        assertEquals("4", resource.path(spaceName).queryParam("evaluate","#fn()").get(String.class));
+        assertEquals("4", resource.path(spaceName).queryParam("evaluate", "#fn()").get(String.class));
         resource.path(refFn2).put("function() { return 'foo ' + #fn() }");
-        assertEquals("foo 4", resource.path(spaceName).queryParam("evaluate","#fn2()").get(String.class));
+        assertEquals("foo 4", resource.path(spaceName).queryParam("evaluate", "#fn2()").get(String.class));
         resource.path(spaceName).delete();
 
 
@@ -221,6 +220,8 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         }
     }
 
+    // TODO: Implement me next
+
     @Ignore
     @Test
     public void testCallFunctionWithPostBody() {
@@ -235,8 +236,6 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
             resource.path(spaceName).delete();
         }
     }
-
-
 
     private void isOk(final WebResource resource, String pth) {
         assertEquals(ClientResponse.Status.OK, resource.path(pth).head().getClientResponseStatus());
