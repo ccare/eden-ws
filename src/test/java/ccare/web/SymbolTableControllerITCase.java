@@ -151,6 +151,24 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         assertEquals("2.0", resource.path("foo").queryParam("evaluate","#a - 1").get(String.class));
     }
 
+
+    @Test
+    public void testExecuteFunction() {
+        // Paths
+        final String spaceName = "execSpace";
+        final String refFn = spaceName + "/fn";
+        final String refFn2 = spaceName + "/fn2";
+        resource.path(spaceName).put();
+        resource.path(refFn).put("function() { return 'hi'; }");
+        assertEquals("hi", resource.path(spaceName).queryParam("evaluate","#fn()").get(String.class));
+        resource.path(refFn).put("function() { return 2*2; }");
+        assertEquals("4", resource.path(spaceName).queryParam("evaluate","#fn()").get(String.class));
+        resource.path(refFn2).put("function() { return 'foo ' + #fn() }");
+        assertEquals("4", resource.path(spaceName).queryParam("evaluate","#fn()").get(String.class));
+    }
+
+
+
     private void isOk(final WebResource resource, String pth) {
         assertEquals(ClientResponse.Status.OK, resource.path(pth).head().getClientResponseStatus());
     }
