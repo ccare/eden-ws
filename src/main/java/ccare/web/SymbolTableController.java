@@ -30,11 +30,12 @@ package ccare.web;
 
 import ccare.domain.SpaceSummary;
 import ccare.domain.TableReference;
+import ccare.service.CannotCreateException;
 import ccare.service.SymbolTableBean;
 import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
-import com.sun.jersey.api.NotFoundException;
+import com.sun.jersey.api.*;
 import com.sun.jersey.api.core.InjectParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,11 @@ public class SymbolTableController {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public TableReference submitSpace(final TableReference reference) {
         logger.debug(format("Recieved POST space request for %s", reference.getName()));
-        return service.createSpace(reference);
+        try {
+            return service.createSpace(reference);
+        } catch (CannotCreateException e) {
+            throw new WebApplicationException(400);
+        }
     }
 
     @GET
@@ -91,7 +96,11 @@ public class SymbolTableController {
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public TableReference createSpace(final @PathParam("spaceName") String spaceName) {
         logger.debug(format("Received PUT space request for %s", spaceName));
-        return service.createSpace(spaceName);
+        try {
+            return service.createSpace(spaceName);
+        } catch (CannotCreateException e) {
+            throw new WebApplicationException(400);
+        }
     }
 
     @DELETE

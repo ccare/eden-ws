@@ -81,12 +81,12 @@ public class SymbolTableBean implements SymbolTableService {
     }
 
     @Override
-    public TableReference createSpace(final TableReference ref) {
+    public TableReference createSpace(final TableReference ref) throws CannotCreateException {
         return createSpace(ref.getName());
     }
 
     @Override
-    public TableReference createSpace(final String name) {
+    public TableReference createSpace(final String name) throws CannotCreateException {
         return doCreate(name);
     }
 
@@ -100,14 +100,18 @@ public class SymbolTableBean implements SymbolTableService {
         doDelete(reference);
     }
 
-    private TableReference doCreate(String name) {
+    private TableReference doCreate(String name) throws CannotCreateException {
+        if (tables.containsKey(new TableReference(name))) {
+            throw new CannotCreateException("Cannot create duplicate space");
+        }
+
         final SymbolTable table = new SymbolTableImpl();
         if (name != null) {
             table.setName(name);
         }
         final TableReference newRef = new TableReference(table.getId(), name);
         tables.put(newRef, table);
-        keys.add(newRef);
+        keys = null;
         return newRef;
     }
 

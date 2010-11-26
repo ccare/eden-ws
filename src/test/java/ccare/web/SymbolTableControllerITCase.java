@@ -31,7 +31,9 @@ package ccare.web;
 import ccare.domain.TableReference;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -39,9 +41,12 @@ import java.util.Collection;
 import java.util.List;
 
 import static junit.framework.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Created by IntelliJ IDEA.
@@ -86,6 +91,19 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         Collection<TableReference> spaces = resource.get(TABLE_REF_COLLECTION_TYPE);
         assertEquals(size + 1, spaces.size());
         containsName(spaces, newName);
+    }
+
+    @Test
+    public void testCreateMultipleTimesFails() throws Exception {
+        int size = spaceCount(resource);
+        final String newName = "duplicateSpace" + Math.random();
+        resource.path(newName).put();
+        try {
+            resource.path(newName).put();
+            fail("Expected an exception to be thrown");
+        } catch (UniformInterfaceException e) {
+            assertThat(e.getResponse().getClientResponseStatus().getStatusCode(), is(equalTo(400)));
+        } 
     }
 
     private void containsName(Collection<TableReference> spaces, String newName) {
@@ -164,7 +182,58 @@ public class SymbolTableControllerITCase extends IntegrationSupport {
         resource.path(refFn).put("function() { return 2*2; }");
         assertEquals("4", resource.path(spaceName).queryParam("evaluate","#fn()").get(String.class));
         resource.path(refFn2).put("function() { return 'foo ' + #fn() }");
-        assertEquals("4", resource.path(spaceName).queryParam("evaluate","#fn()").get(String.class));
+        assertEquals("foo 4", resource.path(spaceName).queryParam("evaluate","#fn2()").get(String.class));
+        resource.path(spaceName).delete();
+
+
+    }
+
+    @Test
+    public void testDependOnFunction() {
+        // Paths
+        final String spaceName = "fnSpace";
+        resource.path(spaceName).put();
+        try {
+            final String refA = spaceName + "/A";
+            final String refB = spaceName + "/B";
+            final String refFn = spaceName + "/fn";
+            resource.path(refFn).put("function(a) { return a + 1; }");
+            resource.path(refA).put("#fn(#B)");
+            resource.path(refB).put("20000");
+            assertEquals("20001.0", resource.path(refA).get(String.class));
+        } finally {
+            resource.path(spaceName).delete();
+        }
+    }
+
+    @Test
+    public void testCallFunctionWithPost() {
+        // Paths
+        final String spaceName = "fnSpace2";
+        resource.path(spaceName).put();
+        try {
+            final String refHello = spaceName + "/hello";
+            resource.path(refHello).put("function() { return 'hello world' }");
+            assertEquals("hello world", resource.path(refHello).post(String.class));
+            assertEquals("hello world", resource.path(refHello).post(String.class, "hi"));
+        } finally {
+            resource.path(spaceName).delete();
+        }
+    }
+
+    @Ignore
+    @Test
+    public void testCallFunctionWithPostBody() {
+        // Paths
+        final String spaceName = "fnSpace2";
+        resource.path(spaceName).put();
+        try {
+            final String refHello = spaceName + "/hello";
+            resource.path(refHello).put("function(param) { return param + ' world' }");
+            assertEquals("hello world", resource.path(refHello).post(String.class, "hi"));
+        } finally {
+            resource.path(spaceName).delete();
+        }
     }
 
 

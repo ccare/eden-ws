@@ -28,36 +28,15 @@
 
 package ccare.service;
 
-import ccare.domain.Observable;
-import ccare.domain.SpaceSummary;
-import ccare.domain.TableReference;
-import ccare.symboltable.SymbolReference;
-
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
 /**
+ * Created by IntelliJ IDEA.
  * User: carecx
- * Date: 13-Oct-2010
- * Time: 22:20:08
+ * Date: 26-Nov-2010
+ * Time: 22:33:25
+ * To change this template use File | Settings | File Templates.
  */
-public interface SymbolTableService {
-    public UUID getId();
-
-    public void define(SymbolReference reference, Observable d);
-
-    public Observable observe(SymbolReference reference);
-
-    public Set<SymbolReference> listSymbols();
-
-    public TableReference createSpace(TableReference reference) throws CannotCreateException;
-    
-    public TableReference createSpace(String name) throws CannotCreateException;
-
-    public void deleteSpace(TableReference reference);
-
-    public void deleteSpace(String name);
-
-    public List<TableReference> allSpaces();
+public class CannotCreateException extends Throwable {
+    public CannotCreateException(String s) {
+        
+    }
 }
