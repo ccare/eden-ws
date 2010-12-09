@@ -6,6 +6,7 @@ public interface SymbolTableMXBean {
 	
 	int getSymbolCount();
 	
+	String evaluateString(String expression);
 	
 
 }

@@ -199,4 +199,10 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
 	public int getSymbolCount() {
 		return this.getSymbols().size();
 	}
+
+	@Override
+	public String evaluateString(String expression) {
+		Object o = evaluate(expression);
+		return (o == null) ? "null" : o.toString();
+	}
 }

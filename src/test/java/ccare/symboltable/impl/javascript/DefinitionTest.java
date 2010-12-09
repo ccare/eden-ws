@@ -304,6 +304,12 @@ public class DefinitionTest {
 				// TODO Auto-generated method stub
 				return 0;
 			}
+
+			@Override
+			public String evaluateString(String expression) {
+				// TODO Auto-generated method stub
+				return null;
+			}
         };
     }
 
