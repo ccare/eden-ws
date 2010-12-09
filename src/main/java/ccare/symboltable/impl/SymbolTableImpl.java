@@ -36,15 +36,52 @@ import ccare.symboltable.exceptions.SymbolTableException;
 import ccare.symboltable.impl.javascript.Definition;
 import org.mozilla.javascript.Undefined;
 
+import java.lang.management.ManagementFactory;
 import java.util.*;
 
-public class SymbolTableImpl implements SymbolTable {
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.NotificationBroadcasterSupport;
+import javax.management.ObjectName;
+
+public class SymbolTableImpl extends NotificationBroadcasterSupport implements SymbolTable {
 
     private String name;
     private final UUID id = UUID.randomUUID();
     private Map<SymbolReference, Symbol> symbols = new HashMap<SymbolReference, Symbol>();
 
-    @Override
+    public SymbolTableImpl() {
+		registerAsMXBean();
+	}
+    
+    private void registerAsMXBean() {
+    	MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+    	ObjectName beanName;
+		try {
+			beanName = new ObjectName("ccare.symboltable:type=SymbolTable,name="+id.toString());
+	        mbs.registerMBean(this, beanName);
+		} catch (MalformedObjectNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NullPointerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InstanceAlreadyExistsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MBeanRegistrationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotCompliantMBeanException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+
+	@Override
     public UUID getId() {
         return id;
     }

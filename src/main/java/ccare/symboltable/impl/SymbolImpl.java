@@ -38,6 +38,8 @@ import org.mozilla.javascript.Undefined;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.management.NotificationBroadcasterSupport;
+
 /**
  * User: carecx
  * Date: 13-Oct-2010
@@ -56,6 +58,8 @@ public class SymbolImpl implements Symbol {
     public SymbolImpl(SymbolReference ref) {
         this.ref = ref;
     }
+    
+    
 
     @Override
     public SymbolReference getReference() {

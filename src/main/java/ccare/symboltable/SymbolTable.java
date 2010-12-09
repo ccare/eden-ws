@@ -31,12 +31,15 @@ package ccare.symboltable;
 import java.util.Set;
 import java.util.UUID;
 
+import ccare.service.SymbolTableService;
+import ccare.symboltable.SymbolTableMXBean;
+
 /**
  * User: carecx
  * Date: 26-Oct-2010
  * Time: 15:24:19
  */
-public interface SymbolTable {
+public interface SymbolTable extends SymbolTableMXBean {
     UUID getId();
 
     Set<SymbolReference> listSymbols();
