@@ -238,7 +238,7 @@ public class DefinitionTest {
             }
 
             @Override
-            public Set<SymbolReference> listSymbols() {
+            public Set<SymbolReference> getSymbols() {
                 return null;
             }
 
@@ -298,6 +298,12 @@ public class DefinitionTest {
             public Object evaluate(String s) {
                 return null;  //To change body of implemented methods use File | Settings | File Templates.
             }
+
+			@Override
+			public int getSymbolCount() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
         };
     }
 

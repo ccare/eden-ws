@@ -99,7 +99,7 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
     }
 
     @Override
-    public Set<SymbolReference> listSymbols() {
+    public Set<SymbolReference> getSymbols() {
         return Collections.unmodifiableSet(symbols.keySet());
     }
 
@@ -194,4 +194,9 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
         define(r, s);
         return getValue(r);
     }
+
+	@Override
+	public int getSymbolCount() {
+		return this.getSymbols().size();
+	}
 }

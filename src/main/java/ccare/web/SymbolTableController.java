@@ -165,7 +165,7 @@ public class SymbolTableController {
             throw new NotFoundException();
         }
         final SymbolReference ref = new SymbolReference(symbolName);
-        if (table.listSymbols().contains(ref)) {
+        if (table.getSymbols().contains(ref)) {
             return table.getValue(ref).toString();
         } else {
             throw new NotFoundException();
@@ -178,7 +178,7 @@ public class SymbolTableController {
             throw new NotFoundException();
         }
         final SymbolReference ref = new SymbolReference(symbolName);
-        if (table.listSymbols().contains(ref)) {
+        if (table.getSymbols().contains(ref)) {
             return table.execute(ref);
         } else {
             throw new NotFoundException();

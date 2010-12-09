@@ -77,7 +77,7 @@ public void define(SymbolReference reference, Observable d) {
 
     @Override
     public Set<SymbolReference> listSymbols() {
-        return table.listSymbols();
+        return table.getSymbols();
     }
 
     @Override

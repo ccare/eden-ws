@@ -42,7 +42,7 @@ import ccare.symboltable.SymbolTableMXBean;
 public interface SymbolTable extends SymbolTableMXBean {
     UUID getId();
 
-    Set<SymbolReference> listSymbols();
+    Set<SymbolReference> getSymbols();
 
     Symbol get(SymbolReference reference);
 
