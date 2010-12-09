@@ -28,15 +28,16 @@
 
 package ccare.service;
 
-import ccare.domain.Observable;
-import ccare.symboltable.SymbolReference;
-import org.junit.Test;
-
-import javax.naming.NamingException;
-
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+
+import javax.naming.NamingException;
+
+import org.junit.Test;
+
+import ccare.domain.Observable;
+import ccare.symboltable.SymbolReference;
 
 /**
  * User: carecx
