@@ -35,6 +35,7 @@ import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotForgetException;
 import org.mozilla.javascript.Undefined;
 
+import java.lang.ref.SoftReference;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,7 +49,8 @@ import javax.management.NotificationBroadcasterSupport;
 public class SymbolImpl implements Symbol {
     private final SymbolReference ref;
     private SymbolDefinition definition;
-    private Object value;
+    private SoftReference<Object> cachedValue;
+    //private Object value;
     private boolean upToDate;
     private Set<Symbol> dependents = new HashSet<Symbol>();
     private Set<Symbol> dependsOn = new HashSet<Symbol>();
@@ -98,11 +100,11 @@ public class SymbolImpl implements Symbol {
         if (definition == null) {
             return Undefined.instance;
         }
-        if (!upToDate || value == null) {
-            value = definition.evaluate(t);
+        if (!upToDate || cachedValue == null) {
+            cachedValue = new SoftReference(definition.evaluate(t)); 
             upToDate = true;
         }
-        return value;
+        return cachedValue.get();
     }
 
     @Override
@@ -147,7 +149,8 @@ public class SymbolImpl implements Symbol {
     }
 
     private void clearDefinitions() {
-        value = null;
+        cachedValue = null;
+    	//value = null;
         definition = null;
         for (Symbol s : dependsOn) {
             s.unRegisterDependent(this);
