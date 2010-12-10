@@ -1,0 +1,20 @@
+Loads of spike code to think through what an implementation of a web-exposed definitive 
+machine might look like. 
+
+Basically, the server starts up a Java service and allows you to code via REST calls. 
+The language is currently JavaScript and hooks into the Rhino framework. 
+
+Major todos:
+- Decide on design/package layouts - at the moment it's all just hacked together :)
+- Add more mocks to provide better separation in the tests
+- Once there's a clearer idea around the abstractions going to be used, need to code up 
+some better JavaDocs
+- Still need to think through the threading issues - and that means deciding whether we're
+going to go EJB or stick with Spring... hmmm.
+
+When all that's done, I'll add more documentation... for now it's possible to play using 
+maven.
+
+$ mvn jetty:run
+
+
