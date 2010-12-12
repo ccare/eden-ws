@@ -36,6 +36,7 @@ import ccare.symboltable.exceptions.CannotForgetException;
 import org.mozilla.javascript.Undefined;
 
 import java.lang.ref.SoftReference;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,16 +48,19 @@ import javax.management.NotificationBroadcasterSupport;
  * Time: 23:36:43
  */
 public class SymbolImpl implements Symbol {
+	
+	private static final Symbol[] EMPTY_SYMBOL_ARRAY = {};
+	
     private final SymbolReference ref;
     private SymbolDefinition definition;
     private SoftReference<Object> cachedValue;
     //private Object value;
     private boolean upToDate;
     private Set<Symbol> dependents = new HashSet<Symbol>();
-    private Set<Symbol> triggeredBy = new HashSet<Symbol>();
-    
-    private Set<Symbol> dependsOn = new HashSet<Symbol>();
     private Set<Symbol> triggers = new HashSet<Symbol>();
+    
+    private Set<Symbol> triggeredBy = new HashSet<Symbol>();
+    private Symbol[] dependsOn = EMPTY_SYMBOL_ARRAY;
 
     public SymbolImpl(SymbolReference ref) {
         this.ref = ref;
@@ -141,7 +145,7 @@ public class SymbolImpl implements Symbol {
         for (Symbol s : dependsOn) {
             s.unRegisterDependent(this);
         }
-        dependsOn.clear();
+        dependsOn = EMPTY_SYMBOL_ARRAY;
         for (Symbol s : triggeredBy) {
             s.unRegisterTrigger(this);
         }
@@ -149,11 +153,16 @@ public class SymbolImpl implements Symbol {
     }
 
     private void buildDefinitions(SymbolTable t) {
-        for (SymbolReference ref : definition.getDependencies()) {
+    	int i = 0;
+        final Collection<SymbolReference> dependencies = definition.getDependencies();
+    	final Symbol[] newDependsOn = new Symbol[dependencies.size()];
+		for (SymbolReference ref : dependencies) {
             Symbol s = t.get(ref);
-            dependsOn.add(s);
+            newDependsOn[i] = s;
             s.registerDependent(this);
+            i++;
         }
+		dependsOn = newDependsOn;
         for (SymbolReference ref : definition.getTriggers()) {
             Symbol s = t.get(ref);
             triggeredBy.add(s);
