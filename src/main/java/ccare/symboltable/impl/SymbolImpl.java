@@ -74,6 +74,7 @@ public class SymbolImpl implements Symbol {
         clearDefinitions();
         definition = d;
         buildDefinitions(t);
+        // TODO change to fireTriggers(this)
         t.fireTriggers(triggers);
         expireValue();
     }
