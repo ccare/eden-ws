@@ -92,40 +92,37 @@ public class SymbolImplTest {
         verify(symbolTable);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testRegisterDependentWhenNotADependent() throws Exception {
-        final Symbol dependant = createMock(Symbol.class);
-        expect(dependant.isDependentOn(anyObject(Symbol.class))).andReturn(false);
-        replay(dependant);
-        Symbol s = new SymbolImpl(new SymbolReference());
-        s.registerDependent(dependant);
-        verify(dependant);
-    }
+    
+//    @Test(expected = IllegalArgumentException.class)
+//    public void testRegisterDependentWhenNotADependent() throws Exception {
+//        final Symbol dependant = createMock(Symbol.class);
+//        replay(dependant);
+//        Symbol s = new SymbolImpl(new SymbolReference());
+//        s.registerDependent(dependant);
+//        verify(dependant);
+//    }
 
     @Test
     public void testRegisterDependent() throws Exception {
         final Symbol dependant = createMock(Symbol.class);
-        expect(dependant.isDependentOn(anyObject(Symbol.class))).andReturn(true);
         replay(dependant);
         Symbol s = new SymbolImpl(new SymbolReference());
         s.registerDependent(dependant);
         verify(dependant);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testRegisterTriggerWhenNotATrigger() throws Exception {
-        final Symbol other = createMock(Symbol.class);
-        expect(other.isTriggeredBy(anyObject(Symbol.class))).andReturn(false);
-        replay(other);
-        Symbol s = new SymbolImpl(new SymbolReference());
-        s.registerTrigger(other);
-        verify(other);
-    }
+//    @Test(expected = IllegalArgumentException.class)
+//    public void testRegisterTriggerWhenNotATrigger() throws Exception {
+//        final Symbol other = createMock(Symbol.class);
+//        replay(other);
+//        Symbol s = new SymbolImpl(new SymbolReference());
+//        s.registerTrigger(other);
+//        verify(other);
+//    }
 
     @Test
     public void testRegisterTrigger() throws Exception {
         final Symbol other = createMock(Symbol.class);
-        expect(other.isTriggeredBy(anyObject(Symbol.class))).andReturn(true);
         replay(other);
         Symbol s = new SymbolImpl(new SymbolReference());
         s.registerTrigger(other);

@@ -53,15 +53,14 @@ public class SymbolImpl implements Symbol {
     //private Object value;
     private boolean upToDate;
     private Set<Symbol> dependents = new HashSet<Symbol>();
-    private Set<Symbol> dependsOn = new HashSet<Symbol>();
     private Set<Symbol> triggeredBy = new HashSet<Symbol>();
+    
+    private Set<Symbol> dependsOn = new HashSet<Symbol>();
     private Set<Symbol> triggers = new HashSet<Symbol>();
 
     public SymbolImpl(SymbolReference ref) {
         this.ref = ref;
     }
-    
-    
 
     @Override
     public SymbolReference getReference() {
@@ -110,9 +109,6 @@ public class SymbolImpl implements Symbol {
 
     @Override
     public void registerDependent(Symbol s) {
-        if (!s.isDependentOn(this)) {
-            throw new IllegalArgumentException("Not a valid dependent");
-        }
         dependents.add(s);
     }
 
@@ -121,10 +117,6 @@ public class SymbolImpl implements Symbol {
         dependents.remove(s);
     }
 
-    @Override
-    public boolean isDependentOn(Symbol symbol) {
-        return dependsOn.contains(symbol);
-    }
 
     @Override
     public boolean isUpToDate() {
@@ -133,16 +125,9 @@ public class SymbolImpl implements Symbol {
 
     @Override
     public void registerTrigger(Symbol s) {
-        if (!s.isTriggeredBy(this)) {
-            throw new IllegalArgumentException("Not a valid trigger");
-        }
         triggers.add(s);
     }
 
-    @Override
-    public boolean isTriggeredBy(Symbol symbol) {
-        return triggeredBy.contains(symbol);
-    }
 
     @Override
     public void unRegisterTrigger(Symbol symbol) {

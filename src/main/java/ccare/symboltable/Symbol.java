@@ -53,11 +53,7 @@ public interface Symbol {
 
     void registerTrigger(Symbol s);
 
-    boolean isTriggeredBy(Symbol symbol);
-
     void unRegisterTrigger(Symbol symbol);
-
-    boolean isDependentOn(Symbol symbol);
 
     boolean isUpToDate();
 
