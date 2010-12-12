@@ -49,7 +49,6 @@ import javax.management.NotificationBroadcasterSupport;
  */
 public class SymbolImpl implements Symbol {
 	
-	private static final Symbol[] EMPTY_SYMBOL_ARRAY = {};
 	
     private final SymbolReference ref;
     private SymbolDefinition definition;
@@ -60,7 +59,7 @@ public class SymbolImpl implements Symbol {
     private Set<Symbol> triggers = new HashSet<Symbol>();
     
     private Set<Symbol> triggeredBy = new HashSet<Symbol>();
-    private Symbol[] dependsOn = EMPTY_SYMBOL_ARRAY;
+    private ObservationGraphNode dOn = new ObservationGraphNode();
 
     public SymbolImpl(SymbolReference ref) {
         this.ref = ref;
@@ -142,10 +141,7 @@ public class SymbolImpl implements Symbol {
         cachedValue = null;
     	//value = null;
         definition = null;
-        for (Symbol s : dependsOn) {
-            s.unRegisterDependent(this);
-        }
-        dependsOn = EMPTY_SYMBOL_ARRAY;
+        dOn.unregister(this);
         for (Symbol s : triggeredBy) {
             s.unRegisterTrigger(this);
         }
@@ -153,22 +149,15 @@ public class SymbolImpl implements Symbol {
     }
 
     private void buildDefinitions(SymbolTable t) {
-    	int i = 0;
-        final Collection<SymbolReference> dependencies = definition.getDependencies();
-    	final Symbol[] newDependsOn = new Symbol[dependencies.size()];
-		for (SymbolReference ref : dependencies) {
-            Symbol s = t.get(ref);
-            newDependsOn[i] = s;
-            s.registerDependent(this);
-            i++;
-        }
-		dependsOn = newDependsOn;
+    	dOn.buildDependencyGraph(this, definition, t);
         for (SymbolReference ref : definition.getTriggers()) {
             Symbol s = t.get(ref);
             triggeredBy.add(s);
             s.registerTrigger(this);
         }
     }
+
+	
 
     @Override
     public SymbolDefinition getDefinition() {
