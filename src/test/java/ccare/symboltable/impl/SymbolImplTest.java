@@ -238,9 +238,9 @@ public class SymbolImplTest {
     @Test
     public void testForgetSymbolThrowsExceptionIfThereAreDependentValues() {
         final SymbolTableImpl table = new SymbolTableImpl();
-        final SymbolReference refA = new SymbolReference();
-        final SymbolReference refB = new SymbolReference();
-        final SymbolReference refC = new SymbolReference();
+        final SymbolReference refA = new SymbolReference("a");
+        final SymbolReference refB = new SymbolReference("b");
+        final SymbolReference refC = new SymbolReference("c");
 
         final Symbol a = new SymbolImpl(refA);
         final Symbol b = new SymbolImpl(refB);

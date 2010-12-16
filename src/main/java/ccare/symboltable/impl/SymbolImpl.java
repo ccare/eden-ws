@@ -56,14 +56,22 @@ public class SymbolImpl implements Symbol {
     //private Object value;
     private boolean upToDate;
     private Set<Symbol> dependents = new HashSet<Symbol>();
-    private Set<Symbol> triggers = new HashSet<Symbol>();
+	private Set<Symbol> triggers = new HashSet<Symbol>();
     
-    private Set<Symbol> triggeredBy = new HashSet<Symbol>();
-    private ObservationGraphNode dOn = new ObservationGraphNode();
+    private ObservationGraphNode dependsOn = new DependencyGraphNode();
+    private ObservationGraphNode tb = new TriggerGraphNode();
 
     public SymbolImpl(SymbolReference ref) {
         this.ref = ref;
     }
+    
+    public Set<Symbol> getDependents() {
+		return dependents;
+	}
+
+	public Set<Symbol> getTriggers() {
+		return triggers;
+	}
 
     @Override
     public SymbolReference getReference() {
@@ -83,11 +91,15 @@ public class SymbolImpl implements Symbol {
 
     @Override
     public void forget() throws CannotForgetException {
+    	System.out.println("Dependencies are " + dependents.size());
+    	System.out.println("Triggers are " + triggers.size());
         if (dependents.isEmpty() && triggers.isEmpty()) {
             clearDefinitions();
         } else {
             throw new CannotForgetException("Cannot forget a symbol inside a dependency graph");
         }
+    	System.out.println("After Dependencies are " + dependents.size());
+    	System.out.println("After Triggers are " + triggers.size());
     }
 
     @Override
@@ -141,20 +153,17 @@ public class SymbolImpl implements Symbol {
         cachedValue = null;
     	//value = null;
         definition = null;
-        dOn.unregister(this);
-        for (Symbol s : triggeredBy) {
-            s.unRegisterTrigger(this);
-        }
-        triggeredBy.clear();
+        dependsOn.unregister(this);
+        tb.unregister(this);
     }
 
     private void buildDefinitions(SymbolTable t) {
-    	dOn.buildDependencyGraph(this, definition, t);
-        for (SymbolReference ref : definition.getTriggers()) {
-            Symbol s = t.get(ref);
-            triggeredBy.add(s);
-            s.registerTrigger(this);
-        }
+    	dependsOn.buildGraph(this, 
+    			definition.getDependencies(), 
+    			t);
+    	tb.buildGraph(this, 
+    			definition.getTriggers(), 
+    			t);
     }
 
 	
