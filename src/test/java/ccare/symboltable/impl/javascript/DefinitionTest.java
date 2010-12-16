@@ -32,7 +32,6 @@ import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.impl.Symbol;
-import ccare.symboltable.impl.SymbolImpl;
 import ccare.symboltable.impl.SymbolTableImpl;
 import org.junit.Test;
 
@@ -200,7 +199,7 @@ public class DefinitionTest {
     @Test
     public void testCallMagicObserveFunctionDelegatesCorrectly() throws Exception {
         final SymbolTableImpl table = new SymbolTableImpl();
-        final SymbolImpl s = new SymbolImpl(new SymbolReference());
+        final Symbol s = new Symbol(new SymbolReference());
         s.redefine(new Definition("'abc'"), table);
         final SymbolDefinition d = new Definition("$eden_observe('a')");
         final SymbolTable t = stubSymbolTable(s);
@@ -210,7 +209,7 @@ public class DefinitionTest {
     @Test
     public void testEvaluateDependency() throws Exception {
         final SymbolTableImpl table = new SymbolTableImpl();
-        final SymbolImpl s = new SymbolImpl(new SymbolReference());
+        final Symbol s = new Symbol(new SymbolReference());
         s.redefine(new Definition("'abc'"), table);
         final SymbolDefinition d = new Definition("#a");
         final SymbolTable t = stubSymbolTable(s);
@@ -220,7 +219,7 @@ public class DefinitionTest {
     @Test
     public void testEvaluateDependencyExpression() throws Exception {
         final SymbolTableImpl table = new SymbolTableImpl();
-        final SymbolImpl s = new SymbolImpl(new SymbolReference());
+        final Symbol s = new Symbol(new SymbolReference());
         s.redefine(new Definition("'abc'"), table);
         final SymbolDefinition d1 = new Definition("#a + 'def'");
         final SymbolDefinition d2 = new Definition("#{a} + 'def'");
@@ -242,10 +241,6 @@ public class DefinitionTest {
                 return null;
             }
             
-            @Override
-            public void fireTriggers(Set<Symbol> triggers) {
-
-            }
 
             @Override
             public void define(SymbolReference aRef, String s) {

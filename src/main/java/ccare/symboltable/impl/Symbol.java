@@ -28,39 +28,146 @@
 
 package ccare.symboltable.impl;
 
-import java.util.Set;
-
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotForgetException;
+import org.mozilla.javascript.Undefined;
+
+import java.lang.ref.SoftReference;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.management.NotificationBroadcasterSupport;
 
 /**
  * User: carecx
- * Date: 14-Oct-2010
- * Time: 09:45:59
+ * Date: 13-Oct-2010
+ * Time: 23:36:43
  */
-public interface Symbol {
+public class Symbol {
+	
+	
+    private final SymbolReference ref;
+    private SymbolDefinition definition;
+    private SoftReference<Object> cachedValue;
+    //private Object value;
+    private boolean upToDate;
+    private Set<Symbol> dependents = new HashSet<Symbol>();
+	private Set<Symbol> triggers = new HashSet<Symbol>();
+    
+    private ObservationGraphNode dependsOn = new DependencyGraphNode();
+    private ObservationGraphNode tb = new TriggerGraphNode();
 
-    SymbolReference getReference();
+    public Symbol(SymbolReference ref) {
+        this.ref = ref;
+    }
+    
+    public Set<Symbol> getDependents() {
+		return dependents;
+	}
 
-    void forget() throws CannotForgetException;
+	public Set<Symbol> getTriggers() {
+		return triggers;
+	}
 
-    void expireValue();
+    
+    public SymbolReference getReference() {
+        return ref;
+    }
 
-    Object getValue(SymbolTable t);
+    public void redefine(SymbolDefinition d, SymbolTableImpl t) {
+        upToDate = false;
+        clearDefinitions();
+        definition = d;
+        buildDefinitions(t);
+        // TODO change to fireTriggers(this)
+        t.fireTriggers(triggers);
+        expireValue();
+    }
 
-    void registerDependent(Symbol s);
+    
+    public void forget() throws CannotForgetException {
+    	System.out.println("Dependencies are " + dependents.size());
+    	System.out.println("Triggers are " + triggers.size());
+        if (dependents.isEmpty() && triggers.isEmpty()) {
+            clearDefinitions();
+        } else {
+            throw new CannotForgetException("Cannot forget a symbol inside a dependency graph");
+        }
+    	System.out.println("After Dependencies are " + dependents.size());
+    	System.out.println("After Triggers are " + triggers.size());
+    }
 
-    void unRegisterDependent(Symbol s);
+    
+    public void expireValue() {
+        upToDate = false;
+//        for (Symbol s : dependents) {
+//            s.expireValue();
+//        }
+    }
 
-    void registerTrigger(Symbol s);
+    
+    public Object getValue(SymbolTable t) {
+        if (definition == null) {
+            return Undefined.instance;
+        }
+        if (!upToDate || cachedValue == null) {
+            cachedValue = new SoftReference(definition.evaluate(t)); 
+            upToDate = true;
+        }
+        return cachedValue.get();
+    }
 
-    void unRegisterTrigger(Symbol symbol);
+    
+    public void registerDependent(Symbol s) {
+        dependents.add((Symbol) s);
+    }
 
-    boolean isUpToDate();
+    
+    public void unRegisterDependent(Symbol s) {
+        dependents.remove(s);
+    }
 
-    SymbolDefinition getDefinition();
 
-	Set<Symbol> getDependents();
+    
+    public boolean isUpToDate() {
+        return upToDate;
+    }
+
+    
+    public void registerTrigger(Symbol s) {
+        triggers.add(s);
+    }
+
+
+    
+    public void unRegisterTrigger(Symbol symbol) {
+        triggers.remove(symbol);
+    }
+
+    private void clearDefinitions() {
+        cachedValue = null;
+    	//value = null;
+        definition = null;
+        dependsOn.unregister(this);
+        tb.unregister(this);
+    }
+
+    private void buildDefinitions(SymbolTableImpl t) {
+    	dependsOn.buildGraph(this, 
+    			definition.getDependencies(), 
+    			t);
+    	tb.buildGraph(this, 
+    			definition.getTriggers(), 
+    			t);
+    }
+
+	
+
+    
+    public SymbolDefinition getDefinition() {
+        return definition;
+    }
 }

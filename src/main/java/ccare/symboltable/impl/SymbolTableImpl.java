@@ -91,7 +91,7 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
 
     public Symbol get(SymbolReference reference) {
         if (!symbols.containsKey(reference)) {
-            add(new SymbolImpl(reference));
+            add(new Symbol(reference));
         }
         return symbols.get(reference);
     }
@@ -101,7 +101,6 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
         return Collections.unmodifiableSet(symbols.keySet());
     }
 
-    @Override
     public void fireTriggers(Set<Symbol> triggers) {
         for (Symbol s : triggers) {
             this.execute(s.getReference());
@@ -122,7 +121,7 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
     }
 
 	private void doRedefine(SymbolReference ref, final Definition d) {
-		SymbolImpl s = (SymbolImpl) get(ref);
+		Symbol s = (Symbol) get(ref);
 		s.redefine(d, this);
 		doRecursivelyExpireValue(s);
 	}

@@ -45,8 +45,6 @@ public interface SymbolTable extends SymbolTableMXBean {
 
     Set<SymbolReference> getSymbols();
 
-    void fireTriggers(Set<Symbol> triggers);
-
     void define(SymbolReference aRef, String s);
 
     Object getValue(SymbolReference bRef);
