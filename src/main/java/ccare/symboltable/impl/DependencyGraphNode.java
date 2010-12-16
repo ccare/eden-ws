@@ -1,6 +1,5 @@
 package ccare.symboltable.impl;
 
-import ccare.symboltable.Symbol;
 
 public class DependencyGraphNode extends ObservationGraphNode {
 	

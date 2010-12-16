@@ -28,7 +28,6 @@
 
 package ccare.symboltable.impl;
 
-import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
@@ -54,33 +53,6 @@ public class SymbolTableImplTest {
     final SymbolReference e = new SymbolReference("e");
     final SymbolReference f = new SymbolReference("f");
     private final Object undefined = Undefined.instance;
-
-    @Test
-    public void testDependencyManagementUsingLowLevel() {
-        SymbolTableImpl table = new SymbolTableImpl();
-
-        Symbol sA = new SymbolImpl(a);
-        Symbol sB = new SymbolImpl(b);
-        Symbol sC = new SymbolImpl(c);
-
-        table.add(sA);
-        table.add(sB);
-        table.add(sC);
-
-        table.get(a).redefine(new Definition("#b + #c"), table);
-        table.get(b).redefine(new Definition("1"), table);
-        table.get(c).redefine(new Definition("2"), table);
-
-        assertEquals(1.0, table.get(b).getValue(table));
-        assertEquals(2, table.get(c).getValue(table));
-        assertEquals(3.0, table.get(a).getValue(table));
-
-        table.get(b).redefine(new Definition("2"), table);
-        assertEquals(4.0, table.get(a).getValue(table));
-
-        table.get(b).redefine(new Definition("3"), table);
-        assertEquals(5.0, table.get(a).getValue(table));
-    }
 
     @Test
     public void testScript() {

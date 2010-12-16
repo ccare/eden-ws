@@ -28,7 +28,6 @@
 
 package ccare.symboltable.impl;
 
-import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
@@ -119,10 +118,22 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
             defineFunction(ref, defn);
         } else {
             final Definition d = new Definition(defn);
-            Symbol s = get(ref);
-            s.redefine(d, this);
+            doRedefine(ref, d);
         }
     }
+
+	private void doRedefine(SymbolReference ref, final Definition d) {
+		SymbolImpl s = (SymbolImpl) get(ref);
+		s.redefine(d, this);
+		doRecursivelyExpireValue(s);
+	}
+	
+	private void doRecursivelyExpireValue(Symbol s) {
+		s.expireValue();
+		for (Symbol dependent : s.getDependents()) {
+			doRecursivelyExpireValue(dependent);
+		}
+	}
 
     @Override
     public Object getValue(SymbolReference ref) {
@@ -139,15 +150,13 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
     @Override
     public void defineFunction(SymbolReference ref, String defn) {
         final Definition d = new Definition(defn, Definition.ExprType.FUNCTION);
-        Symbol s = get(ref);
-        s.redefine(d, this);
+        doRedefine(ref, d);
     }
 
     @Override
     public void defineTriggeredProc(SymbolReference ref, String defn, String... triggers) {
         final Definition d = new Definition(defn, Definition.ExprType.FUNCTION, triggers);
-        Symbol s = get(ref);
-        s.redefine(d, this);
+        doRedefine(ref, d);
     }
 
     @Override

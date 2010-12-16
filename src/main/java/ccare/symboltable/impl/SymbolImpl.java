@@ -28,7 +28,6 @@
 
 package ccare.symboltable.impl;
 
-import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
@@ -65,6 +64,7 @@ public class SymbolImpl implements Symbol {
         this.ref = ref;
     }
     
+    @Override
     public Set<Symbol> getDependents() {
 		return dependents;
 	}
@@ -78,7 +78,6 @@ public class SymbolImpl implements Symbol {
         return ref;
     }
 
-    @Override
     public void redefine(SymbolDefinition d, SymbolTable t) {
         upToDate = false;
         clearDefinitions();
@@ -105,9 +104,9 @@ public class SymbolImpl implements Symbol {
     @Override
     public void expireValue() {
         upToDate = false;
-        for (Symbol s : dependents) {
-            s.expireValue();
-        }
+//        for (Symbol s : dependents) {
+//            s.expireValue();
+//        }
     }
 
     @Override

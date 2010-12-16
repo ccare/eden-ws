@@ -28,7 +28,6 @@
 
 package ccare.symboltable.impl;
 
-import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
@@ -66,7 +65,7 @@ public class SymbolImplTest {
 
     @Test
     public void testIsUpToDateInitialisesCorrectly() throws Exception {
-        Symbol s = new SymbolImpl(new SymbolReference());
+        SymbolImpl s = new SymbolImpl(new SymbolReference());
         assertFalse(s.isUpToDate());
     }
 
@@ -80,7 +79,7 @@ public class SymbolImplTest {
         replay(defn);
         replay(symbolTable);
 
-        Symbol s = new SymbolImpl(new SymbolReference());
+        SymbolImpl s = new SymbolImpl(new SymbolReference());
         s.redefine(defn, symbolTable);
         assertFalse(s.isUpToDate());
         s.getValue(symbolTable);
@@ -95,36 +94,36 @@ public class SymbolImplTest {
     
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testRegisterDependentWhenNotADependent() throws Exception {
-//        final Symbol dependant = createMock(Symbol.class);
+//        final SymbolImpl dependant = createMock(Symbol.class);
 //        replay(dependant);
-//        Symbol s = new SymbolImpl(new SymbolReference());
+//        SymbolImpl s = new SymbolImpl(new SymbolReference());
 //        s.registerDependent(dependant);
 //        verify(dependant);
 //    }
 
     @Test
     public void testRegisterDependent() throws Exception {
-        final Symbol dependant = createMock(Symbol.class);
+        final SymbolImpl dependant = createMock(SymbolImpl.class);
         replay(dependant);
-        Symbol s = new SymbolImpl(new SymbolReference());
+        SymbolImpl s = new SymbolImpl(new SymbolReference());
         s.registerDependent(dependant);
         verify(dependant);
     }
 
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testRegisterTriggerWhenNotATrigger() throws Exception {
-//        final Symbol other = createMock(Symbol.class);
+//        final SymbolImpl other = createMock(Symbol.class);
 //        replay(other);
-//        Symbol s = new SymbolImpl(new SymbolReference());
+//        SymbolImpl s = new SymbolImpl(new SymbolReference());
 //        s.registerTrigger(other);
 //        verify(other);
 //    }
 
     @Test
     public void testRegisterTrigger() throws Exception {
-        final Symbol other = createMock(Symbol.class);
+        final SymbolImpl other = createMock(SymbolImpl.class);
         replay(other);
-        Symbol s = new SymbolImpl(new SymbolReference());
+        SymbolImpl s = new SymbolImpl(new SymbolReference());
         s.registerTrigger(other);
         verify(other);
     }
@@ -139,7 +138,7 @@ public class SymbolImplTest {
         replay(defn);
         replay(symbolTable);
 
-        Symbol s = new SymbolImpl(new SymbolReference());
+        SymbolImpl s = new SymbolImpl(new SymbolReference());
         s.redefine(defn, symbolTable);
         s.getValue(symbolTable);
         s.getValue(symbolTable);
@@ -159,7 +158,7 @@ public class SymbolImplTest {
         replay(defn);
         replay(symbolTable);
 
-        Symbol s = new SymbolImpl(new SymbolReference());
+        SymbolImpl s = new SymbolImpl(new SymbolReference());
         s.redefine(defn, symbolTable);
         s.getValue(symbolTable);
         s.expireValue();
@@ -170,71 +169,8 @@ public class SymbolImplTest {
         verify(symbolTable);
     }
 
-    @Test
-    public void testDependentValuesAreReEvaluated() {
-        final SymbolTableImpl table = new SymbolTableImpl();
-        final SymbolReference refA = new SymbolReference();
-        final SymbolReference refB = new SymbolReference();
 
-        final Symbol a = new SymbolImpl(refA);
-        final Symbol b = new SymbolImpl(refB);
-
-        table.add(a);
-        table.add(b);
-
-        defineAsNumber(table, b, 2);
-
-        assertNotNull(b.getValue(table));
-        assertEquals(2, b.getValue(table));
-
-        defineAsIncrement(table, refB, a);    // a is increment of b
-
-        assertNotNull(a.getValue(table));
-        assertEquals(3, a.getValue(table));
-
-        defineAsNumber(table, b, 3);
-        assertEquals(4, a.getValue(table));
-
-        defineAsNumber(table, b, -1);
-        assertEquals(0, a.getValue(table));
-    }
-
-    @Test
-    public void testDeepDependentValuesAreReEvaluated() {
-        final SymbolTableImpl table = new SymbolTableImpl();
-        final SymbolReference refA = new SymbolReference();
-        final SymbolReference refB = new SymbolReference();
-        final SymbolReference refC = new SymbolReference();
-
-        final Symbol a = new SymbolImpl(refA);
-        final Symbol b = new SymbolImpl(refB);
-        final Symbol c = new SymbolImpl(refC);
-
-        table.add(a);
-        table.add(b);
-        table.add(c);
-
-        defineAsNumber(table, a, 2);       // a = 2
-        defineAsIncrement(table, refA, b); // b = a + 1
-        defineAsIncrement(table, refB, c); // c = b + 1
-
-        assertNotNull(a.getValue(table));
-        assertNotNull(b.getValue(table));
-        assertNotNull(c.getValue(table));
-
-        assertEquals(2, a.getValue(table));
-        assertEquals(3, b.getValue(table));
-        assertEquals(4, c.getValue(table));
-
-        defineAsNumber(table, a, 3);       // a = 2
-        assertEquals(3, a.getValue(table));
-        assertEquals(4, b.getValue(table));
-        assertEquals(5, c.getValue(table));
-
-        defineAsNumber(table, a, 4);       // a = 2
-        assertEquals(6, c.getValue(table));
-    }
-
+   
     @Test
     public void testForgetSymbolThrowsExceptionIfThereAreDependentValues() {
         final SymbolTableImpl table = new SymbolTableImpl();
@@ -242,9 +178,9 @@ public class SymbolImplTest {
         final SymbolReference refB = new SymbolReference("b");
         final SymbolReference refC = new SymbolReference("c");
 
-        final Symbol a = new SymbolImpl(refA);
-        final Symbol b = new SymbolImpl(refB);
-        final Symbol c = new SymbolImpl(refC);
+        final SymbolImpl a = new SymbolImpl(refA);
+        final SymbolImpl b = new SymbolImpl(refB);
+        final SymbolImpl c = new SymbolImpl(refC);
 
         table.add(a);
         table.add(b);
@@ -280,7 +216,7 @@ public class SymbolImplTest {
     }
 
 
-    private void defineAsNumber(final SymbolTable table, final Symbol b, final Integer val) {
+    private void defineAsNumber(final SymbolTable table, final SymbolImpl b, final Integer val) {
         b.redefine(new SymbolDefinition() {
             @Override
             public Collection<SymbolReference> getDependencies() {
@@ -306,7 +242,7 @@ public class SymbolImplTest {
     }
 
 
-    private void defineAsIncrement(SymbolTable table, final SymbolReference refB, Symbol a) {
+    private void defineAsIncrement(SymbolTable table, final SymbolReference refB, SymbolImpl a) {
         a.redefine(new SymbolDefinition() {
             @Override
             public Collection<SymbolReference> getDependencies() {
