@@ -11,7 +11,7 @@ public abstract class ObservationGraphNode {
 
     private Symbol[] backPointers = EMPTY_SYMBOL_ARRAY;
 	
-	void buildGraph(Symbol sym, Collection<SymbolReference> obs, SymbolTable t) {
+	void buildGraph(Symbol sym, Collection<SymbolReference> obs, SymbolTableImpl t) {
 		int i = 0;
     	final Symbol[] newReferences = new Symbol[obs.size()];
 		for (SymbolReference ref : obs) {

@@ -55,12 +55,12 @@ import static org.junit.Assert.fail;
 public class SymbolImplTest {
 
     SymbolDefinition defn;
-    SymbolTable symbolTable;
+    SymbolTableImpl symbolTable;
 
     @Before
     public void setup() {
         defn = createMock(SymbolDefinition.class);
-        symbolTable = createMock(SymbolTable.class);
+        symbolTable = createMock(SymbolTableImpl.class);
     }
 
     @Test
@@ -216,7 +216,7 @@ public class SymbolImplTest {
     }
 
 
-    private void defineAsNumber(final SymbolTable table, final SymbolImpl b, final Integer val) {
+    private void defineAsNumber(final SymbolTableImpl table, final SymbolImpl b, final Integer val) {
         b.redefine(new SymbolDefinition() {
             @Override
             public Collection<SymbolReference> getDependencies() {
@@ -242,7 +242,7 @@ public class SymbolImplTest {
     }
 
 
-    private void defineAsIncrement(SymbolTable table, final SymbolReference refB, SymbolImpl a) {
+    private void defineAsIncrement(SymbolTableImpl table, final SymbolReference refB, SymbolImpl a) {
         a.redefine(new SymbolDefinition() {
             @Override
             public Collection<SymbolReference> getDependencies() {
@@ -255,17 +255,15 @@ public class SymbolImplTest {
             }
 
             @Override
-            public Object evaluate(SymbolTable t) {
-                Symbol b = t.get(refB);
-                Object value = b.getValue(t);
-                return 1 + (Integer) value;
-
-            }
-
-            @Override
             public boolean isExecutable() {
                 return false;
             }
+
+			@Override
+			public Object evaluate(SymbolTable t) {
+				// TODO Auto-generated method stub
+				return null;
+			}
         }, table);
     }
 

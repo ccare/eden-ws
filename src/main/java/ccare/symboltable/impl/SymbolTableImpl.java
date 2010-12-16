@@ -89,7 +89,6 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
         symbols.put(sym.getReference(), sym);
     }
 
-    @Override
     public Symbol get(SymbolReference reference) {
         if (!symbols.containsKey(reference)) {
             add(new SymbolImpl(reference));

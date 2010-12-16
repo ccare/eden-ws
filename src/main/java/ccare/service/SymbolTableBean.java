@@ -67,15 +67,6 @@ public void define(SymbolReference reference, Observable d) {
     }
 
     @Override
-    public Observable observe(SymbolReference reference) {
-        Observable o = new Observable();
-        final Symbol symbol = table.get(reference);
-        o.setCurrentValue(table.getValue(reference));
-        o.setDefinition(symbol.getDefinition().toString());
-        return o;
-    }
-
-    @Override
     public Set<SymbolReference> listSymbols() {
         return table.getSymbols();
     }

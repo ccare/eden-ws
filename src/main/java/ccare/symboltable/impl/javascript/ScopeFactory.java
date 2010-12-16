@@ -30,7 +30,6 @@ package ccare.symboltable.impl.javascript;
 
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
-import ccare.symboltable.impl.Symbol;
 
 import org.mozilla.javascript.*;
 
@@ -107,8 +106,7 @@ public class ScopeFactory {
                     final Object o = objects[0];
                     final String str = o.toString();
                     final SymbolReference ref = new SymbolReference(str);
-                    final Symbol s = t.get(ref);
-                    final Object value = s.getValue(t);
+                    final Object value = t.getValue(ref);
                     return value;
                 } else if (objects.length == 2) {
                     final Object sym = objects[0];

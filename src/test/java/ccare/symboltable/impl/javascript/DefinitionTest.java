@@ -199,7 +199,7 @@ public class DefinitionTest {
 
     @Test
     public void testCallMagicObserveFunctionDelegatesCorrectly() throws Exception {
-        final SymbolTable table = new SymbolTableImpl();
+        final SymbolTableImpl table = new SymbolTableImpl();
         final SymbolImpl s = new SymbolImpl(new SymbolReference());
         s.redefine(new Definition("'abc'"), table);
         final SymbolDefinition d = new Definition("$eden_observe('a')");
@@ -209,7 +209,7 @@ public class DefinitionTest {
 
     @Test
     public void testEvaluateDependency() throws Exception {
-        final SymbolTable table = new SymbolTableImpl();
+        final SymbolTableImpl table = new SymbolTableImpl();
         final SymbolImpl s = new SymbolImpl(new SymbolReference());
         s.redefine(new Definition("'abc'"), table);
         final SymbolDefinition d = new Definition("#a");
@@ -219,7 +219,7 @@ public class DefinitionTest {
 
     @Test
     public void testEvaluateDependencyExpression() throws Exception {
-        final SymbolTable table = new SymbolTableImpl();
+        final SymbolTableImpl table = new SymbolTableImpl();
         final SymbolImpl s = new SymbolImpl(new SymbolReference());
         s.redefine(new Definition("'abc'"), table);
         final SymbolDefinition d1 = new Definition("#a + 'def'");
@@ -241,12 +241,7 @@ public class DefinitionTest {
             public Set<SymbolReference> getSymbols() {
                 return null;
             }
-
-            @Override
-            public Symbol get(SymbolReference reference) {
-                return s;
-            }
-
+            
             @Override
             public void fireTriggers(Set<Symbol> triggers) {
 
@@ -259,7 +254,7 @@ public class DefinitionTest {
 
             @Override
             public Object getValue(SymbolReference bRef) {
-                return null;
+                return "abc";
             }
 
             @Override

@@ -78,7 +78,7 @@ public class SymbolImpl implements Symbol {
         return ref;
     }
 
-    public void redefine(SymbolDefinition d, SymbolTable t) {
+    public void redefine(SymbolDefinition d, SymbolTableImpl t) {
         upToDate = false;
         clearDefinitions();
         definition = d;
@@ -156,7 +156,7 @@ public class SymbolImpl implements Symbol {
         tb.unregister(this);
     }
 
-    private void buildDefinitions(SymbolTable t) {
+    private void buildDefinitions(SymbolTableImpl t) {
     	dependsOn.buildGraph(this, 
     			definition.getDependencies(), 
     			t);

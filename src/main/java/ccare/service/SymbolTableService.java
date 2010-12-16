@@ -46,8 +46,6 @@ public interface SymbolTableService {
 
     public void define(SymbolReference reference, Observable d);
 
-    public Observable observe(SymbolReference reference);
-
     public Set<SymbolReference> listSymbols();
 
     public TableReference createSpace(TableReference reference) throws CannotCreateException;

@@ -57,16 +57,7 @@ public class SymbolTableBeanTest {
         assertEquals(serviceBean.getId(), serviceBean2.getId());
     }
 
-    @Test
-    public void testSetAndGetSymbol() throws NamingException {
-        SymbolTableService serviceBean = service();
-        Observable def = new Observable();
-        def.setDefinition("#a+#b");
-        SymbolReference r = new SymbolReference();
-        serviceBean.define(r, def);
-        Observable o = serviceBean.observe(r);
-        assertEquals(o.getDefinition(), "#a+#b");
-    }
+    
 
     @Test
     public void testListSymbol() throws NamingException {
