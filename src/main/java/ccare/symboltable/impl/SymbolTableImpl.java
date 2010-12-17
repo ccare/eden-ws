@@ -181,7 +181,6 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
 		}
 	}
 
-
     @Override
     public String getName() {
         return name;
@@ -193,10 +192,8 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
     }
 
     @Override
-    public Object evaluate(String s) {
-        final SymbolReference r = new SymbolReference("____DUMMY_REF");
-        define(r, s);
-        return getValue(r);
+    public Object evaluate(String expression) {
+        return eval(languageSupport.createDefinition(expression));
     }
 
 	@Override
