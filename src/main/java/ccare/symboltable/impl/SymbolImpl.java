@@ -32,18 +32,12 @@ import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
-import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotForgetException;
 
 import org.mozilla.javascript.Undefined;
 
 import java.lang.ref.SoftReference;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
-
-import javax.management.NotificationBroadcasterSupport;
 
 /**
  * User: carecx Date: 13-Oct-2010 Time: 23:36:43
@@ -110,7 +104,7 @@ class SymbolImpl implements Symbol {
 			return Undefined.instance;
 		}
 		if (!upToDate || cachedValue == null) {
-			cachedValue = new SoftReference(definition.evaluate(exec));
+			cachedValue = new SoftReference<Object>(definition.evaluate(exec));
 			upToDate = true;
 		}
 		return cachedValue.get();

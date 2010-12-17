@@ -33,7 +33,7 @@ public class JavaScriptLanguageExecutor extends LanguageExecutor {
             }
         } catch (EcmaError error) {
             throw new EvaluationException(format("Could not evaluate %s", expr), error);
-        } finally {
+        } finally {getScopeFactory().scopeFor(getSymbolTable());
             Context.exit();
         }
 	}

@@ -6,9 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ccare.symboltable.Symbol;
-import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
-import ccare.symboltable.SymbolTable;
 
 abstract class SymbolGraphNodeRecord {
 	private static final SymbolImpl[] EMPTY_SYMBOL_ARRAY = {};

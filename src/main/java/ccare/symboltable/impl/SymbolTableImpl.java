@@ -28,7 +28,7 @@
 
 package ccare.symboltable.impl;
 
-import static java.lang.String.format;
+import ccare.monitoring.AbstractMonitoringBean;
 import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.LanugageSupport;
 import ccare.symboltable.Symbol;
@@ -36,7 +36,6 @@ import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
-import ccare.symboltable.exceptions.EvaluationException;
 import ccare.symboltable.exceptions.SymbolTableException;
 import ccare.symboltable.impl.javascript.JavaScriptLanguageExecutor;
 import ccare.symboltable.impl.javascript.JavaScriptLanguageSupport;
@@ -44,23 +43,11 @@ import ccare.symboltable.maintainers.StateMaintainer;
 import ccare.symboltable.maintainers.MarkOutOfDateMaintainer;
 import ccare.symboltable.maintainers.TriggeredProcScheduler;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EcmaError;
-import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Undefined;
 
-import java.lang.management.ManagementFactory;
 import java.util.*;
 
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.NotificationBroadcasterSupport;
-import javax.management.ObjectName;
-
-public class SymbolTableImpl extends NotificationBroadcasterSupport implements SymbolTable {
+public class SymbolTableImpl extends AbstractMonitoringBean implements SymbolTable {
 
     private String name;
     private final UUID id = UUID.randomUUID();
@@ -73,35 +60,12 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
     @Override
 	public LanguageExecutor getExecutor() {
 		return executor;
-	}
-
-	public SymbolTableImpl() {
-		registerAsMXBean();
-	}
+	}    
     
-    private void registerAsMXBean() {
-    	MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-    	ObjectName beanName;
-		try {
-			beanName = new ObjectName("ccare.symboltable:type=SymbolTable,name="+id.toString());
-	        mbs.registerMBean(this, beanName);
-		} catch (MalformedObjectNameException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NullPointerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstanceAlreadyExistsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MBeanRegistrationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotCompliantMBeanException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
+	@Override
+	protected String getMxBeanName() {
+		return "ccare.symboltable:type=SymbolTable,name="+id.toString();
+	}
 
 	@Override
     public UUID getId() {
