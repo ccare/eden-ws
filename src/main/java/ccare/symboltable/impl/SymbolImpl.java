@@ -53,8 +53,8 @@ class SymbolImpl implements Symbol {
 	private SoftReference<Object> cachedValue;
 	// private Object value;
 	private boolean upToDate;
-	private Set<Symbol> dependents = new HashSet<Symbol>();
-	private Set<Symbol> triggers = new HashSet<Symbol>();
+	//private Set<Symbol> dependents = new HashSet<Symbol>();
+	//private Set<Symbol> triggers = new HashSet<Symbol>();
 
 	private SymbolGraphNodeRecord dependsOn = new DependencyGraphNodeRecord();
 	private SymbolGraphNodeRecord tb = new TriggerGraphNodeRecord();
@@ -68,7 +68,7 @@ class SymbolImpl implements Symbol {
 	 */
 	@Override
 	public Set<Symbol> getDependents() {
-		return dependents;
+		return dependsOn.listeners;
 	}
 
 	/* (non-Javadoc)
@@ -76,7 +76,7 @@ class SymbolImpl implements Symbol {
 	 */
 	@Override
 	public Set<Symbol> getTriggers() {
-		return triggers;
+		return tb.listeners;
 	}
 
 	@Override
@@ -93,16 +93,16 @@ class SymbolImpl implements Symbol {
 	}
 
 	public void forget() throws CannotForgetException {
-		System.out.println("Dependencies are " + dependents.size());
-		System.out.println("Triggers are " + triggers.size());
-		if (dependents.isEmpty() && triggers.isEmpty()) {
+		System.out.println("Dependencies are " + dependsOn.listeners.size());
+		System.out.println("Triggers are " + tb.listeners.size());
+		if (dependsOn.listeners.isEmpty() && tb.listeners.isEmpty()) {
 			clearDefinitions();
 		} else {
 			throw new CannotForgetException(
 					"Cannot forget a symbol inside a dependency graph");
 		}
-		System.out.println("After Dependencies are " + dependents.size());
-		System.out.println("After Triggers are " + triggers.size());
+		System.out.println("After Dependencies are " + dependsOn.listeners.size());
+		System.out.println("After Triggers are " + tb.listeners.size());
 	}
 
 	@Override
@@ -122,11 +122,11 @@ class SymbolImpl implements Symbol {
 	}
 
 	public void registerDependent(Symbol s) {
-		dependents.add((Symbol) s);
+		dependsOn.listeners.add((Symbol) s);
 	}
 
 	public void unRegisterDependent(Symbol s) {
-		dependents.remove(s);
+		dependsOn.listeners.remove(s);
 	}
 
 	public boolean isUpToDate() {
@@ -134,11 +134,11 @@ class SymbolImpl implements Symbol {
 	}
 
 	public void registerTrigger(Symbol s) {
-		triggers.add(s);
+		tb.listeners.add(s);
 	}
 
 	public void unRegisterTrigger(Symbol symbol) {
-		triggers.remove(symbol);
+		tb.listeners.remove(symbol);
 	}
 
 	private void clearDefinitions() {
