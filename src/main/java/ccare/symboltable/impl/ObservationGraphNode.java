@@ -6,7 +6,7 @@ import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 
-public abstract class ObservationGraphNode {
+abstract class ObservationGraphNode {
 	private static final Symbol[] EMPTY_SYMBOL_ARRAY = {};	
 
     private Symbol[] backPointers = EMPTY_SYMBOL_ARRAY;

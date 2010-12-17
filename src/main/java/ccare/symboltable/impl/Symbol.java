@@ -42,29 +42,26 @@ import java.util.Set;
 import javax.management.NotificationBroadcasterSupport;
 
 /**
- * User: carecx
- * Date: 13-Oct-2010
- * Time: 23:36:43
+ * User: carecx Date: 13-Oct-2010 Time: 23:36:43
  */
-public class Symbol {
-	
-	
-    private final SymbolReference ref;
-    private SymbolDefinition definition;
-    private SoftReference<Object> cachedValue;
-    //private Object value;
-    private boolean upToDate;
-    private Set<Symbol> dependents = new HashSet<Symbol>();
-	private Set<Symbol> triggers = new HashSet<Symbol>();
-    
-    private ObservationGraphNode dependsOn = new DependencyGraphNode();
-    private ObservationGraphNode tb = new TriggerGraphNode();
+class Symbol {
 
-    public Symbol(SymbolReference ref) {
-        this.ref = ref;
-    }
-    
-    public Set<Symbol> getDependents() {
+	private final SymbolReference ref;
+	private SymbolDefinition definition;
+	private SoftReference<Object> cachedValue;
+	// private Object value;
+	private boolean upToDate;
+	private Set<Symbol> dependents = new HashSet<Symbol>();
+	private Set<Symbol> triggers = new HashSet<Symbol>();
+
+	private ObservationGraphNode dependsOn = new DependencyGraphNode();
+	private ObservationGraphNode tb = new TriggerGraphNode();
+
+	public Symbol(SymbolReference ref) {
+		this.ref = ref;
+	}
+
+	public Set<Symbol> getDependents() {
 		return dependents;
 	}
 
@@ -72,102 +69,85 @@ public class Symbol {
 		return triggers;
 	}
 
-    
-    public SymbolReference getReference() {
-        return ref;
-    }
+	public SymbolReference getReference() {
+		return ref;
+	}
 
-    public void redefine(SymbolDefinition d, SymbolTableImpl t) {
-        upToDate = false;
-        clearDefinitions();
-        definition = d;
-        buildDefinitions(t);
-        // TODO change to fireTriggers(this)
-        t.fireTriggers(triggers);
-        expireValue();
-    }
+	public void redefine(SymbolDefinition d, SymbolTableImpl t) {
+		upToDate = false;
+		clearDefinitions();
+		definition = d;
+		buildDefinitions(t);
+		// TODO change to fireTriggers(this)
+		t.fireTriggers(triggers);
+		expireValue();
+	}
 
-    
-    public void forget() throws CannotForgetException {
-    	System.out.println("Dependencies are " + dependents.size());
-    	System.out.println("Triggers are " + triggers.size());
-        if (dependents.isEmpty() && triggers.isEmpty()) {
-            clearDefinitions();
-        } else {
-            throw new CannotForgetException("Cannot forget a symbol inside a dependency graph");
-        }
-    	System.out.println("After Dependencies are " + dependents.size());
-    	System.out.println("After Triggers are " + triggers.size());
-    }
+	public void forget() throws CannotForgetException {
+		System.out.println("Dependencies are " + dependents.size());
+		System.out.println("Triggers are " + triggers.size());
+		if (dependents.isEmpty() && triggers.isEmpty()) {
+			clearDefinitions();
+		} else {
+			throw new CannotForgetException(
+					"Cannot forget a symbol inside a dependency graph");
+		}
+		System.out.println("After Dependencies are " + dependents.size());
+		System.out.println("After Triggers are " + triggers.size());
+	}
 
-    
-    public void expireValue() {
-        upToDate = false;
-//        for (Symbol s : dependents) {
-//            s.expireValue();
-//        }
-    }
+	public void expireValue() {
+		upToDate = false;
+		// for (Symbol s : dependents) {
+		// s.expireValue();
+		// }
+	}
 
-    
-    public Object getValue(SymbolTable t) {
-        if (definition == null) {
-            return Undefined.instance;
-        }
-        if (!upToDate || cachedValue == null) {
-            cachedValue = new SoftReference(definition.evaluate(t)); 
-            upToDate = true;
-        }
-        return cachedValue.get();
-    }
+	public Object getValue(SymbolTable t) {
+		if (definition == null) {
+			return Undefined.instance;
+		}
+		if (!upToDate || cachedValue == null) {
+			cachedValue = new SoftReference(definition.evaluate(t));
+			upToDate = true;
+		}
+		return cachedValue.get();
+	}
 
-    
-    public void registerDependent(Symbol s) {
-        dependents.add((Symbol) s);
-    }
+	public void registerDependent(Symbol s) {
+		dependents.add((Symbol) s);
+	}
 
-    
-    public void unRegisterDependent(Symbol s) {
-        dependents.remove(s);
-    }
+	public void unRegisterDependent(Symbol s) {
+		dependents.remove(s);
+	}
 
+	public boolean isUpToDate() {
+		return upToDate;
+	}
 
-    
-    public boolean isUpToDate() {
-        return upToDate;
-    }
+	public void registerTrigger(Symbol s) {
+		triggers.add(s);
+	}
 
-    
-    public void registerTrigger(Symbol s) {
-        triggers.add(s);
-    }
+	public void unRegisterTrigger(Symbol symbol) {
+		triggers.remove(symbol);
+	}
 
+	private void clearDefinitions() {
+		cachedValue = null;
+		// value = null;
+		definition = null;
+		dependsOn.unregister(this);
+		tb.unregister(this);
+	}
 
-    
-    public void unRegisterTrigger(Symbol symbol) {
-        triggers.remove(symbol);
-    }
+	private void buildDefinitions(SymbolTableImpl t) {
+		dependsOn.buildGraph(this, definition.getDependencies(), t);
+		tb.buildGraph(this, definition.getTriggers(), t);
+	}
 
-    private void clearDefinitions() {
-        cachedValue = null;
-    	//value = null;
-        definition = null;
-        dependsOn.unregister(this);
-        tb.unregister(this);
-    }
-
-    private void buildDefinitions(SymbolTableImpl t) {
-    	dependsOn.buildGraph(this, 
-    			definition.getDependencies(), 
-    			t);
-    	tb.buildGraph(this, 
-    			definition.getTriggers(), 
-    			t);
-    }
-
-	
-
-    
-    public SymbolDefinition getDefinition() {
-        return definition;
-    }
+	public SymbolDefinition getDefinition() {
+		return definition;
+	}
 }

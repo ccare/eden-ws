@@ -32,7 +32,6 @@ import ccare.domain.Observable;
 import ccare.domain.TableReference;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
-import ccare.symboltable.impl.Symbol;
 import ccare.symboltable.impl.SymbolTableImpl;
 import com.sun.jersey.api.NotFoundException;
 import org.slf4j.Logger;

@@ -31,7 +31,6 @@ package ccare.symboltable.impl.javascript;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
-import ccare.symboltable.impl.Symbol;
 import ccare.symboltable.impl.SymbolTableImpl;
 import org.junit.Test;
 
@@ -198,38 +197,31 @@ public class DefinitionTest {
 
     @Test
     public void testCallMagicObserveFunctionDelegatesCorrectly() throws Exception {
-        final SymbolTableImpl table = new SymbolTableImpl();
-        final Symbol s = new Symbol(new SymbolReference());
-        s.redefine(new Definition("'abc'"), table);
         final SymbolDefinition d = new Definition("$eden_observe('a')");
-        final SymbolTable t = stubSymbolTable(s);
+        final SymbolTable t = stubSymbolTable("abc");
         assertEquals("abc", d.evaluate(t));
     }
 
     @Test
     public void testEvaluateDependency() throws Exception {
         final SymbolTableImpl table = new SymbolTableImpl();
-        final Symbol s = new Symbol(new SymbolReference());
-        s.redefine(new Definition("'abc'"), table);
         final SymbolDefinition d = new Definition("#a");
-        final SymbolTable t = stubSymbolTable(s);
+        final SymbolTable t = stubSymbolTable("abc");
         assertEquals("abc", d.evaluate(t));
     }
 
     @Test
     public void testEvaluateDependencyExpression() throws Exception {
         final SymbolTableImpl table = new SymbolTableImpl();
-        final Symbol s = new Symbol(new SymbolReference());
-        s.redefine(new Definition("'abc'"), table);
         final SymbolDefinition d1 = new Definition("#a + 'def'");
         final SymbolDefinition d2 = new Definition("#{a} + 'def'");
-        final SymbolTable t = stubSymbolTable(s);
+        final SymbolTable t = stubSymbolTable("abc");
         final String target = "abcdef";
         assertEquals(target, d1.evaluate(t));
         assertEquals(target, d2.evaluate(t));
     }
 
-    private SymbolTable stubSymbolTable(final Symbol s) {
+    private SymbolTable stubSymbolTable(final Object value) {
         return new SymbolTable() {
             @Override
             public UUID getId() {
@@ -249,7 +241,7 @@ public class DefinitionTest {
 
             @Override
             public Object getValue(SymbolReference bRef) {
-                return "abc";
+                return value;
             }
 
             @Override

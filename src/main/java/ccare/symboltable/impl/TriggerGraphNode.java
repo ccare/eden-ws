@@ -1,7 +1,7 @@
 package ccare.symboltable.impl;
 
 
-public class TriggerGraphNode extends ObservationGraphNode {
+class TriggerGraphNode extends ObservationGraphNode {
 	
 	@Override
 	void register(Symbol sym, Symbol s) {

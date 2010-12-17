@@ -33,7 +33,6 @@ import java.util.UUID;
 
 import ccare.service.SymbolTableService;
 import ccare.symboltable.SymbolTableMXBean;
-import ccare.symboltable.impl.Symbol;
 
 /**
  * User: carecx
