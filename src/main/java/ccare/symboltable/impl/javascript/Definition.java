@@ -51,7 +51,7 @@ import static java.lang.String.format;
  * Time: 17:06:58
  * To change this template use File | Settings | File Templates.
  */
-public class Definition implements SymbolDefinition {
+class Definition implements SymbolDefinition {
 
     public enum ExprType {
         FUNCTION, EXPRESSION

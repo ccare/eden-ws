@@ -56,7 +56,7 @@ import static org.apache.commons.lang.Validate.notNull;
  * Time: 20:38:10
  * To change this template use File | Settings | File Templates.
  */
-public class XmlProcessingSupport {
+class XmlProcessingSupport {
 
     private static Pattern PROCESSING_INSTRUCT_PATTERN = Pattern.compile("^<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>");
 

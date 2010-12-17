@@ -31,7 +31,6 @@ package ccare.symboltable.impl;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
-import ccare.symboltable.impl.javascript.Definition;
 import org.junit.Test;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Undefined;

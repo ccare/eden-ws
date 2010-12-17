@@ -35,14 +35,12 @@ import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
 import ccare.symboltable.exceptions.SymbolTableException;
-import ccare.symboltable.impl.javascript.Definition;
 import ccare.symboltable.impl.javascript.JavaScriptLanguageSupport;
 import ccare.symboltable.maintainers.StateMaintainer;
 import ccare.symboltable.maintainers.MarkOutOfDateMaintainer;
 import ccare.symboltable.maintainers.TriggeredProcScheduler;
 
 import org.mozilla.javascript.Undefined;
-import org.springframework.web.util.JavaScriptUtils;
 
 import java.lang.management.ManagementFactory;
 import java.util.*;
@@ -135,7 +133,6 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
 		syncMaintainer.afterRedefinition(this, s);
 		asyncMaintainer.afterRedefinition(this, s);
 	}
-	
 	
 
     @Override
