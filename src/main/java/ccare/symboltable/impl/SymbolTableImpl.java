@@ -164,17 +164,25 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
 
     @Override
     public Object execute(SymbolReference a) {
-        final SymbolReference r = new SymbolReference("____DUMMY_REF");
-        define(r, "#{" + a.getName() + "}()");
-        return getValue(r);
+        final String defn = "#{" + a.getName() + "}()";
+        return eval(defn);
     }
 
     @Override
     public Object execute(SymbolReference a, Object... params) {
-        final SymbolReference r = new SymbolReference("____DUMMY_REF");
-        define(r, "#{" + a.getName() + "}(" + encodeParams(params) + ")");
-        return getValue(r);
+        final String defn = "#{" + a.getName() + "}(" + encodeParams(params) + ")";
+		return eval(defn);
     }
+
+	private Object eval(final String defn) {
+		Definition d = new Definition(defn);
+        try {
+        	return d.evaluate(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Undefined.instance;
+		}
+	}
 
     private String encodeParams(Object... params) {
         if (params.length == 0) {
