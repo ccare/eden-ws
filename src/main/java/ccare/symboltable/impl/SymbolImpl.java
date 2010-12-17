@@ -33,6 +33,7 @@ import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotForgetException;
+
 import org.mozilla.javascript.Undefined;
 
 import java.lang.ref.SoftReference;
@@ -55,8 +56,8 @@ class SymbolImpl implements Symbol {
 	private Set<Symbol> dependents = new HashSet<Symbol>();
 	private Set<Symbol> triggers = new HashSet<Symbol>();
 
-	private ObservationGraphNode dependsOn = new DependencyGraphNode();
-	private ObservationGraphNode tb = new TriggerGraphNode();
+	private SymbolGraphNodeRecord dependsOn = new DependencyGraphNodeRecord();
+	private SymbolGraphNodeRecord tb = new TriggerGraphNodeRecord();
 
 	public SymbolImpl(SymbolReference ref) {
 		this.ref = ref;
