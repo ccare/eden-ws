@@ -38,6 +38,7 @@ import org.mozilla.javascript.Undefined;
 
 import java.lang.ref.SoftReference;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -68,7 +69,7 @@ class SymbolImpl implements Symbol {
 	 */
 	@Override
 	public Set<Symbol> getDependents() {
-		return dependsOn.listeners;
+		return dependsOn.getListeners();
 	}
 
 	/* (non-Javadoc)
@@ -76,7 +77,7 @@ class SymbolImpl implements Symbol {
 	 */
 	@Override
 	public Set<Symbol> getTriggers() {
-		return tb.listeners;
+		return tb.getListeners();
 	}
 
 	@Override
@@ -93,16 +94,12 @@ class SymbolImpl implements Symbol {
 	}
 
 	public void forget() throws CannotForgetException {
-		System.out.println("Dependencies are " + dependsOn.listeners.size());
-		System.out.println("Triggers are " + tb.listeners.size());
-		if (dependsOn.listeners.isEmpty() && tb.listeners.isEmpty()) {
-			clearDefinitions();
-		} else {
+		if (dependsOn.hasListeners() || tb.hasListeners()) {
 			throw new CannotForgetException(
-					"Cannot forget a symbol inside a dependency graph");
+			"Cannot forget a symbol inside a dependency graph");
+		} else {
+			clearDefinitions();
 		}
-		System.out.println("After Dependencies are " + dependsOn.listeners.size());
-		System.out.println("After Triggers are " + tb.listeners.size());
 	}
 
 	@Override
@@ -122,23 +119,23 @@ class SymbolImpl implements Symbol {
 	}
 
 	public void registerDependent(Symbol s) {
-		dependsOn.listeners.add((Symbol) s);
+		dependsOn.addListener((Symbol) s);
 	}
 
 	public void unRegisterDependent(Symbol s) {
-		dependsOn.listeners.remove(s);
+		dependsOn.removeListener(s);
 	}
 
 	public boolean isUpToDate() {
 		return upToDate;
 	}
 
-	public void registerTrigger(Symbol s) {
-		tb.listeners.add(s);
+	public void registerTrigger(Symbol symbol) {
+		tb.addListener(symbol);
 	}
 
 	public void unRegisterTrigger(Symbol symbol) {
-		tb.listeners.remove(symbol);
+		tb.removeListener(symbol);
 	}
 
 	private void clearDefinitions() {
