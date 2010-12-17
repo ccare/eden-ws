@@ -34,7 +34,7 @@ import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
 import ccare.symboltable.exceptions.SymbolTableException;
 import ccare.symboltable.impl.javascript.Definition;
-import ccare.symboltable.maintainers.DependencyMaintainer;
+import ccare.symboltable.maintainers.StateMaintainer;
 import ccare.symboltable.maintainers.MarkOutOfDateMaintainer;
 import ccare.symboltable.maintainers.TriggeredProcScheduler;
 
@@ -56,8 +56,8 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
     private String name;
     private final UUID id = UUID.randomUUID();
     private Map<SymbolReference, SymbolImpl> symbols = new HashMap<SymbolReference, SymbolImpl>();
-	private DependencyMaintainer syncMaintainer = new MarkOutOfDateMaintainer();
-	private DependencyMaintainer asyncMaintainer = new TriggeredProcScheduler();
+	private StateMaintainer syncMaintainer = new MarkOutOfDateMaintainer();
+	private StateMaintainer asyncMaintainer = new TriggeredProcScheduler();
 
     public SymbolTableImpl() {
 		registerAsMXBean();

@@ -5,7 +5,7 @@ import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.impl.javascript.Definition;
 
-public class MarkOutOfDateMaintainer implements DependencyMaintainer {
+public class MarkOutOfDateMaintainer implements StateMaintainer {
 
 	@Override
 	public void beforeRedefinition(SymbolTable table, Symbol s, Definition d) {

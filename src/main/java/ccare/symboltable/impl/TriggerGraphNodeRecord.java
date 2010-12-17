@@ -2,7 +2,6 @@ package ccare.symboltable.impl;
 
 import ccare.symboltable.Symbol;
 
-
 class TriggerGraphNodeRecord extends SymbolGraphNodeRecord {
 	
 	@Override
