@@ -52,10 +52,7 @@ class SymbolImpl implements Symbol {
 	private final SymbolReference ref;
 	private SymbolDefinition definition;
 	private SoftReference<Object> cachedValue;
-	// private Object value;
 	private boolean upToDate;
-	//private Set<Symbol> dependents = new HashSet<Symbol>();
-	//private Set<Symbol> triggers = new HashSet<Symbol>();
 
 	private SymbolGraphNodeRecord dependsOn = new DependencyGraphNodeRecord();
 	private SymbolGraphNodeRecord tb = new TriggerGraphNodeRecord();
@@ -85,7 +82,7 @@ class SymbolImpl implements Symbol {
 		return ref;
 	}
 
-	public void redefine(SymbolDefinition d, SymbolTableImpl t) {
+	void redefine(SymbolDefinition d, SymbolTableImpl t) {
 		upToDate = false;
 		clearDefinitions();
 		definition = d;
@@ -93,7 +90,7 @@ class SymbolImpl implements Symbol {
 		expireValue();
 	}
 
-	public void forget() throws CannotForgetException {
+	void forget() throws CannotForgetException {
 		if (dependsOn.hasListeners() || tb.hasListeners()) {
 			throw new CannotForgetException(
 			"Cannot forget a symbol inside a dependency graph");
@@ -107,7 +104,7 @@ class SymbolImpl implements Symbol {
 		upToDate = false;
 	}
 
-	public Object getValue(SymbolTable t) {
+	Object getValue(SymbolTable t) {
 		if (definition == null) {
 			return Undefined.instance;
 		}
@@ -118,23 +115,23 @@ class SymbolImpl implements Symbol {
 		return cachedValue.get();
 	}
 
-	public void registerDependent(Symbol s) {
+	void registerDependent(Symbol s) {
 		dependsOn.addListener((Symbol) s);
 	}
 
-	public void unRegisterDependent(Symbol s) {
+	void unRegisterDependent(Symbol s) {
 		dependsOn.removeListener(s);
 	}
 
-	public boolean isUpToDate() {
+	boolean isUpToDate() {
 		return upToDate;
 	}
 
-	public void registerTrigger(Symbol symbol) {
+	void registerTrigger(Symbol symbol) {
 		tb.addListener(symbol);
 	}
 
-	public void unRegisterTrigger(Symbol symbol) {
+	void unRegisterTrigger(Symbol symbol) {
 		tb.removeListener(symbol);
 	}
 
