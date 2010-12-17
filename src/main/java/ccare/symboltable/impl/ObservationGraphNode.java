@@ -2,20 +2,21 @@ package ccare.symboltable.impl;
 
 import java.util.Collection;
 
+import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 
 abstract class ObservationGraphNode {
-	private static final Symbol[] EMPTY_SYMBOL_ARRAY = {};	
+	private static final SymbolImpl[] EMPTY_SYMBOL_ARRAY = {};	
 
-    private Symbol[] backPointers = EMPTY_SYMBOL_ARRAY;
+    private SymbolImpl[] backPointers = EMPTY_SYMBOL_ARRAY;
 	
 	void buildGraph(Symbol sym, Collection<SymbolReference> obs, SymbolTableImpl t) {
 		int i = 0;
-    	final Symbol[] newReferences = new Symbol[obs.size()];
+    	final SymbolImpl[] newReferences = new SymbolImpl[obs.size()];
 		for (SymbolReference ref : obs) {
-            Symbol s = t.get(ref);
+            SymbolImpl s = t.get(ref);
             newReferences[i] = s;
             register(sym, s);
             i++;
@@ -25,12 +26,12 @@ abstract class ObservationGraphNode {
 
 	void unregister(Symbol sym) {
 		System.out.println("unregistering " + backPointers.length);
-		for (Symbol s : backPointers) {
+		for (SymbolImpl s : backPointers) {
            unregister(sym, s);
         }		
 	}
 
-	abstract void register(Symbol sym, Symbol s);
+	abstract void register(Symbol sym, SymbolImpl s);
 
-	abstract void unregister(Symbol sym, Symbol s);
+	abstract void unregister(Symbol sym, SymbolImpl s);
 }

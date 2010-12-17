@@ -28,11 +28,15 @@
 
 package ccare.symboltable.impl;
 
+import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
 import ccare.symboltable.exceptions.SymbolTableException;
 import ccare.symboltable.impl.javascript.Definition;
+import ccare.symboltable.maintainers.DependencyMaintainer;
+import ccare.symboltable.maintainers.MarkOutOfDateMaintainer;
+
 import org.mozilla.javascript.Undefined;
 
 import java.lang.management.ManagementFactory;
@@ -50,7 +54,7 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
 
     private String name;
     private final UUID id = UUID.randomUUID();
-    private Map<SymbolReference, Symbol> symbols = new HashMap<SymbolReference, Symbol>();
+    private Map<SymbolReference, SymbolImpl> symbols = new HashMap<SymbolReference, SymbolImpl>();
 	private DependencyMaintainer maintainer = new MarkOutOfDateMaintainer();
 
     public SymbolTableImpl() {
@@ -86,13 +90,13 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
         return id;
     }
 
-    public void add(Symbol sym) {
+    public void add(SymbolImpl sym) {
         symbols.put(sym.getReference(), sym);
     }
 
-    public Symbol get(SymbolReference reference) {
+    public SymbolImpl get(SymbolReference reference) {
         if (!symbols.containsKey(reference)) {
-            add(new Symbol(reference));
+            add(new SymbolImpl(reference));
         }
         return symbols.get(reference);
     }
@@ -102,8 +106,8 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
         return Collections.unmodifiableSet(symbols.keySet());
     }
 
-    public void fireTriggers(Set<Symbol> triggers) {
-        for (Symbol s : triggers) {
+    public void fireTriggers(Set<Symbol> set) {
+        for (Symbol s : set) {
             this.execute(s.getReference());
         }
     }
@@ -122,17 +126,18 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
     }
 
 	private void doRedefine(SymbolReference ref, final Definition d) {
-		Symbol s = get(ref);
+		SymbolImpl s = get(ref);
 		maintainer.beforeRedefinition(s, d);
 		s.redefine(d, this);
 		maintainer.afterRedefinition(s);
+		fireTriggers(s.getTriggers());
 	}
 	
 	
 
     @Override
     public Object getValue(SymbolReference ref) {
-        Symbol s = get(ref);
+        SymbolImpl s = get(ref);
         try {
             return s.getValue(this);
         } catch (SymbolTableException e) {

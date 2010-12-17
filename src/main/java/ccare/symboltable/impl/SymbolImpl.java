@@ -28,6 +28,7 @@
 
 package ccare.symboltable.impl;
 
+import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
@@ -44,7 +45,7 @@ import javax.management.NotificationBroadcasterSupport;
 /**
  * User: carecx Date: 13-Oct-2010 Time: 23:36:43
  */
-class Symbol {
+class SymbolImpl implements Symbol {
 
 	private final SymbolReference ref;
 	private SymbolDefinition definition;
@@ -57,18 +58,27 @@ class Symbol {
 	private ObservationGraphNode dependsOn = new DependencyGraphNode();
 	private ObservationGraphNode tb = new TriggerGraphNode();
 
-	public Symbol(SymbolReference ref) {
+	public SymbolImpl(SymbolReference ref) {
 		this.ref = ref;
 	}
 
+	/* (non-Javadoc)
+	 * @see ccare.symboltable.impl.ISymbol#getDependents()
+	 */
+	@Override
 	public Set<Symbol> getDependents() {
 		return dependents;
 	}
 
+	/* (non-Javadoc)
+	 * @see ccare.symboltable.impl.ISymbol#getTriggers()
+	 */
+	@Override
 	public Set<Symbol> getTriggers() {
 		return triggers;
 	}
 
+	@Override
 	public SymbolReference getReference() {
 		return ref;
 	}
@@ -78,8 +88,6 @@ class Symbol {
 		clearDefinitions();
 		definition = d;
 		buildDefinitions(t);
-		// TODO change to fireTriggers(this)
-		t.fireTriggers(triggers);
 		expireValue();
 	}
 
@@ -96,6 +104,7 @@ class Symbol {
 		System.out.println("After Triggers are " + triggers.size());
 	}
 
+	@Override
 	public void expireValue() {
 		upToDate = false;
 		// for (Symbol s : dependents) {
@@ -147,6 +156,10 @@ class Symbol {
 		tb.buildGraph(this, definition.getTriggers(), t);
 	}
 
+	/* (non-Javadoc)
+	 * @see ccare.symboltable.impl.ISymbol#getDefinition()
+	 */
+	@Override
 	public SymbolDefinition getDefinition() {
 		return definition;
 	}
