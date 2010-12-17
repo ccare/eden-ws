@@ -107,9 +107,6 @@ class SymbolImpl implements Symbol {
 	@Override
 	public void expireValue() {
 		upToDate = false;
-		// for (Symbol s : dependents) {
-		// s.expireValue();
-		// }
 	}
 
 	public Object getValue(SymbolTable t) {

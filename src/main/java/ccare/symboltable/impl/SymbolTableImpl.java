@@ -36,6 +36,7 @@ import ccare.symboltable.exceptions.SymbolTableException;
 import ccare.symboltable.impl.javascript.Definition;
 import ccare.symboltable.maintainers.DependencyMaintainer;
 import ccare.symboltable.maintainers.MarkOutOfDateMaintainer;
+import ccare.symboltable.maintainers.TriggeredProcScheduler;
 
 import org.mozilla.javascript.Undefined;
 
@@ -55,7 +56,8 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
     private String name;
     private final UUID id = UUID.randomUUID();
     private Map<SymbolReference, SymbolImpl> symbols = new HashMap<SymbolReference, SymbolImpl>();
-	private DependencyMaintainer maintainer = new MarkOutOfDateMaintainer();
+	private DependencyMaintainer syncMaintainer = new MarkOutOfDateMaintainer();
+	private DependencyMaintainer asyncMaintainer = new TriggeredProcScheduler();
 
     public SymbolTableImpl() {
 		registerAsMXBean();
@@ -127,10 +129,11 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
 
 	private void doRedefine(SymbolReference ref, final Definition d) {
 		SymbolImpl s = get(ref);
-		maintainer.beforeRedefinition(s, d);
+		asyncMaintainer.beforeRedefinition(this, s, d);
+		syncMaintainer.beforeRedefinition(this, s, d);
 		s.redefine(d, this);
-		maintainer.afterRedefinition(s);
-		fireTriggers(s.getTriggers());
+		syncMaintainer.afterRedefinition(this, s);
+		asyncMaintainer.afterRedefinition(this, s);
 	}
 	
 	
