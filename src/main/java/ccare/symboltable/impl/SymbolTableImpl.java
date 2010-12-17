@@ -51,6 +51,7 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
     private String name;
     private final UUID id = UUID.randomUUID();
     private Map<SymbolReference, Symbol> symbols = new HashMap<SymbolReference, Symbol>();
+	private DependencyMaintainer maintainer = new MarkOutOfDateMaintainer();
 
     public SymbolTableImpl() {
 		registerAsMXBean();
@@ -121,17 +122,13 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
     }
 
 	private void doRedefine(SymbolReference ref, final Definition d) {
-		Symbol s = (Symbol) get(ref);
+		Symbol s = get(ref);
+		maintainer.beforeRedefinition(s, d);
 		s.redefine(d, this);
-		doRecursivelyExpireValue(s);
+		maintainer.afterRedefinition(s);
 	}
 	
-	private void doRecursivelyExpireValue(Symbol s) {
-		s.expireValue();
-		for (Symbol dependent : s.getDependents()) {
-			doRecursivelyExpireValue(dependent);
-		}
-	}
+	
 
     @Override
     public Object getValue(SymbolReference ref) {
