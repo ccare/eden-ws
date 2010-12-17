@@ -124,15 +124,10 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
         if (ref == null || defn == null) {
             throw new CannotDefineException();
         }
-        if (defn.trim().startsWith("function")) {
-            defineFunction(ref, defn);
-        } else {
-            final Definition d = new Definition(defn);
-            doRedefine(ref, d);
-        }
+        doRedefine(ref, languageSupport.createDefinition(defn));
     }
 
-	private void doRedefine(SymbolReference ref, final Definition d) {
+	private void doRedefine(SymbolReference ref, final SymbolDefinition d) {
 		SymbolImpl s = get(ref);
 		asyncMaintainer.beforeRedefinition(this, s, d);
 		syncMaintainer.beforeRedefinition(this, s, d);
@@ -157,13 +152,13 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
 
     @Override
     public void defineFunction(SymbolReference ref, String defn) {
-        final Definition d = new Definition(defn, Definition.ExprType.FUNCTION);
+    	final SymbolDefinition d = languageSupport.defineFunction(defn);
         doRedefine(ref, d);
     }
 
     @Override
     public void defineTriggeredProc(SymbolReference ref, String defn, String... triggers) {
-        final Definition d = new Definition(defn, Definition.ExprType.FUNCTION, triggers);
+        final SymbolDefinition d = languageSupport.defineTriggeredProc(defn, triggers);
         doRedefine(ref, d);
     }
 

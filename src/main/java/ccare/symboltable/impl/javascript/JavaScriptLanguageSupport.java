@@ -24,4 +24,24 @@ public class JavaScriptLanguageSupport implements LanugageSupport {
         }
     }
 
+	@Override
+	public SymbolDefinition defineTriggeredProc(String defn, String... triggers) {
+		return new Definition(defn, Definition.ExprType.FUNCTION, triggers);
+	}
+
+	@Override
+	public SymbolDefinition defineFunction(String defn) {
+		return new Definition(defn, Definition.ExprType.FUNCTION);
+	}
+
+	@Override
+	public SymbolDefinition createDefinition(String defn) {
+		if (defn.trim().startsWith("function")) {
+			return defineFunction(defn);
+		} else {
+			return new Definition(defn);
+		}
+
+	}
+
 }
