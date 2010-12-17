@@ -28,17 +28,21 @@
 
 package ccare.symboltable.impl;
 
+import ccare.symboltable.LanugageSupport;
 import ccare.symboltable.Symbol;
+import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
 import ccare.symboltable.exceptions.SymbolTableException;
 import ccare.symboltable.impl.javascript.Definition;
+import ccare.symboltable.impl.javascript.JavaScriptLanguageSupport;
 import ccare.symboltable.maintainers.StateMaintainer;
 import ccare.symboltable.maintainers.MarkOutOfDateMaintainer;
 import ccare.symboltable.maintainers.TriggeredProcScheduler;
 
 import org.mozilla.javascript.Undefined;
+import org.springframework.web.util.JavaScriptUtils;
 
 import java.lang.management.ManagementFactory;
 import java.util.*;
@@ -58,6 +62,7 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
     private Map<SymbolReference, SymbolImpl> symbols = new HashMap<SymbolReference, SymbolImpl>();
 	private StateMaintainer syncMaintainer = new MarkOutOfDateMaintainer();
 	private StateMaintainer asyncMaintainer = new TriggeredProcScheduler();
+	private LanugageSupport languageSupport = new JavaScriptLanguageSupport();
 
     public SymbolTableImpl() {
 		registerAsMXBean();
@@ -164,39 +169,23 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
 
     @Override
     public Object execute(SymbolReference a) {
-        final String defn = "#{" + a.getName() + "}()";
-        return eval(defn);
+        return eval(languageSupport.createMethodCall(a.getName()));
     }
 
     @Override
     public Object execute(SymbolReference a, Object... params) {
-        final String defn = "#{" + a.getName() + "}(" + encodeParams(params) + ")";
-		return eval(defn);
+		return eval(languageSupport.createMethodCall(a.getName(), params));
     }
 
-	private Object eval(final String defn) {
-		Definition d = new Definition(defn);
+	private Object eval(final SymbolDefinition defn) {
         try {
-        	return d.evaluate(this);
+        	return defn.evaluate(this);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Undefined.instance;
 		}
 	}
 
-    private String encodeParams(Object... params) {
-        if (params.length == 0) {
-            return "";
-        } else {
-            StringBuilder sb = new StringBuilder();
-            sb.append(params[0]);
-            for (int i = 1; i < params.length; i++) {
-                sb.append(",");
-                sb.append(params[i]);
-            }
-            return sb.toString();
-        }
-    }
 
     @Override
     public String getName() {
