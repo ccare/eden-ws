@@ -14,8 +14,11 @@ import ccare.symboltable.exceptions.EvaluationException;
 
 public class JavaScriptLanguageExecutor extends LanguageExecutor {
 
+	final Scriptable scope;
+    
 	public JavaScriptLanguageExecutor(SymbolTable table) {
 		super(table);
+		scope = getScopeFactory().scopeFor(getSymbolTable());
 	}
 
 	@Override
@@ -23,7 +26,6 @@ public class JavaScriptLanguageExecutor extends LanguageExecutor {
 		final String expr = definition.getExpr();
         Context cx = Context.enter();
         try {
-            final Scriptable scope = getScopeFactory().scopeFor(getSymbolTable());
             if (definition.isExecutable()) {
                 return compileFunction(cx, scope, expr);
             } else {
