@@ -39,7 +39,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import java.io.IOException;
 
-import static ccare.symboltable.impl.javascript.RuntimeUtils.evalExpression;
+import static ccare.symboltable.impl.javascript.JavaScriptLanguageExecutor.evalExpression;
 import static ccare.symboltable.impl.javascript.XmlProcessingSupport.*;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;

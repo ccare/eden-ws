@@ -40,7 +40,9 @@ public interface SymbolDefinition {
 
     public Collection<SymbolReference> getTriggers();
 
-    public Object evaluate(SymbolTable t);
+    public Object evaluate(LanguageExecutor context);
 
     boolean isExecutable();
+
+	public abstract String getExpr();
 }

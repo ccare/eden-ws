@@ -28,9 +28,11 @@
 
 package ccare.symboltable.impl.javascript;
 
+import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
+import ccare.symboltable.SymbolTableMXBean;
 import ccare.symboltable.impl.SymbolTableImpl;
 import org.junit.Test;
 
@@ -158,7 +160,7 @@ public class DefinitionTest {
     }
 
     private void validateExpr(final String target, final String expr) {
-        final Definition defn = new Definition(expr);
+        final SymbolDefinition defn = new Definition(expr);
         assertEquals(target, defn.getExpr());
     }
 
@@ -180,45 +182,45 @@ public class DefinitionTest {
     @Test
     public void testEvaluate() throws Exception {
         SymbolDefinition d = new Definition("1+2");
-        assertEquals(3, d.evaluate(null));
+        assertEquals(3, d.evaluate(new JavaScriptLanguageExecutor(null)));
     }
 
     @Test
     public void testEvaluateE4X() throws Exception {
         SymbolDefinition d = new Definition("<xml><foo>bar</foo></xml>.foo.toString()");
-        assertEquals("bar", d.evaluate(null));
+        assertEquals("bar", d.evaluate(new JavaScriptLanguageExecutor(null)));
     }
 
     @Test
     public void testPrintln() throws Exception {
         SymbolDefinition d = new Definition("java.lang.System.out.println(3)");
-        d.evaluate(null);
+        d.evaluate(new JavaScriptLanguageExecutor(null));
     }
 
     @Test
     public void testCallMagicObserveFunctionDelegatesCorrectly() throws Exception {
         final SymbolDefinition d = new Definition("$eden_observe('a')");
         final SymbolTable t = stubSymbolTable("abc");
-        assertEquals("abc", d.evaluate(t));
+        assertEquals("abc", d.evaluate(t.getExecutor()));
     }
 
     @Test
     public void testEvaluateDependency() throws Exception {
-        final SymbolTableImpl table = new SymbolTableImpl();
+        final SymbolTableMXBean table = new SymbolTableImpl();
         final SymbolDefinition d = new Definition("#a");
         final SymbolTable t = stubSymbolTable("abc");
-        assertEquals("abc", d.evaluate(t));
+        assertEquals("abc", d.evaluate(t.getExecutor())); 	
     }
 
     @Test
     public void testEvaluateDependencyExpression() throws Exception {
-        final SymbolTableImpl table = new SymbolTableImpl();
+        final SymbolTableMXBean table = new SymbolTableImpl();
         final SymbolDefinition d1 = new Definition("#a + 'def'");
         final SymbolDefinition d2 = new Definition("#{a} + 'def'");
         final SymbolTable t = stubSymbolTable("abc");
         final String target = "abcdef";
-        assertEquals(target, d1.evaluate(t));
-        assertEquals(target, d2.evaluate(t));
+        assertEquals(target, d1.evaluate(t.getExecutor()));
+        assertEquals(target, d2.evaluate(t.getExecutor()));
     }
 
     private SymbolTable stubSymbolTable(final Object value) {
@@ -292,8 +294,23 @@ public class DefinitionTest {
 				// TODO Auto-generated method stub
 				return null;
 			}
+
+			@Override
+			public Object evaluateDefintion(SymbolDefinition definition) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public LanguageExecutor getExecutor() {
+				return new JavaScriptLanguageExecutor(this);
+			}
         };
     }
+
+	public LanguageExecutor getExecutor() {
+		return null;
+	}
 
 
 }

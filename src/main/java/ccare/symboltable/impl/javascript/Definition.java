@@ -28,9 +28,9 @@
 
 package ccare.symboltable.impl.javascript;
 
+import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
-import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.EvaluationException;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EcmaError;
@@ -38,8 +38,6 @@ import org.mozilla.javascript.Scriptable;
 
 import java.util.*;
 
-import static ccare.symboltable.impl.javascript.RuntimeUtils.compileFunction;
-import static ccare.symboltable.impl.javascript.RuntimeUtils.evalExpression;
 import static ccare.symboltable.impl.javascript.TranslationUtils.extractSpecialSymbols;
 import static ccare.symboltable.impl.javascript.TranslationUtils.translateExpression;
 import static java.lang.String.format;
@@ -79,7 +77,8 @@ class Definition implements SymbolDefinition {
         }
     }
 
-    public String getExpr() {
+    @Override
+	public String getExpr() {
         return translateExpression(expr);
     }
 
@@ -100,27 +99,10 @@ class Definition implements SymbolDefinition {
     }
 
     @Override
-    public Object evaluate(final SymbolTable t) {
-        Context cx = Context.enter();
-        try {
-            final Scriptable scope = getScopeFactory().scopeFor(t);
-            final String expr = getExpr();
-            if (isExecutable()) {
-                return compileFunction(cx, scope, expr);
-            } else {
-                return evalExpression(cx, scope, expr);
-            }
-        } catch (EcmaError error) {
-            throw new EvaluationException(format("Could not evaluate %s", expr), error);
-        } finally {
-            Context.exit();
-        }
+    public Object evaluate(final LanguageExecutor context) {
+        return context.evaluate(this);
     }
 
-
-    private ScopeFactory getScopeFactory() {
-        return ScopeFactory.getInstance();
-    }
 
     @Override
     public boolean isExecutable() {

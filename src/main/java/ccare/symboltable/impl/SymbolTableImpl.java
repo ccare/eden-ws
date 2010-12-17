@@ -28,18 +28,25 @@
 
 package ccare.symboltable.impl;
 
+import static java.lang.String.format;
+import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.LanugageSupport;
 import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
+import ccare.symboltable.exceptions.EvaluationException;
 import ccare.symboltable.exceptions.SymbolTableException;
+import ccare.symboltable.impl.javascript.JavaScriptLanguageExecutor;
 import ccare.symboltable.impl.javascript.JavaScriptLanguageSupport;
 import ccare.symboltable.maintainers.StateMaintainer;
 import ccare.symboltable.maintainers.MarkOutOfDateMaintainer;
 import ccare.symboltable.maintainers.TriggeredProcScheduler;
 
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.EcmaError;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Undefined;
 
 import java.lang.management.ManagementFactory;
@@ -61,8 +68,14 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
 	private StateMaintainer syncMaintainer = new MarkOutOfDateMaintainer();
 	private StateMaintainer asyncMaintainer = new TriggeredProcScheduler();
 	private LanugageSupport languageSupport = new JavaScriptLanguageSupport();
+	private LanguageExecutor executor = new JavaScriptLanguageExecutor(this);
+	
+    @Override
+	public LanguageExecutor getExecutor() {
+		return executor;
+	}
 
-    public SymbolTableImpl() {
+	public SymbolTableImpl() {
 		registerAsMXBean();
 	}
     
@@ -139,7 +152,7 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
     public Object getValue(SymbolReference ref) {
         SymbolImpl s = get(ref);
         try {
-            return s.getValue(this);
+            return s.getValue(this.executor);
         } catch (SymbolTableException e) {
             e.printStackTrace();
             // TODO: Log these...
@@ -171,7 +184,7 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
 
 	private Object eval(final SymbolDefinition defn) {
         try {
-        	return defn.evaluate(this);
+        	return defn.evaluate(this.executor);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Undefined.instance;
@@ -202,5 +215,10 @@ public class SymbolTableImpl extends NotificationBroadcasterSupport implements S
 	public String evaluateString(String expression) {
 		Object o = evaluate(expression);
 		return (o == null) ? "null" : o.toString();
+	}
+
+	@Override
+	public Object evaluateDefintion(SymbolDefinition definition) {
+		return executor.evaluate(definition);
 	}
 }

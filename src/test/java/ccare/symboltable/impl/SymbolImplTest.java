@@ -28,10 +28,10 @@
 
 package ccare.symboltable.impl;
 
+import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
-import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotForgetException;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,11 +57,13 @@ public class SymbolImplTest {
 
     SymbolDefinition defn;
     SymbolTableImpl symbolTable;
+    LanguageExecutor executor;
 
     @Before
     public void setup() {
         defn = createMock(SymbolDefinition.class);
         symbolTable = createMock(SymbolTableImpl.class);
+        executor = createMock(LanguageExecutor.class);
     }
 
     @Test
@@ -72,7 +74,7 @@ public class SymbolImplTest {
 
     @Test
     public void testExpireCachedValueResetsFlag() throws Exception {
-        expect(defn.evaluate(symbolTable)).andReturn(new Object());
+        expect(defn.evaluate(executor)).andReturn(new Object());
         expect(defn.getDependencies()).andReturn(Collections.<SymbolReference>emptyList());
         expect(defn.getTriggers()).andReturn(Collections.<SymbolReference>emptyList());
   
@@ -82,7 +84,7 @@ public class SymbolImplTest {
         SymbolImpl s = new SymbolImpl(new SymbolReference());
         s.redefine(defn, symbolTable);
         assertFalse(s.isUpToDate());
-        s.getValue(symbolTable);
+        s.getValue(executor);
         assertTrue(s.isUpToDate());
         s.expireValue();
         assertFalse(s.isUpToDate());
@@ -112,7 +114,7 @@ public class SymbolImplTest {
 
     @Test
     public void testGetValueDoesntReEvaluateButCaches() throws Exception {
-        expect(defn.evaluate(symbolTable)).andReturn(new Object());
+        expect(defn.evaluate(executor)).andReturn(new Object());
         expect(defn.getDependencies()).andReturn(Collections.<SymbolReference>emptyList());
         expect(defn.getTriggers()).andReturn(Collections.<SymbolReference>emptyList());
   
@@ -121,9 +123,9 @@ public class SymbolImplTest {
 
         SymbolImpl s = new SymbolImpl(new SymbolReference());
         s.redefine(defn, symbolTable);
-        s.getValue(symbolTable);
-        s.getValue(symbolTable);
-        s.getValue(symbolTable);
+        s.getValue(executor);
+        s.getValue(executor);
+        s.getValue(executor);
 
         verify(defn);
         verify(symbolTable);
@@ -131,7 +133,7 @@ public class SymbolImplTest {
 
     @Test
     public void testGetValueReEvaluatesWhenSymbolValueExpires() throws Exception {
-        expect(defn.evaluate(symbolTable)).andReturn(new Object()).times(2);
+        expect(defn.evaluate(executor)).andReturn(new Object()).times(2);
         expect(defn.getDependencies()).andReturn(Collections.<SymbolReference>emptyList());
         expect(defn.getTriggers()).andReturn(Collections.<SymbolReference>emptyList());
 
@@ -140,10 +142,10 @@ public class SymbolImplTest {
 
         SymbolImpl s = new SymbolImpl(new SymbolReference());
         s.redefine(defn, symbolTable);
-        s.getValue(symbolTable);
+        s.getValue(executor);
         s.expireValue();
-        s.getValue(symbolTable);
-        s.getValue(symbolTable);
+        s.getValue(executor);
+        s.getValue(executor);
 
         verify(defn);
         verify(symbolTable);
@@ -190,9 +192,9 @@ public class SymbolImplTest {
         } catch (CannotForgetException e) {
             fail();
         }
-        assertEquals(Undefined.instance, a.getValue(table));
-        assertEquals(Undefined.instance, b.getValue(table));
-        assertEquals(Undefined.instance, c.getValue(table));
+        assertEquals(Undefined.instance, a.getValue(executor));
+        assertEquals(Undefined.instance, b.getValue(executor));
+        assertEquals(Undefined.instance, c.getValue(executor));
     }
 
 
@@ -209,7 +211,7 @@ public class SymbolImplTest {
             }
 
             @Override
-            public Object evaluate(SymbolTable t) {
+            public Object evaluate(LanguageExecutor context) {
                 return val;
 
             }
@@ -218,7 +220,14 @@ public class SymbolImplTest {
             public boolean isExecutable() {
                 return false;
             }
+
+			@Override
+			public String getExpr() {
+				// TODO Auto-generated method stub
+				return null;
+			}
         }, table);
+
     }
 
 
@@ -240,10 +249,15 @@ public class SymbolImplTest {
             }
 
 			@Override
-			public Object evaluate(SymbolTable t) {
+			public Object evaluate(LanguageExecutor context) {
 				// TODO Auto-generated method stub
 				return null;
 			}
+			
+			@Override
+	    	public String getExpr() {
+	    		return null;
+	    	}
         }, table);
     }
 

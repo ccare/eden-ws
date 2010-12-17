@@ -61,4 +61,8 @@ public interface SymbolTable extends SymbolTableMXBean {
     void setName(String name);
 
     Object evaluate(String s);
+
+	Object evaluateDefintion(SymbolDefinition definition);
+
+	public abstract LanguageExecutor getExecutor();
 }

@@ -28,6 +28,7 @@
 
 package ccare.symboltable.impl;
 
+import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
@@ -104,12 +105,12 @@ class SymbolImpl implements Symbol {
 		upToDate = false;
 	}
 
-	Object getValue(SymbolTable t) {
+	Object getValue(LanguageExecutor exec) {
 		if (definition == null) {
 			return Undefined.instance;
 		}
 		if (!upToDate || cachedValue == null) {
-			cachedValue = new SoftReference(definition.evaluate(t));
+			cachedValue = new SoftReference(definition.evaluate(exec));
 			upToDate = true;
 		}
 		return cachedValue.get();
