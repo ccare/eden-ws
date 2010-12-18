@@ -78,12 +78,6 @@ public class DefinitionTest {
 			}
 
 			@Override
-			public Object evaluateDefintion(SymbolDefinition definition) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
 			public String evaluateString(String expression) {
 				// TODO Auto-generated method stub
 				return null;
@@ -168,7 +162,6 @@ public class DefinitionTest {
 
 	@Test
 	public void testEvaluateDependencyExpression() throws Exception {
-		final SymbolTableMXBean table = new SymbolTableImpl();
 		final SymbolDefinition d1 = new Definition("#a + 'def'");
 		final SymbolDefinition d2 = new Definition("#{a} + 'def'");
 		final SymbolTable t = stubSymbolTable("abc");

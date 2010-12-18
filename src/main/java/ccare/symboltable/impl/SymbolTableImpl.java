@@ -35,8 +35,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.mozilla.javascript.Undefined;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ccare.monitoring.AbstractMonitoringBean;
+import ccare.service.SymbolTableBean;
 import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.LanugageSupport;
 import ccare.symboltable.Symbol;
@@ -53,6 +56,8 @@ import ccare.symboltable.maintainers.TriggeredProcScheduler;
 
 public class SymbolTableImpl extends AbstractMonitoringBean implements
 		SymbolTable {
+	
+	private static final Logger logger = LoggerFactory.getLogger(SymbolTableImpl.class);
 
 	private StateMaintainer asyncMaintainer = new TriggeredProcScheduler();
 	private LanguageExecutor executor = new JavaScriptLanguageExecutor(this);
@@ -61,7 +66,9 @@ public class SymbolTableImpl extends AbstractMonitoringBean implements
 	private String name;
 	private Map<SymbolReference, SymbolImpl> symbols = new HashMap<SymbolReference, SymbolImpl>();
 	private StateMaintainer syncMaintainer = new MarkOutOfDateMaintainer();
-
+		
+	private boolean showDetailedLogging = false;
+	
 	public SymbolTableImpl() {
 		register("ccare.symboltable", "SymbolTable", id.toString());
 	}
@@ -112,12 +119,8 @@ public class SymbolTableImpl extends AbstractMonitoringBean implements
 
 	@Override
 	public Object evaluate(String expression) {
+		logger.debug("Evaluating: " + expression);
 		return eval(languageSupport.createDefinition(expression));
-	}
-
-	@Override
-	public Object evaluateDefintion(SymbolDefinition definition) {
-		return executor.evaluate(definition);
 	}
 
 	@Override
@@ -128,22 +131,27 @@ public class SymbolTableImpl extends AbstractMonitoringBean implements
 
 	@Override
 	public Object execute(SymbolReference a) {
+		logger.debug("Executing " + a);
 		return eval(languageSupport.createMethodCall(a.getName()));
 	}
 
 	@Override
 	public Object execute(SymbolReference a, Object... params) {
+		logger.debug("Executing " + a + " with " + params.length + " params");
 		return eval(languageSupport.createMethodCall(a.getName(), params));
 	}
 
 	public void fireTriggers(Set<Symbol> set) {
+		logger.debug("Fire triggers");
 		for (Symbol s : set) {
 			this.execute(s.getReference());
 		}
 	}
 
 	public SymbolImpl get(SymbolReference reference) {
+		logger.debug("Get symbol " + reference);
 		if (!symbols.containsKey(reference)) {
+			logger.debug("Introducing symbol to symboltable" + reference);
 			add(new SymbolImpl(reference));
 		}
 		return symbols.get(reference);
@@ -176,13 +184,15 @@ public class SymbolTableImpl extends AbstractMonitoringBean implements
 
 	@Override
 	public Object getValue(SymbolReference ref) {
+		logger.debug("Get value for " + ref);
 		SymbolImpl s = get(ref);
 		try {
 			return s.getValue(this.executor);
 		} catch (SymbolTableException e) {
+			logger.info("Exception getting value for " + ref);
 			e.printStackTrace();
-			// TODO: Log these...
 		}
+		logger.info("Returning UNDEFINED for " + ref);
 		return Undefined.instance;
 	}
 
@@ -190,4 +200,5 @@ public class SymbolTableImpl extends AbstractMonitoringBean implements
 	public void setName(final String name) {
 		this.name = name;
 	}
+	
 }

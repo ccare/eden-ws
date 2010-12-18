@@ -31,29 +31,84 @@ package ccare.symboltable;
 import java.util.Set;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+
 /**
  * User: carecx Date: 26-Oct-2010 Time: 15:24:19
  */
 public interface SymbolTable extends SymbolTableMXBean {
-	void define(SymbolReference aRef, String s);
+	
+	/**
+	 * Define a symbol in the symbol table.  
+	 * 
+	 * @param reference The reference of the target symbol
+	 * @param definition The definition of the symbol as a String
+	 */
+	void define(SymbolReference reference, String definition);
 
-	void defineFunction(SymbolReference a, String s);
+	/**
+	 * Define a function. Note that implementers <i>may</i> choose to support
+	 * defining a function via the {@link #define} method.
+	 * 
+	 * @param reference The reference of the target symbol
+	 * @param definition The definition of the function as a String
+	 */
+	void defineFunction(SymbolReference reference, String definition);
 
-	void defineTriggeredProc(SymbolReference a, String s, String... triggers);
+	/**
+	 * Define a Triggered procedure. The proc will be executed
+	 * when one of the observables registered as triggers changed.  
+	 * 
+	 * @param reference The reference of the target symbol
+	 * @param definition The definition of the proceedure as a String
+	 * @param triggers A var-arg list of triggers 
+	 */
+	void defineTriggeredProc(SymbolReference reference, String definition, 
+			String... triggers);
 
-	Object evaluate(String s);
+	/**
+	 * Evaluate an expression
+	 * 
+	 * @param expr an expression to evaluate
+	 * @return the result of evaluating the expression
+	 */
+	Object evaluate(String expr);
 
-	Object evaluateDefintion(SymbolDefinition definition);
+	/**
+	 * Execute a symbol (if it is executable!)
+	 * 
+	 * @param reference A reference to the symbol
+	 * @return The result of execution
+	 * 
+	 * @see #execute(SymbolReference, Object...)
+	 */
+	Object execute(SymbolReference reference);
 
-	Object execute(SymbolReference a);
+	/**
+	 * Execute a symbol (if it is executable!)
+	 * 
+	 * @param reference A reference to the symbol
+	 * @param params Parameters to pass to the underlying function
+	 * @return The result of execution
+	 * 
+	 * @see #execute(SymbolReference)
+	 */
+	Object execute(SymbolReference reference, Object... params);
 
-	Object execute(SymbolReference a, Object... params);
+	
+	/**
+	 * Get the executor instance being used to evaluate
+	 * values in this symbol table
+	 * @return The executor instance
+	 */
+	LanguageExecutor getExecutor();
 
-	public abstract LanguageExecutor getExecutor();
-
+	/** 
+	 * Get the unique id of this symbol table
+	 * @return unique id 
+	 */
 	UUID getId();
 
-	@Override
 	String getName();
 
 	Set<SymbolReference> getSymbols();
@@ -61,4 +116,5 @@ public interface SymbolTable extends SymbolTableMXBean {
 	Object getValue(SymbolReference bRef);
 
 	void setName(String name);
+	
 }
