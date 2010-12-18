@@ -10,36 +10,38 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 
-public abstract class AbstractMonitoringBean extends NotificationBroadcasterSupport {
+public class AbstractMonitoringBean extends NotificationBroadcasterSupport {
+		
+	protected final void register(final String group, final String type, final String name) {
+		final String beanName = group + ":type=" + type + ",name=" + name;
+    	register(beanName);
+	}
 	
-	public AbstractMonitoringBean() {
-		registerAsMXBean();
+	final void register(final String beanName) {
+		final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+		registerAsMXBean(createName(beanName), this, mbs);		
 	}
 
-	private void registerAsMXBean() {
-    	MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-    	ObjectName beanName;
+	static ObjectName createName(final String beanName) {
 		try {
-			beanName = new ObjectName(getMxBeanName());
-	        mbs.registerMBean(this, beanName);
+			return new ObjectName(beanName);
 		} catch (MalformedObjectNameException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new MonitoringException("Invalid MXBean Name: " + beanName, e);
 		} catch (NullPointerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new MonitoringException("Cannot have null MXBean Name", e);
+		}
+	}
+	
+	static void registerAsMXBean(final ObjectName beanName, final AbstractMonitoringBean bean, final MBeanServer mbs) {
+    	try {
+	        mbs.registerMBean(bean, beanName);
 		} catch (InstanceAlreadyExistsException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new MonitoringException("Instance of bean already exists", e);
 		} catch (MBeanRegistrationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new MonitoringException("Exception thrown when registering MXBean", e);
 		} catch (NotCompliantMBeanException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new MonitoringException("Exception thrown when registering MXBean - bean not compliant", e);
 		}
     }
-
-	protected abstract String getMxBeanName();
 	
 }

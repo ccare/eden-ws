@@ -55,6 +55,12 @@ public class DefinitionTest {
     public void testCreate() {
         new Definition("a+b");
     }
+    
+    @Test
+    public void testToString() {
+    	final String expr = "a+b";
+		assertEquals(expr, new Definition(expr).toString());
+    }
 
     @Test
     public void testExpressionTranslationBaseCase() {

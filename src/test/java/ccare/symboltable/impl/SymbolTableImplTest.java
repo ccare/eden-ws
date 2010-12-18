@@ -31,6 +31,7 @@ package ccare.symboltable.impl;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.exceptions.CannotDefineException;
+
 import org.junit.Test;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Undefined;
@@ -573,6 +574,16 @@ public class SymbolTableImplTest {
         assertEquals(13, table.evaluate("12 + 1"));
         assertEquals("121", table.evaluate("'12' + 1"));
     }
+    
+    @Test
+    public void testCallingMagicFunctionWithIncorrectArgsReturnsUndefined() {
+    	SymbolTableImpl table = new SymbolTableImpl();
+        assertEquals(Undefined.instance, table.evaluate("$eden_observe()"));
+        assertEquals(Undefined.instance, table.evaluate("$eden_observe(1,2,3)"));
+        assertEquals(Undefined.instance, table.evaluate("$eden_observe(1,2,3,4,5)"));
+        assertEquals(Undefined.instance, table.evaluate("$eden_define()"));
+        assertEquals(Undefined.instance, table.evaluate("$eden_define(1,2,3)"));
+        assertEquals(Undefined.instance, table.evaluate("$eden_define(1,2,3,4,5)"));    }
 
     @Test
     public void testEvaluateBasedOnDependency() {

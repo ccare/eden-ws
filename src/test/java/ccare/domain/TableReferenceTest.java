@@ -47,7 +47,7 @@ public class TableReferenceTest {
 
     @Test
     public void testEqualsAndHashCode() {
-        Map<SymbolTableRef, Object> m = new HashMap<SymbolTableRef, Object>();
+        Map<TableReferenceTest, Object> m = new HashMap<TableReferenceTest, Object>();
         assertEquals(new TableReference("a"), new TableReference("a"));
         assertFalse(new TableReference("a").equals(new TableReference("b")));
         assertEquals(new TableReference("a").hashCode(), new TableReference("a").hashCode());

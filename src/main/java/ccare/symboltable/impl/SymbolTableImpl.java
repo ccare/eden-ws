@@ -57,16 +57,15 @@ public class SymbolTableImpl extends AbstractMonitoringBean implements SymbolTab
 	private LanugageSupport languageSupport = new JavaScriptLanguageSupport();
 	private LanguageExecutor executor = new JavaScriptLanguageExecutor(this);
 	
+	public SymbolTableImpl() {
+		register("ccare.symboltable","SymbolTable",id.toString());
+	}
+	
     @Override
 	public LanguageExecutor getExecutor() {
 		return executor;
 	}    
     
-	@Override
-	protected String getMxBeanName() {
-		return "ccare.symboltable:type=SymbolTable,name="+id.toString();
-	}
-
 	@Override
     public UUID getId() {
         return id;
