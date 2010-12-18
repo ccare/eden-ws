@@ -52,123 +52,131 @@ import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.xml.XMLObject;
 
 /**
- * Created by IntelliJ IDEA.
- * User: carecx
- * Date: 03-Nov-2010
- * Time: 20:38:10
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: carecx Date: 03-Nov-2010 Time: 20:38:10 To
+ * change this template use File | Settings | File Templates.
  */
 class XmlProcessingSupport {
 
-    private static Pattern PROCESSING_INSTRUCT_PATTERN = Pattern.compile("^<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>");
+	private static Pattern PROCESSING_INSTRUCT_PATTERN = Pattern
+			.compile("^<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>");
 
-    static String doTransform(final Transformer transformer, StreamSource inputSource, Map<String, Object> m) throws TransformerException {
-        if (m != null) {
-            for (String k : m.keySet()) {
-                transformer.setParameter(k, m.get(k));
-            }
-        }
-        final OutputStream bos = new ByteArrayOutputStream();
-        final StreamResult result = new StreamResult(bos);
-        transformer.transform(inputSource, result);
+	static String doTransform(final Transformer transformer,
+			StreamSource inputSource, Map<String, Object> m)
+			throws TransformerException {
+		if (m != null) {
+			for (String k : m.keySet()) {
+				transformer.setParameter(k, m.get(k));
+			}
+		}
+		final OutputStream bos = new ByteArrayOutputStream();
+		final StreamResult result = new StreamResult(bos);
+		transformer.transform(inputSource, result);
 
-        final String transformedString = bos.toString();
-        return transformedString;
-    }
+		final String transformedString = bos.toString();
+		return transformedString;
+	}
 
-    static Function createTransformerFactoryFunction() {
-        final TransformerFactory factory = TransformerFactory.newInstance();
-        return new EmptyFunction() {
+	static Function createTransformerFactoryFunction() {
+		final TransformerFactory factory = TransformerFactory.newInstance();
+		return new EmptyFunction() {
 
-            @Override
-            public Object call(Context context, Scriptable scriptable, Scriptable scriptable1, Object[] objects) {
-                if (objects.length == 1) {
-                    return createTransformFunction(factory, objects[0]);
-                }
-                return Undefined.instance;
-            }
-        };
+			@Override
+			public Object call(Context context, Scriptable scriptable,
+					Scriptable scriptable1, Object[] objects) {
+				if (objects.length == 1) {
+					return createTransformFunction(factory, objects[0]);
+				}
+				return Undefined.instance;
+			}
+		};
 
-    }
+	}
 
-    static Function createTransformFunction(final TransformerFactory factory, final Object xsl) {
-        notNull(xsl);
-        String xslString = getXMLStringFromObject(xsl);
+	static Function createTransformFunction(final TransformerFactory factory,
+			final Object xsl) {
+		notNull(xsl);
+		String xslString = getXMLStringFromObject(xsl);
 
-        final StreamSource src = new StreamSource(IOUtils.toInputStream(xslString));
-        final Transformer trans;
-        try {
-            trans = factory.newTransformer(src);
-        } catch (TransformerConfigurationException e) {
-            throw new RuntimeException(e);
-        }
+		final StreamSource src = new StreamSource(
+				IOUtils.toInputStream(xslString));
+		final Transformer trans;
+		try {
+			trans = factory.newTransformer(src);
+		} catch (TransformerConfigurationException e) {
+			throw new RuntimeException(e);
+		}
 
-        return new EmptyFunction() {
+		return new EmptyFunction() {
 
-            @Override
-            public Object call(Context context, Scriptable scope, Scriptable scriptable1, Object[] objects) {
-                final String input;
-                if (objects.length > 0) {
-                    input = getXMLStringFromObject(objects[0]);
-                    final StreamSource inputSource = new StreamSource(IOUtils.toInputStream(input));
-                    String result;
-                    Map<String, Object> paramMap = null;
-                    if (objects.length > 1) {
-                        Object param2 = objects[1];
-                        if (param2 instanceof Scriptable) {
-                            Scriptable obj = (Scriptable) param2;
-                            final Object[] keys = obj.getIds();
-                            paramMap = new HashMap<String, Object>(keys.length);
-                            for (Object o : keys) {
-                                if (o instanceof String) {
-                                    String key = (String) o;
-                                    paramMap.put(key, obj.get(key, obj));
-                                }
-                            }
-                        }
-                    }
+			@Override
+			public Object call(Context context, Scriptable scope,
+					Scriptable scriptable1, Object[] objects) {
+				final String input;
+				if (objects.length > 0) {
+					input = getXMLStringFromObject(objects[0]);
+					final StreamSource inputSource = new StreamSource(
+							IOUtils.toInputStream(input));
+					String result;
+					Map<String, Object> paramMap = null;
+					if (objects.length > 1) {
+						Object param2 = objects[1];
+						if (param2 instanceof Scriptable) {
+							Scriptable obj = (Scriptable) param2;
+							final Object[] keys = obj.getIds();
+							paramMap = new HashMap<String, Object>(keys.length);
+							for (Object o : keys) {
+								if (o instanceof String) {
+									String key = (String) o;
+									paramMap.put(key, obj.get(key, obj));
+								}
+							}
+						}
+					}
 
-                    try {
-                        result = doTransform(trans, inputSource, paramMap);
-                    } catch (TransformerException e) {
-                        throw new RuntimeException(e);
-                    }
-                    if (context != null && scope != null) {
-                        return context.evaluateString(scope, "XML('" + removeProcessingInstruction(result) + "')", "cmd", 0, null);
-                    } else {
-                        return result;
-                    }
-                }
-                return null;
-            }
+					try {
+						result = doTransform(trans, inputSource, paramMap);
+					} catch (TransformerException e) {
+						throw new RuntimeException(e);
+					}
+					if (context != null && scope != null) {
+						return context.evaluateString(scope, "XML('"
+								+ removeProcessingInstruction(result) + "')",
+								"cmd", 0, null);
+					} else {
+						return result;
+					}
+				}
+				return null;
+			}
 
-        };
-    }
+		};
+	}
 
-    private static String getXMLStringFromObject(Object xsl) {
-        String xslString;
-        if (xsl instanceof String) {
-            xslString = (String) xsl;
-        } else if (xsl instanceof XMLObject) {
-            xslString = toXMLString((XMLObject) xsl);
-        } else {
-            xslString = xsl.toString();
-        }
-        return xslString;
-    }
+	private static String getXMLStringFromObject(Object xsl) {
+		String xslString;
+		if (xsl instanceof String) {
+			xslString = (String) xsl;
+		} else if (xsl instanceof XMLObject) {
+			xslString = toXMLString((XMLObject) xsl);
+		} else {
+			xslString = xsl.toString();
+		}
+		return xslString;
+	}
 
-    static String removeProcessingInstruction(String xml) {
-        return PROCESSING_INSTRUCT_PATTERN.matcher(xml).replaceFirst("");
-    }
+	static String removeProcessingInstruction(String xml) {
+		return PROCESSING_INSTRUCT_PATTERN.matcher(xml).replaceFirst("");
+	}
 
-    static String toXMLString(XMLObject transformed) {
-        final Object o = ScriptableObject.callMethod(transformed, "toXMLString", null);
-        if (o instanceof String) {
-            return (String) o;
-        } else if (o == null) {
-            return Undefined.instance.toString();
-        } else {
-            return o.toString();
-        }
-    }
+	static String toXMLString(XMLObject transformed) {
+		final Object o = ScriptableObject.callMethod(transformed,
+				"toXMLString", null);
+		if (o instanceof String) {
+			return (String) o;
+		} else if (o == null) {
+			return Undefined.instance.toString();
+		} else {
+			return o.toString();
+		}
+	}
 }

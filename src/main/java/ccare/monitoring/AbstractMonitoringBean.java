@@ -11,15 +11,16 @@ import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 
 public class AbstractMonitoringBean extends NotificationBroadcasterSupport {
-		
-	protected final void register(final String group, final String type, final String name) {
+
+	protected final void register(final String group, final String type,
+			final String name) {
 		final String beanName = group + ":type=" + type + ",name=" + name;
-    	register(beanName);
+		register(beanName);
 	}
-	
+
 	final void register(final String beanName) {
 		final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-		registerAsMXBean(createName(beanName), this, mbs);		
+		registerAsMXBean(createName(beanName), this, mbs);
 	}
 
 	static ObjectName createName(final String beanName) {
@@ -31,17 +32,21 @@ public class AbstractMonitoringBean extends NotificationBroadcasterSupport {
 			throw new MonitoringException("Cannot have null MXBean Name", e);
 		}
 	}
-	
-	static void registerAsMXBean(final ObjectName beanName, final AbstractMonitoringBean bean, final MBeanServer mbs) {
-    	try {
-	        mbs.registerMBean(bean, beanName);
+
+	static void registerAsMXBean(final ObjectName beanName,
+			final AbstractMonitoringBean bean, final MBeanServer mbs) {
+		try {
+			mbs.registerMBean(bean, beanName);
 		} catch (InstanceAlreadyExistsException e) {
 			throw new MonitoringException("Instance of bean already exists", e);
 		} catch (MBeanRegistrationException e) {
-			throw new MonitoringException("Exception thrown when registering MXBean", e);
+			throw new MonitoringException(
+					"Exception thrown when registering MXBean", e);
 		} catch (NotCompliantMBeanException e) {
-			throw new MonitoringException("Exception thrown when registering MXBean - bean not compliant", e);
+			throw new MonitoringException(
+					"Exception thrown when registering MXBean - bean not compliant",
+					e);
 		}
-    }
-	
+	}
+
 }

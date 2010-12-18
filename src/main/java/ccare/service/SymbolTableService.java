@@ -37,24 +37,23 @@ import ccare.domain.TableReference;
 import ccare.symboltable.SymbolReference;
 
 /**
- * User: carecx
- * Date: 13-Oct-2010
- * Time: 22:20:08
+ * User: carecx Date: 13-Oct-2010 Time: 22:20:08
  */
 public interface SymbolTableService {
-    public UUID getId();
+	public UUID getId();
 
-    public void define(SymbolReference reference, Observable d);
+	public void define(SymbolReference reference, Observable d);
 
-    public Set<SymbolReference> listSymbols();
+	public Set<SymbolReference> listSymbols();
 
-    public TableReference createSpace(TableReference reference) throws CannotCreateException;
+	public TableReference createSpace(TableReference reference)
+			throws CannotCreateException;
 
-    public TableReference createSpace(String name) throws CannotCreateException;
+	public TableReference createSpace(String name) throws CannotCreateException;
 
-    public void deleteSpace(TableReference reference);
+	public void deleteSpace(TableReference reference);
 
-    public void deleteSpace(String name);
+	public void deleteSpace(String name);
 
-    public List<TableReference> allSpaces();
+	public List<TableReference> allSpaces();
 }

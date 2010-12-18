@@ -29,14 +29,11 @@
 package ccare.service;
 
 /**
- * Created by IntelliJ IDEA.
- * User: carecx
- * Date: 26-Nov-2010
- * Time: 22:33:25
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: carecx Date: 26-Nov-2010 Time: 22:33:25 To
+ * change this template use File | Settings | File Templates.
  */
 public class CannotCreateException extends Throwable {
-    public CannotCreateException(String s) {
+	public CannotCreateException(String s) {
 
-    }
+	}
 }

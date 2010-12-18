@@ -15,7 +15,7 @@ import ccare.symboltable.exceptions.EvaluationException;
 public class JavaScriptLanguageExecutor extends LanguageExecutor {
 
 	final Scriptable scope;
-    
+
 	public JavaScriptLanguageExecutor(SymbolTable table) {
 		super(table);
 		scope = getScopeFactory().scopeFor(getSymbolTable());
@@ -24,31 +24,32 @@ public class JavaScriptLanguageExecutor extends LanguageExecutor {
 	@Override
 	public Object evaluate(SymbolDefinition definition) {
 		final String expr = definition.getExpr();
-        Context cx = Context.enter();
-        try {
-            if (definition.isExecutable()) {
-                return compileFunction(cx, scope, expr);
-            } else {
-                return evalExpression(cx, scope, expr);
-            }
-        } catch (EcmaError error) {
-            throw new EvaluationException(format("Could not evaluate %s", expr), error);
-        } finally {getScopeFactory().scopeFor(getSymbolTable());
-            Context.exit();
-        }
+		Context cx = Context.enter();
+		try {
+			if (definition.isExecutable()) {
+				return compileFunction(cx, scope, expr);
+			} else {
+				return evalExpression(cx, scope, expr);
+			}
+		} catch (EcmaError error) {
+			throw new EvaluationException(
+					format("Could not evaluate %s", expr), error);
+		} finally {
+			getScopeFactory().scopeFor(getSymbolTable());
+			Context.exit();
+		}
 	}
-	
 
-    private ScopeFactory getScopeFactory() {
-        return ScopeFactory.getInstance();
-    }
+	private ScopeFactory getScopeFactory() {
+		return ScopeFactory.getInstance();
+	}
 
-    static Object evalExpression(Context cx, Scriptable scope, String expr) {
-        return cx.evaluateString(scope, expr, "<cmd>", 1, null);
-    }
+	static Object evalExpression(Context cx, Scriptable scope, String expr) {
+		return cx.evaluateString(scope, expr, "<cmd>", 1, null);
+	}
 
-    static Function compileFunction(Context cx, Scriptable scope, String expr) {
-        return cx.compileFunction(scope, expr, "<func>", 1, null);
-    }
-	
+	static Function compileFunction(Context cx, Scriptable scope, String expr) {
+		return cx.compileFunction(scope, expr, "<func>", 1, null);
+	}
+
 }

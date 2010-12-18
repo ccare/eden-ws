@@ -11,9 +11,9 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
 public class EmptyFunctionTest {
-	
+
 	EmptyFunction f = new EmptyFunction() {
-		
+
 		@Override
 		public Object call(Context arg0, Scriptable arg1, Scriptable arg2,
 				Object[] arg3) {
@@ -24,7 +24,8 @@ public class EmptyFunctionTest {
 
 	@Test
 	public void testConstruct() {
-		assertNull(f.construct(createMock(Context.class), createMock(Scriptable.class), new Object[]{}));
+		assertNull(f.construct(createMock(Context.class),
+				createMock(Scriptable.class), new Object[] {}));
 	}
 
 	@Test

@@ -51,59 +51,60 @@ import ccare.symboltable.maintainers.MarkOutOfDateMaintainer;
 import ccare.symboltable.maintainers.StateMaintainer;
 import ccare.symboltable.maintainers.TriggeredProcScheduler;
 
-public class SymbolTableImpl extends AbstractMonitoringBean implements SymbolTable {
+public class SymbolTableImpl extends AbstractMonitoringBean implements
+		SymbolTable {
 
-    private String name;
-    private final UUID id = UUID.randomUUID();
-    private Map<SymbolReference, SymbolImpl> symbols = new HashMap<SymbolReference, SymbolImpl>();
+	private String name;
+	private final UUID id = UUID.randomUUID();
+	private Map<SymbolReference, SymbolImpl> symbols = new HashMap<SymbolReference, SymbolImpl>();
 	private StateMaintainer syncMaintainer = new MarkOutOfDateMaintainer();
 	private StateMaintainer asyncMaintainer = new TriggeredProcScheduler();
 	private LanugageSupport languageSupport = new JavaScriptLanguageSupport();
 	private LanguageExecutor executor = new JavaScriptLanguageExecutor(this);
-	
+
 	public SymbolTableImpl() {
-		register("ccare.symboltable","SymbolTable",id.toString());
+		register("ccare.symboltable", "SymbolTable", id.toString());
 	}
-	
-    @Override
+
+	@Override
 	public LanguageExecutor getExecutor() {
 		return executor;
-	}    
-    
+	}
+
 	@Override
-    public UUID getId() {
-        return id;
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    public void add(SymbolImpl sym) {
-        symbols.put(sym.getReference(), sym);
-    }
+	public void add(SymbolImpl sym) {
+		symbols.put(sym.getReference(), sym);
+	}
 
-    public SymbolImpl get(SymbolReference reference) {
-        if (!symbols.containsKey(reference)) {
-            add(new SymbolImpl(reference));
-        }
-        return symbols.get(reference);
-    }
+	public SymbolImpl get(SymbolReference reference) {
+		if (!symbols.containsKey(reference)) {
+			add(new SymbolImpl(reference));
+		}
+		return symbols.get(reference);
+	}
 
-    @Override
-    public Set<SymbolReference> getSymbols() {
-        return Collections.unmodifiableSet(symbols.keySet());
-    }
+	@Override
+	public Set<SymbolReference> getSymbols() {
+		return Collections.unmodifiableSet(symbols.keySet());
+	}
 
-    public void fireTriggers(Set<Symbol> set) {
-        for (Symbol s : set) {
-            this.execute(s.getReference());
-        }
-    }
+	public void fireTriggers(Set<Symbol> set) {
+		for (Symbol s : set) {
+			this.execute(s.getReference());
+		}
+	}
 
-    @Override
-    public void define(SymbolReference ref, String defn) {
-        if (ref == null || defn == null) {
-            throw new CannotDefineException();
-        }
-        doRedefine(ref, languageSupport.createDefinition(defn));
-    }
+	@Override
+	public void define(SymbolReference ref, String defn) {
+		if (ref == null || defn == null) {
+			throw new CannotDefineException();
+		}
+		doRedefine(ref, languageSupport.createDefinition(defn));
+	}
 
 	private void doRedefine(SymbolReference ref, final SymbolDefinition d) {
 		SymbolImpl s = get(ref);
@@ -113,65 +114,66 @@ public class SymbolTableImpl extends AbstractMonitoringBean implements SymbolTab
 		syncMaintainer.afterRedefinition(this, s);
 		asyncMaintainer.afterRedefinition(this, s);
 	}
-	
 
-    @Override
-    public Object getValue(SymbolReference ref) {
-        SymbolImpl s = get(ref);
-        try {
-            return s.getValue(this.executor);
-        } catch (SymbolTableException e) {
-            e.printStackTrace();
-            // TODO: Log these...
-        }
-        return Undefined.instance;
-    }
+	@Override
+	public Object getValue(SymbolReference ref) {
+		SymbolImpl s = get(ref);
+		try {
+			return s.getValue(this.executor);
+		} catch (SymbolTableException e) {
+			e.printStackTrace();
+			// TODO: Log these...
+		}
+		return Undefined.instance;
+	}
 
-    @Override
-    public void defineFunction(SymbolReference ref, String defn) {
-    	final SymbolDefinition d = languageSupport.defineFunction(defn);
-        doRedefine(ref, d);
-    }
+	@Override
+	public void defineFunction(SymbolReference ref, String defn) {
+		final SymbolDefinition d = languageSupport.defineFunction(defn);
+		doRedefine(ref, d);
+	}
 
-    @Override
-    public void defineTriggeredProc(SymbolReference ref, String defn, String... triggers) {
-        final SymbolDefinition d = languageSupport.defineTriggeredProc(defn, triggers);
-        doRedefine(ref, d);
-    }
+	@Override
+	public void defineTriggeredProc(SymbolReference ref, String defn,
+			String... triggers) {
+		final SymbolDefinition d = languageSupport.defineTriggeredProc(defn,
+				triggers);
+		doRedefine(ref, d);
+	}
 
-    @Override
-    public Object execute(SymbolReference a) {
-        return eval(languageSupport.createMethodCall(a.getName()));
-    }
+	@Override
+	public Object execute(SymbolReference a) {
+		return eval(languageSupport.createMethodCall(a.getName()));
+	}
 
-    @Override
-    public Object execute(SymbolReference a, Object... params) {
+	@Override
+	public Object execute(SymbolReference a, Object... params) {
 		return eval(languageSupport.createMethodCall(a.getName(), params));
-    }
+	}
 
 	private Object eval(final SymbolDefinition defn) {
-        try {
-        	return defn.evaluate(this.executor);
+		try {
+			return defn.evaluate(this.executor);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Undefined.instance;
 		}
 	}
 
-    @Override
-    public String getName() {
-        return name;
-    }
+	@Override
+	public String getName() {
+		return name;
+	}
 
-    @Override
-    public void setName(final String name) {
-        this.name = name;
-    }
+	@Override
+	public void setName(final String name) {
+		this.name = name;
+	}
 
-    @Override
-    public Object evaluate(String expression) {
-        return eval(languageSupport.createDefinition(expression));
-    }
+	@Override
+	public Object evaluate(String expression) {
+		return eval(languageSupport.createDefinition(expression));
+	}
 
 	@Override
 	public int getSymbolCount() {

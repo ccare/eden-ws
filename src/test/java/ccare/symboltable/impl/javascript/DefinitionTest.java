@@ -44,251 +44,254 @@ import ccare.symboltable.SymbolTableMXBean;
 import ccare.symboltable.impl.SymbolTableImpl;
 
 /**
- * Created by IntelliJ IDEA.
- * User: carecx
- * Date: 25-Oct-2010
- * Time: 17:07:10
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: carecx Date: 25-Oct-2010 Time: 17:07:10 To
+ * change this template use File | Settings | File Templates.
  */
 public class DefinitionTest {
 
-    @Test
-    public void testCreate() {
-        new Definition("a+b");
-    }
-    
-    @Test
-    public void testToString() {
-    	final String expr = "a+b";
+	@Test
+	public void testCreate() {
+		new Definition("a+b");
+	}
+
+	@Test
+	public void testToString() {
+		final String expr = "a+b";
 		assertEquals(expr, new Definition(expr).toString());
-    }
+	}
 
-    @Test
-    public void testExpressionTranslationBaseCase() {
-        validateExprUnchangedFor("a+b");
-        validateExprUnchangedFor("1 * 123 + 3 % b");
-        validateExprUnchangedFor("\"aa\" + 'b' + c");
-    }
+	@Test
+	public void testExpressionTranslationBaseCase() {
+		validateExprUnchangedFor("a+b");
+		validateExprUnchangedFor("1 * 123 + 3 % b");
+		validateExprUnchangedFor("\"aa\" + 'b' + c");
+	}
 
-    @Test
-    public void testExpressionTranslationForExpressionWithSimpleObservables() {
-        validateExpr("a+$eden_observe('c')", "a+#c");
-        validateExpr("a % $eden_observe('c_c_d')", "a % #c_c_d");
-    }
+	@Test
+	public void testExpressionTranslationForExpressionWithSimpleObservables() {
+		validateExpr("a+$eden_observe('c')", "a+#c");
+		validateExpr("a % $eden_observe('c_c_d')", "a % #c_c_d");
+	}
 
-    @Test
-    public void testExpressionTranslationForExpressionWithEscapedObservables() {
-        validateExpr("$eden_observe('abc')", "#{abc}");
-        validateExpr("$eden_observe('http://foo/bar/') * $eden_observe('b')", "#{http://foo/bar/} * #b");
-    }
+	@Test
+	public void testExpressionTranslationForExpressionWithEscapedObservables() {
+		validateExpr("$eden_observe('abc')", "#{abc}");
+		validateExpr("$eden_observe('http://foo/bar/') * $eden_observe('b')",
+				"#{http://foo/bar/} * #b");
+	}
 
-    @Test
-    public void testExpressionTranslationForCalculatedExpresions() {
-        validateExpr("$eden_observe('abc')", "#{abc}");
-    }
+	@Test
+	public void testExpressionTranslationForCalculatedExpresions() {
+		validateExpr("$eden_observe('abc')", "#{abc}");
+	}
 
-    @Test
-    public void testExpressionTranslationForDefinition() {
-        validateExpr("$eden_define('a','b+c')", "#a is b+c");
-    }
+	@Test
+	public void testExpressionTranslationForDefinition() {
+		validateExpr("$eden_define('a','b+c')", "#a is b+c");
+	}
 
-    @Test
-    public void testExpressionTranslationForDefinitionWithDependency() {
-        validateExpr("$eden_define('a','#b+c')", "#a is #b+c");
-        validateExpr("$eden_define('a','#c')", "#a is #c");
-        validateExpr("$eden_define('a','f(#c)')", "#a is f(#c)");
-        validateExpr("$eden_define('a','#f(#c)')", "#a is #f(#c)");
-    }
+	@Test
+	public void testExpressionTranslationForDefinitionWithDependency() {
+		validateExpr("$eden_define('a','#b+c')", "#a is #b+c");
+		validateExpr("$eden_define('a','#c')", "#a is #c");
+		validateExpr("$eden_define('a','f(#c)')", "#a is f(#c)");
+		validateExpr("$eden_define('a','#f(#c)')", "#a is #f(#c)");
+	}
 
-    @Test
-    public void testExpressionTranslationForDefinitionsInFunctions() {
-        validateExpr("function() {$eden_define('a','b+c')}", "function() {#a is b+c}");
-        validateExpr("function() {$eden_define('a','b+c');}", "function() {#a is b+c;}");
-        validateExpr("function() {$eden_define('a','[1,2,\"3\"]');}", "function() {#a is [1,2,\"3\"];}");
-        validateExpr("function() {$eden_define('a','12')}", "function() {#a is 12}");
-    }
+	@Test
+	public void testExpressionTranslationForDefinitionsInFunctions() {
+		validateExpr("function() {$eden_define('a','b+c')}",
+				"function() {#a is b+c}");
+		validateExpr("function() {$eden_define('a','b+c');}",
+				"function() {#a is b+c;}");
+		validateExpr("function() {$eden_define('a','[1,2,\"3\"]');}",
+				"function() {#a is [1,2,\"3\"];}");
+		validateExpr("function() {$eden_define('a','12')}",
+				"function() {#a is 12}");
+	}
 
-    @Test
-    public void testExpressionTranslationForDefinitionsInFunctionsSplitsOnSemiColonAndNewline() {
-        validateExpr("function() {$eden_define('a','12'); $eden_define('b','5'); return $eden_observe('b')}", "function() {#a is 12; #b is 5; return #b}");
-        validateExpr("function() {" +
-                "$eden_define('a','12');\n" +
-                "$eden_define('b','5');\n" +
-                "return $eden_observe('b')\n" +
-                "}",
-                "function() {" +
-                        "#a is 12;\n" +
-                        "#b is 5;\n" +
-                        "return #b\n}");
-        validateExpr("function() {" +
-                "$eden_define('a','12')\n" +
-                "$eden_define('b','5')\n" +
-                "return $eden_observe('b')\n" +
-                "}",
-                "function() {" +
-                        "#a is 12\n" +
-                        "#b is 5\n" +
-                        "return #b\n}");
-    }
+	@Test
+	public void testExpressionTranslationForDefinitionsInFunctionsSplitsOnSemiColonAndNewline() {
+		validateExpr(
+				"function() {$eden_define('a','12'); $eden_define('b','5'); return $eden_observe('b')}",
+				"function() {#a is 12; #b is 5; return #b}");
+		validateExpr("function() {" + "$eden_define('a','12');\n"
+				+ "$eden_define('b','5');\n" + "return $eden_observe('b')\n"
+				+ "}", "function() {" + "#a is 12;\n" + "#b is 5;\n"
+				+ "return #b\n}");
+		validateExpr("function() {" + "$eden_define('a','12')\n"
+				+ "$eden_define('b','5')\n" + "return $eden_observe('b')\n"
+				+ "}", "function() {" + "#a is 12\n" + "#b is 5\n"
+				+ "return #b\n}");
+	}
 
-    @Test
-    public void testExpressionTranslationForDoubleQuoteStrings() {
-        validateExpr("function() {$eden_define('a','\"b+c\"');}", "function() {#a is \"b+c\";}");
-    }
+	@Test
+	public void testExpressionTranslationForDoubleQuoteStrings() {
+		validateExpr("function() {$eden_define('a','\"b+c\"');}",
+				"function() {#a is \"b+c\";}");
+	}
 
-    @Test
-    public void testExpressionTranslationForDoubleQuoteStringsContainingDependency() {
-        validateExpr("function() {$eden_define('a','\"#b+c\"');}", "function() {#a is \"#b+c\";}");
-    }
+	@Test
+	public void testExpressionTranslationForDoubleQuoteStringsContainingDependency() {
+		validateExpr("function() {$eden_define('a','\"#b+c\"');}",
+				"function() {#a is \"#b+c\";}");
+	}
 
-    @Test
-    public void testExpressionTranslationForSingleQuoteStrings() {
-        validateExpr("$eden_define('a','\\'...\\'')", "#a is '...'");
-    }
+	@Test
+	public void testExpressionTranslationForSingleQuoteStrings() {
+		validateExpr("$eden_define('a','\\'...\\'')", "#a is '...'");
+	}
 
-    @Test
-    public void testExpressionTranslationForSingleQuoteStringsInFunctions() {
-        validateExpr("function() {$eden_define('a','\\'b+c\\'')}", "function() {#a is 'b+c'}");
-        validateExpr("function() {$eden_define('a','\\'b+c\\'');}", "function() {#a is 'b+c';}");
-    }
+	@Test
+	public void testExpressionTranslationForSingleQuoteStringsInFunctions() {
+		validateExpr("function() {$eden_define('a','\\'b+c\\'')}",
+				"function() {#a is 'b+c'}");
+		validateExpr("function() {$eden_define('a','\\'b+c\\'');}",
+				"function() {#a is 'b+c';}");
+	}
 
-    @Test
-    public void testExpressionTranslationForObjects() {
-        validateExpr("$eden_define('a','({ a: 1})')", "#a is ({ a: 1})");
-    }
+	@Test
+	public void testExpressionTranslationForObjects() {
+		validateExpr("$eden_define('a','({ a: 1})')", "#a is ({ a: 1})");
+	}
 
-    @Test
-    public void testExpressionTranslationForObjectsInFunctions() {
-        validateExpr("function() { $eden_define('a','({ a: 1})'); }", "function() { #a is ({ a: 1}); }");
-    }
+	@Test
+	public void testExpressionTranslationForObjectsInFunctions() {
+		validateExpr("function() { $eden_define('a','({ a: 1})'); }",
+				"function() { #a is ({ a: 1}); }");
+	}
 
-    private void validateExprUnchangedFor(final String expr) {
-        validateExpr(expr, expr);
-    }
+	private void validateExprUnchangedFor(final String expr) {
+		validateExpr(expr, expr);
+	}
 
-    private void validateExpr(final String target, final String expr) {
-        final SymbolDefinition defn = new Definition(expr);
-        assertEquals(target, defn.getExpr());
-    }
+	private void validateExpr(final String target, final String expr) {
+		final SymbolDefinition defn = new Definition(expr);
+		assertEquals(target, defn.getExpr());
+	}
 
-    @Test
-    public void testGetDependenciesAndTriggersForSimpleExpr() throws Exception {
-        SymbolDefinition d = new Definition("1 + 2");
-        assertEquals(0, d.getDependencies().size());
-        assertEquals(0, d.getTriggers().size());
-    }
+	@Test
+	public void testGetDependenciesAndTriggersForSimpleExpr() throws Exception {
+		SymbolDefinition d = new Definition("1 + 2");
+		assertEquals(0, d.getDependencies().size());
+		assertEquals(0, d.getTriggers().size());
+	}
 
-    @Test
-    public void testGetDependenciesForExpressionWithDependency() throws Exception {
-        SymbolDefinition d = new Definition("1 + #x");
-        final Collection<SymbolReference> dependencies = d.getDependencies();
-        assertEquals(1, dependencies.size());
-        assertEquals(0, d.getTriggers().size());
-    }
+	@Test
+	public void testGetDependenciesForExpressionWithDependency()
+			throws Exception {
+		SymbolDefinition d = new Definition("1 + #x");
+		final Collection<SymbolReference> dependencies = d.getDependencies();
+		assertEquals(1, dependencies.size());
+		assertEquals(0, d.getTriggers().size());
+	}
 
-    @Test
-    public void testEvaluate() throws Exception {
-        SymbolDefinition d = new Definition("1+2");
-        assertEquals(3, d.evaluate(new JavaScriptLanguageExecutor(null)));
-    }
+	@Test
+	public void testEvaluate() throws Exception {
+		SymbolDefinition d = new Definition("1+2");
+		assertEquals(3, d.evaluate(new JavaScriptLanguageExecutor(null)));
+	}
 
-    @Test
-    public void testEvaluateE4X() throws Exception {
-        SymbolDefinition d = new Definition("<xml><foo>bar</foo></xml>.foo.toString()");
-        assertEquals("bar", d.evaluate(new JavaScriptLanguageExecutor(null)));
-    }
+	@Test
+	public void testEvaluateE4X() throws Exception {
+		SymbolDefinition d = new Definition(
+				"<xml><foo>bar</foo></xml>.foo.toString()");
+		assertEquals("bar", d.evaluate(new JavaScriptLanguageExecutor(null)));
+	}
 
-    @Test
-    public void testPrintln() throws Exception {
-        SymbolDefinition d = new Definition("java.lang.System.out.println(3)");
-        d.evaluate(new JavaScriptLanguageExecutor(null));
-    }
+	@Test
+	public void testPrintln() throws Exception {
+		SymbolDefinition d = new Definition("java.lang.System.out.println(3)");
+		d.evaluate(new JavaScriptLanguageExecutor(null));
+	}
 
-    @Test
-    public void testCallMagicObserveFunctionDelegatesCorrectly() throws Exception {
-        final SymbolDefinition d = new Definition("$eden_observe('a')");
-        final SymbolTable t = stubSymbolTable("abc");
-        assertEquals("abc", d.evaluate(t.getExecutor()));
-    }
+	@Test
+	public void testCallMagicObserveFunctionDelegatesCorrectly()
+			throws Exception {
+		final SymbolDefinition d = new Definition("$eden_observe('a')");
+		final SymbolTable t = stubSymbolTable("abc");
+		assertEquals("abc", d.evaluate(t.getExecutor()));
+	}
 
-    @Test
-    public void testEvaluateDependency() throws Exception {
-        final SymbolTableMXBean table = new SymbolTableImpl();
-        final SymbolDefinition d = new Definition("#a");
-        final SymbolTable t = stubSymbolTable("abc");
-        assertEquals("abc", d.evaluate(t.getExecutor())); 	
-    }
+	@Test
+	public void testEvaluateDependency() throws Exception {
+		final SymbolTableMXBean table = new SymbolTableImpl();
+		final SymbolDefinition d = new Definition("#a");
+		final SymbolTable t = stubSymbolTable("abc");
+		assertEquals("abc", d.evaluate(t.getExecutor()));
+	}
 
-    @Test
-    public void testEvaluateDependencyExpression() throws Exception {
-        final SymbolTableMXBean table = new SymbolTableImpl();
-        final SymbolDefinition d1 = new Definition("#a + 'def'");
-        final SymbolDefinition d2 = new Definition("#{a} + 'def'");
-        final SymbolTable t = stubSymbolTable("abc");
-        final String target = "abcdef";
-        assertEquals(target, d1.evaluate(t.getExecutor()));
-        assertEquals(target, d2.evaluate(t.getExecutor()));
-    }
+	@Test
+	public void testEvaluateDependencyExpression() throws Exception {
+		final SymbolTableMXBean table = new SymbolTableImpl();
+		final SymbolDefinition d1 = new Definition("#a + 'def'");
+		final SymbolDefinition d2 = new Definition("#{a} + 'def'");
+		final SymbolTable t = stubSymbolTable("abc");
+		final String target = "abcdef";
+		assertEquals(target, d1.evaluate(t.getExecutor()));
+		assertEquals(target, d2.evaluate(t.getExecutor()));
+	}
 
-    private SymbolTable stubSymbolTable(final Object value) {
-        return new SymbolTable() {
-            @Override
-            public UUID getId() {
-                return null;
-            }
+	private SymbolTable stubSymbolTable(final Object value) {
+		return new SymbolTable() {
+			@Override
+			public UUID getId() {
+				return null;
+			}
 
-            @Override
-            public Set<SymbolReference> getSymbols() {
-                return null;
-            }
-            
+			@Override
+			public Set<SymbolReference> getSymbols() {
+				return null;
+			}
 
-            @Override
-            public void define(SymbolReference aRef, String s) {
+			@Override
+			public void define(SymbolReference aRef, String s) {
 
-            }
+			}
 
-            @Override
-            public Object getValue(SymbolReference bRef) {
-                return value;
-            }
+			@Override
+			public Object getValue(SymbolReference bRef) {
+				return value;
+			}
 
-            @Override
-            public void defineFunction(SymbolReference a, String s) {
+			@Override
+			public void defineFunction(SymbolReference a, String s) {
 
-            }
+			}
 
-            @Override
-            public void defineTriggeredProc(SymbolReference a, String s, String... triggers) {
+			@Override
+			public void defineTriggeredProc(SymbolReference a, String s,
+					String... triggers) {
 
-            }
+			}
 
-            @Override
-            public Object execute(SymbolReference a) {
-                return null;
-            }
+			@Override
+			public Object execute(SymbolReference a) {
+				return null;
+			}
 
+			@Override
+			public Object execute(SymbolReference a, Object... params) {
+				return null;
+			}
 
-            @Override
-            public Object execute(SymbolReference a, Object... params) {
-                return null;
-            }
+			@Override
+			public String getName() {
+				return null; // To change body of implemented methods use File |
+								// Settings | File Templates.
+			}
 
+			@Override
+			public void setName(String name) {
+				// To change body of implemented methods use File | Settings |
+				// File Templates.
+			}
 
-            @Override
-            public String getName() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public void setName(String name) {
-                //To change body of implemented methods use File | Settings | File Templates.
-            }
-
-            @Override
-            public Object evaluate(String s) {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
-            }
+			@Override
+			public Object evaluate(String s) {
+				return null; // To change body of implemented methods use File |
+								// Settings | File Templates.
+			}
 
 			@Override
 			public int getSymbolCount() {
@@ -312,12 +315,11 @@ public class DefinitionTest {
 			public LanguageExecutor getExecutor() {
 				return new JavaScriptLanguageExecutor(this);
 			}
-        };
-    }
+		};
+	}
 
 	public LanguageExecutor getExecutor() {
 		return null;
 	}
-
 
 }

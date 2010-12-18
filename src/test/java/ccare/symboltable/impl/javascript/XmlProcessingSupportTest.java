@@ -48,98 +48,101 @@ import org.mozilla.javascript.xml.XMLObject;
 import org.xml.sax.SAXException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: carecx
- * Date: 03-Nov-2010
- * Time: 17:38:29
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: carecx Date: 03-Nov-2010 Time: 17:38:29 To
+ * change this template use File | Settings | File Templates.
  */
 public class XmlProcessingSupportTest {
 
-    private final String xsl = "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n" +
-            "<xsl:param name=\"myParam\" select=\"'Hi'\" />" +
-            "    <xsl:template match=\"/\">" +
-            "<xml><xsl:value-of select=\"$myParam\" /></xml>" +
-            "</xsl:template>" +
-            "</xsl:stylesheet>";
+	private final String xsl = "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n"
+			+ "<xsl:param name=\"myParam\" select=\"'Hi'\" />"
+			+ "    <xsl:template match=\"/\">"
+			+ "<xml><xsl:value-of select=\"$myParam\" /></xml>"
+			+ "</xsl:template>" + "</xsl:stylesheet>";
 
-    private final TransformerFactory factory = TransformerFactory.newInstance();
-    private final String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-            "<xml>Hi</xml>";
+	private final TransformerFactory factory = TransformerFactory.newInstance();
+	private final String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+			+ "<xml>Hi</xml>";
 
-    @Test(expected = RuntimeException.class)
-    public void testCreateTransform() throws IOException, SAXException, TransformerException {
-        Function f = createTransformFunction(factory, "");
-        assertNotNull(f);
-    }
+	@Test(expected = RuntimeException.class)
+	public void testCreateTransform() throws IOException, SAXException,
+			TransformerException {
+		Function f = createTransformFunction(factory, "");
+		assertNotNull(f);
+	}
 
-    @Test
-    public void testCreateAndRunTransform() throws IOException, SAXException, TransformerException {
-        Function f = createTransformFunction(factory, xsl);
-        Object transformed = f.call(null, null, null, new Object[]{"<xml/>"});
-        assertEquals(result, transformed);
-    }
+	@Test
+	public void testCreateAndRunTransform() throws IOException, SAXException,
+			TransformerException {
+		Function f = createTransformFunction(factory, xsl);
+		Object transformed = f
+				.call(null, null, null, new Object[] { "<xml/>" });
+		assertEquals(result, transformed);
+	}
 
-    @Test
-    public void testCreateAndRunTransformAsECMA() throws IOException, SAXException, TransformerException {
-        Function f = createTransformFunction(factory, xsl);
-        Context cx = Context.enter();
-        try {
-            Scriptable scope = cx.initStandardObjects();
-            XMLObject transformed = (XMLObject) f.call(cx, scope, null, new Object[]{"<xml/>"});
-            final String target = "<xml>Hi</xml>";
-            assertEquals(target, toXMLString(transformed));
-        } finally {
-            Context.exit();
-        }
-    }
+	@Test
+	public void testCreateAndRunTransformAsECMA() throws IOException,
+			SAXException, TransformerException {
+		Function f = createTransformFunction(factory, xsl);
+		Context cx = Context.enter();
+		try {
+			Scriptable scope = cx.initStandardObjects();
+			XMLObject transformed = (XMLObject) f.call(cx, scope, null,
+					new Object[] { "<xml/>" });
+			final String target = "<xml>Hi</xml>";
+			assertEquals(target, toXMLString(transformed));
+		} finally {
+			Context.exit();
+		}
+	}
 
-    @Test
-    public void testCreateAndRunTransformAsECMAWithArgs() throws IOException, SAXException, TransformerException {
+	@Test
+	public void testCreateAndRunTransformAsECMAWithArgs() throws IOException,
+			SAXException, TransformerException {
 
-        Function f = createTransformFunction(factory, xsl);
-        Context cx = Context.enter();
-        try {
-            Scriptable scope = cx.initStandardObjects();
+		Function f = createTransformFunction(factory, xsl);
+		Context cx = Context.enter();
+		try {
+			Scriptable scope = cx.initStandardObjects();
 
-            final Scriptable params = cx.newObject(scope);
-            params.put("myParam", params, "hello there");
+			final Scriptable params = cx.newObject(scope);
+			params.put("myParam", params, "hello there");
 
-            XMLObject transformed = (XMLObject) f.call(cx, scope, null, new Object[]{"<xml/>", params});
-            final String target = "<xml>hello there</xml>";
-            assertEquals(target, toXMLString(transformed));
-        } finally {
-            Context.exit();
-        }
-    }
+			XMLObject transformed = (XMLObject) f.call(cx, scope, null,
+					new Object[] { "<xml/>", params });
+			final String target = "<xml>hello there</xml>";
+			assertEquals(target, toXMLString(transformed));
+		} finally {
+			Context.exit();
+		}
+	}
 
-    @Test
-    public void testCreateAndRunTransformAgainstE4XInput() throws IOException, SAXException, TransformerException {
-        Context cx = Context.enter();
-        try {
-            Scriptable scope = cx.initStandardObjects();
-            final Object xml = evalExpression(cx, scope, "<foo><bar/></foo>");
-            final String xslString = "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n" +
-                    "    <xsl:template match=\"foo\">" +
-                    "<xml>bar</xml>" +
-                    "</xsl:template>" +
-                    "</xsl:stylesheet>";
-            final Object xsl = cx.evaluateString(scope, xslString, "", 0, null);
-            final Function f = createTransformFunction(factory, xsl);
-            XMLObject transformed = (XMLObject) f.call(cx, scope, null, new Object[]{xml});
-            final String target = "<xml>bar</xml>";
-            assertEquals(target, toXMLString(transformed));
-        } finally {
-            Context.exit();
-        }
-    }
+	@Test
+	public void testCreateAndRunTransformAgainstE4XInput() throws IOException,
+			SAXException, TransformerException {
+		Context cx = Context.enter();
+		try {
+			Scriptable scope = cx.initStandardObjects();
+			final Object xml = evalExpression(cx, scope, "<foo><bar/></foo>");
+			final String xslString = "<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">\n"
+					+ "    <xsl:template match=\"foo\">"
+					+ "<xml>bar</xml>"
+					+ "</xsl:template>" + "</xsl:stylesheet>";
+			final Object xsl = cx.evaluateString(scope, xslString, "", 0, null);
+			final Function f = createTransformFunction(factory, xsl);
+			XMLObject transformed = (XMLObject) f.call(cx, scope, null,
+					new Object[] { xml });
+			final String target = "<xml>bar</xml>";
+			assertEquals(target, toXMLString(transformed));
+		} finally {
+			Context.exit();
+		}
+	}
 
-    @Test
-    public void testRemoveProcessingInstruction() {
-        final String target = "<xml>Hi</xml>";
-        assertEquals(target, removeProcessingInstruction(target));
-        assertEquals(target, removeProcessingInstruction(result));
-    }
-
+	@Test
+	public void testRemoveProcessingInstruction() {
+		final String target = "<xml>Hi</xml>";
+		assertEquals(target, removeProcessingInstruction(target));
+		assertEquals(target, removeProcessingInstruction(result));
+	}
 
 }

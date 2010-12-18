@@ -29,14 +29,11 @@
 package ccare.symboltable.exceptions;
 
 /**
- * Created by IntelliJ IDEA.
- * User: carecx
- * Date: 03-Nov-2010
- * Time: 21:58:54
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: carecx Date: 03-Nov-2010 Time: 21:58:54 To
+ * change this template use File | Settings | File Templates.
  */
 public class SymbolTableException extends RuntimeException {
-    public SymbolTableException(String msg, Throwable innerException) {
-        super(msg, innerException);
-    }
+	public SymbolTableException(String msg, Throwable innerException) {
+		super(msg, innerException);
+	}
 }

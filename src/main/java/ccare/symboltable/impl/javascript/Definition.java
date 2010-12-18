@@ -43,74 +43,71 @@ import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 
 /**
- * Created by IntelliJ IDEA.
- * User: carecx
- * Date: 25-Oct-2010
- * Time: 17:06:58
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: carecx Date: 25-Oct-2010 Time: 17:06:58 To
+ * change this template use File | Settings | File Templates.
  */
 class Definition implements SymbolDefinition {
 
-    public enum ExprType {
-        FUNCTION, EXPRESSION
-    }
+	public enum ExprType {
+		FUNCTION, EXPRESSION
+	}
 
-    private final String expr;
-    private final ExprType type;
+	private final String expr;
+	private final ExprType type;
 
-    private List<SymbolReference> triggers;
+	private List<SymbolReference> triggers;
 
-    public Definition(String expr) {
-        this(expr, ExprType.EXPRESSION, null);
-    }
+	public Definition(String expr) {
+		this(expr, ExprType.EXPRESSION, null);
+	}
 
-    public Definition(String expr, ExprType type, String... triggers) {
-        this.expr = expr;
-        this.type = type;
-        if (triggers == null || triggers.length == 0) {
-            this.triggers = Collections.<SymbolReference>emptyList();
-        } else {
-            this.triggers = new ArrayList(triggers.length);
-            for (String trigger : triggers) {
-                this.triggers.add(new SymbolReference(trigger.replaceAll("^#", "")));
-            }
-        }
-    }
+	public Definition(String expr, ExprType type, String... triggers) {
+		this.expr = expr;
+		this.type = type;
+		if (triggers == null || triggers.length == 0) {
+			this.triggers = Collections.<SymbolReference> emptyList();
+		} else {
+			this.triggers = new ArrayList(triggers.length);
+			for (String trigger : triggers) {
+				this.triggers.add(new SymbolReference(trigger.replaceAll("^#",
+						"")));
+			}
+		}
+	}
 
-    @Override
+	@Override
 	public String getExpr() {
-        return translateExpression(expr);
-    }
+		return translateExpression(expr);
+	}
 
+	@Override
+	public Collection<SymbolReference> getDependencies() {
+		final Set<String> dependentNames = extractSpecialSymbols(expr);
+		Set<SymbolReference> refs = new HashSet<SymbolReference>(
+				dependentNames.size());
+		for (String symbolName : dependentNames) {
+			refs.add(new SymbolReference(symbolName));
+		}
+		return refs;
+	}
 
-    @Override
-    public Collection<SymbolReference> getDependencies() {
-        final Set<String> dependentNames = extractSpecialSymbols(expr);
-        Set<SymbolReference> refs = new HashSet<SymbolReference>(dependentNames.size());
-        for (String symbolName : dependentNames) {
-            refs.add(new SymbolReference(symbolName));
-        }
-        return refs;
-    }
+	@Override
+	public Collection<SymbolReference> getTriggers() {
+		return triggers;
+	}
 
-    @Override
-    public Collection<SymbolReference> getTriggers() {
-        return triggers;
-    }
+	@Override
+	public Object evaluate(final LanguageExecutor context) {
+		return context.evaluate(this);
+	}
 
-    @Override
-    public Object evaluate(final LanguageExecutor context) {
-        return context.evaluate(this);
-    }
+	@Override
+	public boolean isExecutable() {
+		return type == ExprType.FUNCTION;
+	}
 
-
-    @Override
-    public boolean isExecutable() {
-        return type == ExprType.FUNCTION;
-    }
-
-    @Override
-    public String toString() {
-        return expr;
-    }
+	@Override
+	public String toString() {
+		return expr;
+	}
 }

@@ -36,25 +36,22 @@ import org.junit.Test;
 import com.sun.jersey.api.client.WebResource;
 
 /**
- * User: carecx
- * Date: 13-Oct-2010
- * Time: 14:50:23
+ * User: carecx Date: 13-Oct-2010 Time: 14:50:23
  */
 public class StatusControllerITCase extends IntegrationSupport {
 
-    @Test
-    public void testGetStatus() throws Exception {
-        WebResource resource = resource("status");
-        String msg = resource.get(String.class);
-        assertEquals("Running and fine", msg);
-    }
+	@Test
+	public void testGetStatus() throws Exception {
+		WebResource resource = resource("status");
+		String msg = resource.get(String.class);
+		assertEquals("Running and fine", msg);
+	}
 
-    @Test
-    public void testGetId() throws Exception {
-        WebResource resource = resource("status/id");
-        String id = resource.get(String.class);
-        assertNotNull(id);
-    }
-
+	@Test
+	public void testGetId() throws Exception {
+		WebResource resource = resource("status/id");
+		String id = resource.get(String.class);
+		assertNotNull(id);
+	}
 
 }

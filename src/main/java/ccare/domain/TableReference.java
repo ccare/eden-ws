@@ -34,64 +34,63 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Created by IntelliJ IDEA.
- * User: carecx
- * Date: 11-Nov-2010
- * Time: 08:44:08
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: carecx Date: 11-Nov-2010 Time: 08:44:08 To
+ * change this template use File | Settings | File Templates.
  */
 @XmlRootElement
 public class TableReference {
 
-    @XmlElement
-    private String name;
-    @XmlElement
-    private UUID id;
+	@XmlElement
+	private String name;
+	@XmlElement
+	private UUID id;
 
-    public TableReference() {
-    }
+	public TableReference() {
+	}
 
-    public TableReference(UUID id) {
-        this.id = id;
-    }
+	public TableReference(UUID id) {
+		this.id = id;
+	}
 
-    public TableReference(String name) {
-        this.name = name;
-    }
+	public TableReference(String name) {
+		this.name = name;
+	}
 
-    public TableReference(UUID id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+	public TableReference(UUID id, String name) {
+		this.id = id;
+		this.name = name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public UUID getId() {
-        return id;
-    }
+	public UUID getId() {
+		return id;
+	}
 
-    @Override
-    public String toString() {
-        return "TableReference<" + name + ',' + id + '>';
-    }
+	@Override
+	public String toString() {
+		return "TableReference<" + name + ',' + id + '>';
+	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+		TableReference that = (TableReference) o;
 
-        TableReference that = (TableReference) o;
+		if (name != null ? !name.equals(that.name) : that.name != null)
+			return false;
 
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+		return true;
+	}
 
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return name != null ? name.hashCode() : 0;
-    }
+	@Override
+	public int hashCode() {
+		return name != null ? name.hashCode() : 0;
+	}
 }

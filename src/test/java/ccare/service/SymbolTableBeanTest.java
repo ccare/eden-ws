@@ -40,51 +40,48 @@ import ccare.domain.Observable;
 import ccare.symboltable.SymbolReference;
 
 /**
- * User: carecx
- * Date: 13-Oct-2010
- * Time: 22:33:38
+ * User: carecx Date: 13-Oct-2010 Time: 22:33:38
  */
 
 public class SymbolTableBeanTest {
 
-    private SymbolTableService service = new SymbolTableBean();
+	private SymbolTableService service = new SymbolTableBean();
 
-    @Test
-    public void testBeanIsSingleton() throws NamingException {
-        SymbolTableService serviceBean = service();
-        assertNotNull(serviceBean);
-        SymbolTableService serviceBean2 = service();
-        assertEquals(serviceBean.getId(), serviceBean2.getId());
-    }
+	@Test
+	public void testBeanIsSingleton() throws NamingException {
+		SymbolTableService serviceBean = service();
+		assertNotNull(serviceBean);
+		SymbolTableService serviceBean2 = service();
+		assertEquals(serviceBean.getId(), serviceBean2.getId());
+	}
 
-    
+	@Test
+	public void testListSymbol() throws NamingException {
+		SymbolTableService serviceBean = service();
+		Observable def = new Observable();
+		def.setDefinition("a+b");
+		SymbolReference r = new SymbolReference();
+		serviceBean.define(r, def);
+		assertTrue(serviceBean.listSymbols().contains(r));
+	}
 
-    @Test
-    public void testListSymbol() throws NamingException {
-        SymbolTableService serviceBean = service();
-        Observable def = new Observable();
-        def.setDefinition("a+b");
-        SymbolReference r = new SymbolReference();
-        serviceBean.define(r, def);
-        assertTrue(serviceBean.listSymbols().contains(r));
-    }
+	// private InitialContext createContext() {
+	// Properties props = new Properties();
+	// props.setProperty(Context.INITIAL_CONTEXT_FACTORY,
+	// "org.apache.openejb.client.LocalInitialContextFactory");
+	// InitialContext context = null;
+	// try {
+	// context = new InitialContext(props);
+	// } catch (NamingException e) {
+	// throw new RuntimeException(e);
+	// }
+	// return context;
+	// }
 
-//    private InitialContext createContext() {
-//        Properties props = new Properties();
-//        props.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.openejb.client.LocalInitialContextFactory");
-//        InitialContext context = null;
-//        try {
-//            context = new InitialContext(props);
-//        } catch (NamingException e) {
-//            throw new RuntimeException(e);
-//        }
-//        return context;
-//    }
-
-    private SymbolTableService service() throws NamingException {
-        return service;
-        //InitialContext context = createContext();
-        //return (SymbolTableService) context.lookup("SymbolTableBeanLocal");
-    }
+	private SymbolTableService service() throws NamingException {
+		return service;
+		// InitialContext context = createContext();
+		// return (SymbolTableService) context.lookup("SymbolTableBeanLocal");
+	}
 
 }

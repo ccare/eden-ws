@@ -39,22 +39,20 @@ import com.sun.jersey.api.core.InjectParam;
 @Path("status")
 public class StatusController {
 
-    @InjectParam("service")
-    SymbolTableBean service;
+	@InjectParam("service")
+	SymbolTableBean service;
 
-    @GET
-    @Produces("text/plain")
-    public String getStatus() {
-        return "Running and fine";
-    }
+	@GET
+	@Produces("text/plain")
+	public String getStatus() {
+		return "Running and fine";
+	}
 
-    @GET
-    @Path("id")
-    @Produces("text/plain")
-    public String getId() {
-        return service.getId().toString();
-    }
+	@GET
+	@Path("id")
+	@Produces("text/plain")
+	public String getId() {
+		return service.getId().toString();
+	}
 
 }
-
-

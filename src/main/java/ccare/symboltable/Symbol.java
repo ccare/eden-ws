@@ -14,5 +14,4 @@ public interface Symbol {
 
 	public abstract SymbolReference getReference();
 
-
 }

@@ -56,7 +56,9 @@ class SymbolImpl implements Symbol {
 		this.ref = ref;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see ccare.symboltable.impl.ISymbol#getDependents()
 	 */
 	@Override
@@ -64,7 +66,9 @@ class SymbolImpl implements Symbol {
 		return dependsOn.getListeners();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see ccare.symboltable.impl.ISymbol#getTriggers()
 	 */
 	@Override
@@ -88,7 +92,7 @@ class SymbolImpl implements Symbol {
 	void forget() throws CannotForgetException {
 		if (dependsOn.hasListeners() || tb.hasListeners()) {
 			throw new CannotForgetException(
-			"Cannot forget a symbol inside a dependency graph");
+					"Cannot forget a symbol inside a dependency graph");
 		} else {
 			clearDefinitions();
 		}
@@ -143,7 +147,9 @@ class SymbolImpl implements Symbol {
 		tb.buildGraph(this, definition.getTriggers(), t);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see ccare.symboltable.impl.ISymbol#getDefinition()
 	 */
 	@Override

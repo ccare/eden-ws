@@ -37,20 +37,18 @@ import java.util.Map;
 import org.junit.Test;
 
 /**
- * Created by IntelliJ IDEA.
- * User: carecx
- * Date: 26-Nov-2010
- * Time: 21:58:43
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: carecx Date: 26-Nov-2010 Time: 21:58:43 To
+ * change this template use File | Settings | File Templates.
  */
 public class TableReferenceTest {
 
-    @Test
-    public void testEqualsAndHashCode() {
-        Map<TableReferenceTest, Object> m = new HashMap<TableReferenceTest, Object>();
-        assertEquals(new TableReference("a"), new TableReference("a"));
-        assertFalse(new TableReference("a").equals(new TableReference("b")));
-        assertEquals(new TableReference("a").hashCode(), new TableReference("a").hashCode());
-    }
+	@Test
+	public void testEqualsAndHashCode() {
+		Map<TableReferenceTest, Object> m = new HashMap<TableReferenceTest, Object>();
+		assertEquals(new TableReference("a"), new TableReference("a"));
+		assertFalse(new TableReference("a").equals(new TableReference("b")));
+		assertEquals(new TableReference("a").hashCode(),
+				new TableReference("a").hashCode());
+	}
 
 }

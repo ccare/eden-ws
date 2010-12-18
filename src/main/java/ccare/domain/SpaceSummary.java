@@ -33,33 +33,29 @@ import java.util.Set;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Created by IntelliJ IDEA.
- * User: carecx
- * Date: 03-Nov-2010
- * Time: 23:43:22
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: carecx Date: 03-Nov-2010 Time: 23:43:22 To
+ * change this template use File | Settings | File Templates.
  */
 
 @XmlRootElement
 public class SpaceSummary {
 
+	private Integer count;
+	private Set<Space> spaces;
 
-    private Integer count;
-    private Set<Space> spaces;
+	public Integer getCount() {
+		return count;
+	}
 
-    public Integer getCount() {
-        return count;
-    }
+	public void setCount(Integer count) {
+		this.count = count;
+	}
 
-    public void setCount(Integer count) {
-        this.count = count;
-    }
+	public Set<Space> getSpaces() {
+		return spaces;
+	}
 
-    public Set<Space> getSpaces() {
-        return spaces;
-    }
-
-    public void setSpaces(Set<Space> spaces) {
-        this.spaces = spaces;
-    }
+	public void setSpaces(Set<Space> spaces) {
+		this.spaces = spaces;
+	}
 }

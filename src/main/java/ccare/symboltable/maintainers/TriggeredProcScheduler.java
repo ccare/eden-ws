@@ -7,7 +7,8 @@ import ccare.symboltable.SymbolTable;
 public class TriggeredProcScheduler implements StateMaintainer {
 
 	@Override
-	public void beforeRedefinition(SymbolTable table, Symbol s, SymbolDefinition d) {
+	public void beforeRedefinition(SymbolTable table, Symbol s,
+			SymbolDefinition d) {
 	}
 
 	@Override

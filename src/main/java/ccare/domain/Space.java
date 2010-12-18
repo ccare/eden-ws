@@ -31,23 +31,20 @@ package ccare.domain;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Created by IntelliJ IDEA.
- * User: carecx
- * Date: 03-Nov-2010
- * Time: 23:47:28
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: carecx Date: 03-Nov-2010 Time: 23:47:28 To
+ * change this template use File | Settings | File Templates.
  */
 
 @XmlRootElement
 public class Space {
 
-    private String name;
+	private String name;
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 }

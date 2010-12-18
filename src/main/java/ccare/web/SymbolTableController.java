@@ -62,180 +62,195 @@ import com.sun.jersey.api.core.InjectParam;
 @Path("spaces")
 public class SymbolTableController {
 
-    private static final Logger logger = LoggerFactory.getLogger(SymbolTableController.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(SymbolTableController.class);
 
-    @InjectParam("service")
-    SymbolTableBean service;
+	@InjectParam("service")
+	SymbolTableBean service;
 
-    @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<TableReference> allSpaces(@QueryParam("evaluate") List<String> evals) {
-        if (evals == null || evals.isEmpty()) {
-            logger.debug(format("Get all spaces"));
-            final List<TableReference> all = service.allSpaces();
-            return all;
-        } else {
-            throw new RuntimeException("ouch");
-        }
-    }
+	@GET
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public List<TableReference> allSpaces(
+			@QueryParam("evaluate") List<String> evals) {
+		if (evals == null || evals.isEmpty()) {
+			logger.debug(format("Get all spaces"));
+			final List<TableReference> all = service.allSpaces();
+			return all;
+		} else {
+			throw new RuntimeException("ouch");
+		}
+	}
 
-    @POST
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public TableReference submitSpace(final TableReference reference) {
-        logger.debug(format("Recieved POST space request for %s", reference.getName()));
-        try {
-            return service.createSpace(reference);
-        } catch (CannotCreateException e) {
-            throw new WebApplicationException(400);
-        }
-    }
+	@POST
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public TableReference submitSpace(final TableReference reference) {
+		logger.debug(format("Recieved POST space request for %s",
+				reference.getName()));
+		try {
+			return service.createSpace(reference);
+		} catch (CannotCreateException e) {
+			throw new WebApplicationException(400);
+		}
+	}
 
-    @GET
-    @Path("{spaceName: [^/]+}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Object getSpace(final @PathParam("spaceName") String spaceName, @QueryParam("evaluate") List<String> evals) {
-        if (evals == null || evals.isEmpty()) {
-            logger.debug(format("Received GET space request for %s", spaceName));
-            return service.getSpaceSummary(spaceName);
-        } else {
-            return service.getSpace(spaceName).evaluate(evals.get(0)).toString();
-        }
-    }
+	@GET
+	@Path("{spaceName: [^/]+}")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Object getSpace(final @PathParam("spaceName") String spaceName,
+			@QueryParam("evaluate") List<String> evals) {
+		if (evals == null || evals.isEmpty()) {
+			logger.debug(format("Received GET space request for %s", spaceName));
+			return service.getSpaceSummary(spaceName);
+		} else {
+			return service.getSpace(spaceName).evaluate(evals.get(0))
+					.toString();
+		}
+	}
 
-    @PUT
-    @Path("{spaceName: [^/]+}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public TableReference createSpace(final @PathParam("spaceName") String spaceName) {
-        logger.debug(format("Received PUT space request for %s", spaceName));
-        try {
-            return service.createSpace(spaceName);
-        } catch (CannotCreateException e) {
-            throw new WebApplicationException(400);
-        }
-    }
+	@PUT
+	@Path("{spaceName: [^/]+}")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public TableReference createSpace(
+			final @PathParam("spaceName") String spaceName) {
+		logger.debug(format("Received PUT space request for %s", spaceName));
+		try {
+			return service.createSpace(spaceName);
+		} catch (CannotCreateException e) {
+			throw new WebApplicationException(400);
+		}
+	}
 
-    @DELETE
-    @Path("{spaceName: [^/]+}")
-    public void deleteSpace(final @PathParam("spaceName") String spaceName) {
-        logger.debug(format("Deleting space request for %s", spaceName));
-        service.deleteSpace(spaceName);
-    }
+	@DELETE
+	@Path("{spaceName: [^/]+}")
+	public void deleteSpace(final @PathParam("spaceName") String spaceName) {
+		logger.debug(format("Deleting space request for %s", spaceName));
+		service.deleteSpace(spaceName);
+	}
 
-    @GET
-    @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Object observeSymbol(final @PathParam("spaceName") String spaceName,
-                                final @PathParam("symbolName") String symbolName) {
-        logger.debug(format("Received GET (observe symbol) for %s.%s", spaceName, symbolName));
-        return doGetValue(spaceName, symbolName);
-    }
+	@GET
+	@Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Object observeSymbol(final @PathParam("spaceName") String spaceName,
+			final @PathParam("symbolName") String symbolName) {
+		logger.debug(format("Received GET (observe symbol) for %s.%s",
+				spaceName, symbolName));
+		return doGetValue(spaceName, symbolName);
+	}
 
-    @POST
-    @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
-    @Consumes("application/x-www-form-urlencoded")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Object executeSymbolForPostData(final @PathParam("spaceName") String spaceName,
-                                           final @PathParam("symbolName") String symbolName,
-                                           final @Context UriInfo ui) {
-        logger.debug(format("Received POST with post data (execute) for %s.%s", spaceName, symbolName));
-        MultivaluedMap<String, String> queryParams = ui.getQueryParameters();
-        return doPostValue(spaceName, symbolName, extractExecParams(queryParams));
-    }
+	@POST
+	@Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
+	@Consumes("application/x-www-form-urlencoded")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Object executeSymbolForPostData(
+			final @PathParam("spaceName") String spaceName,
+			final @PathParam("symbolName") String symbolName,
+			final @Context UriInfo ui) {
+		logger.debug(format("Received POST with post data (execute) for %s.%s",
+				spaceName, symbolName));
+		MultivaluedMap<String, String> queryParams = ui.getQueryParameters();
+		return doPostValue(spaceName, symbolName,
+				extractExecParams(queryParams));
+	}
 
-    @POST
-    @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Object executeSymbol(final @PathParam("spaceName") String spaceName,
-                                final @PathParam("symbolName") String symbolName) {
-        logger.debug(format("Received POST (execute) for %s.%s", spaceName, symbolName));
-        return doPostValue(spaceName, symbolName);
-    }
+	@POST
+	@Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Object executeSymbol(final @PathParam("spaceName") String spaceName,
+			final @PathParam("symbolName") String symbolName) {
+		logger.debug(format("Received POST (execute) for %s.%s", spaceName,
+				symbolName));
+		return doPostValue(spaceName, symbolName);
+	}
 
-    private Object[] extractExecParams(MultivaluedMap<String, String> map) {
-        Object[] params = new Object[map.size()];
-        int i = 0;
-        for (String p : map.keySet()) {
-            params[i] = map.getFirst(p);
-            i++;
-        }
-        return params;
-    }
+	private Object[] extractExecParams(MultivaluedMap<String, String> map) {
+		Object[] params = new Object[map.size()];
+		int i = 0;
+		for (String p : map.keySet()) {
+			params[i] = map.getFirst(p);
+			i++;
+		}
+		return params;
+	}
 
+	// @GET
+	// @Path("{spaceName: [^/]+}/{symbolName: [^:/]+}:value")
+	// @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+	// public Object observeSymbolValue(final @PathParam("spaceName") String
+	// spaceName,
+	// final @PathParam("symbolName") String symbolName) {
+	// logger.debug(format("Received GET (observe symbol value) for %s.%s",
+	// spaceName, symbolName));
+	// return doGetValue(spaceName, symbolName);
+	// }
 
-//    @GET
-//    @Path("{spaceName: [^/]+}/{symbolName: [^:/]+}:value")
-//    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-//    public Object observeSymbolValue(final @PathParam("spaceName") String spaceName,
-//                                        final @PathParam("symbolName") String symbolName) {
-//        logger.debug(format("Received GET (observe symbol value) for %s.%s", spaceName, symbolName));
-//        return doGetValue(spaceName, symbolName);
-//    }
+	private Object doGetValue(String spaceName, String symbolName) {
+		final SymbolTable table = service.getSpace(spaceName);
+		if (table == null) {
+			throw new NotFoundException();
+		}
+		final SymbolReference ref = new SymbolReference(symbolName);
+		if (table.getSymbols().contains(ref)) {
+			return table.getValue(ref).toString();
+		} else {
+			throw new NotFoundException();
+		}
+	}
 
-    private Object doGetValue(String spaceName, String symbolName) {
-        final SymbolTable table = service.getSpace(spaceName);
-        if (table == null) {
-            throw new NotFoundException();
-        }
-        final SymbolReference ref = new SymbolReference(symbolName);
-        if (table.getSymbols().contains(ref)) {
-            return table.getValue(ref).toString();
-        } else {
-            throw new NotFoundException();
-        }
-    }
+	private Object doPostValue(String spaceName, String symbolName,
+			Object... params) {
+		final SymbolTable table = service.getSpace(spaceName);
+		if (table == null) {
+			throw new NotFoundException();
+		}
+		final SymbolReference ref = new SymbolReference(symbolName);
+		if (table.getSymbols().contains(ref)) {
+			return table.execute(ref);
+		} else {
+			throw new NotFoundException();
+		}
+	}
 
-    private Object doPostValue(String spaceName, String symbolName, Object... params) {
-        final SymbolTable table = service.getSpace(spaceName);
-        if (table == null) {
-            throw new NotFoundException();
-        }
-        final SymbolReference ref = new SymbolReference(symbolName);
-        if (table.getSymbols().contains(ref)) {
-            return table.execute(ref);
-        } else {
-            throw new NotFoundException();
-        }
-    }
+	@PUT
+	@Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void defineSymbol(final @PathParam("spaceName") String spaceName,
+			final @PathParam("symbolName") String symbolName,
+			final String definition) {
+		logger.debug(format("Received PUT space request for %s.%s", spaceName,
+				symbolName));
+		final SymbolTable table = service.getSpace(spaceName);
+		if (table == null) {
+			throw new NotFoundException();
+		}
+		table.define(new SymbolReference(symbolName), definition.toString());
+	}
 
-    @PUT
-    @Path("{spaceName: [^/]+}/{symbolName: [^/]+}")
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public void defineSymbol(final @PathParam("spaceName") String spaceName,
-                             final @PathParam("symbolName") String symbolName,
-                             final String definition) {
-        logger.debug(format("Received PUT space request for %s.%s", spaceName, symbolName));
-        final SymbolTable table = service.getSpace(spaceName);
-        if (table == null) {
-            throw new NotFoundException();
-        }
-        table.define(new SymbolReference(symbolName), definition.toString());
-    }
-
-
-//    @GET
-//    @Produces("application/xml")
-//    @Path("{symbolName: [^:]+[:value]*}")
-//    public Object getSymbolValue(@PathParam("symbolName") String symbolName) {
-//        Observable o = new Observable();
-//        o.setDefinition("B + C");
-//        return o.getCurrentValue();
-//    }
-//
-//    @GET
-//    @Produces("application/xml")
-//    @Path("{symbolName}:definition")
-//    public Observable getSymbolDefn(@PathParam("symbolName") String symbolName) {
-//        Observable o = new Observable();
-//        o.setDefinition("B + C");
-//        return o;
-//    }
-//
-//    @GET
-//    @Produces("application/xml")
-//    @Path("{symbolName}:access")
-//    public SecurityDescriptor getSecurityDescriptor(@PathParam("symbolName") String symbolName) {
-//        return SecurityDescriptor.ALLOW_ALL;
-//    }
-
+	// @GET
+	// @Produces("application/xml")
+	// @Path("{symbolName: [^:]+[:value]*}")
+	// public Object getSymbolValue(@PathParam("symbolName") String symbolName)
+	// {
+	// Observable o = new Observable();
+	// o.setDefinition("B + C");
+	// return o.getCurrentValue();
+	// }
+	//
+	// @GET
+	// @Produces("application/xml")
+	// @Path("{symbolName}:definition")
+	// public Observable getSymbolDefn(@PathParam("symbolName") String
+	// symbolName) {
+	// Observable o = new Observable();
+	// o.setDefinition("B + C");
+	// return o;
+	// }
+	//
+	// @GET
+	// @Produces("application/xml")
+	// @Path("{symbolName}:access")
+	// public SecurityDescriptor getSecurityDescriptor(@PathParam("symbolName")
+	// String symbolName) {
+	// return SecurityDescriptor.ALLOW_ALL;
+	// }
 
 }

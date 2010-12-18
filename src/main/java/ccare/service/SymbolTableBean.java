@@ -53,104 +53,107 @@ import com.sun.jersey.api.NotFoundException;
 //@Lock(READ)
 public class SymbolTableBean implements SymbolTableService {
 
-    private static final Logger logger = LoggerFactory.getLogger(SymbolTableBean.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(SymbolTableBean.class);
 
-    private final UUID id = UUID.randomUUID();
-    private SymbolTable table = new SymbolTableImpl();
-    private Map<TableReference, SymbolTable> tables = new HashMap<TableReference, SymbolTable>();
-    private List<SymbolTable> recycleBin = new ArrayList<SymbolTable>();
-    private List<TableReference> keys;
+	private final UUID id = UUID.randomUUID();
+	private SymbolTable table = new SymbolTableImpl();
+	private Map<TableReference, SymbolTable> tables = new HashMap<TableReference, SymbolTable>();
+	private List<SymbolTable> recycleBin = new ArrayList<SymbolTable>();
+	private List<TableReference> keys;
 
-    @Override
-    public UUID getId() {
-        return id;
-    }
+	@Override
+	public UUID getId() {
+		return id;
+	}
 
-    @Override
-//    @Lock(WRITE)
-public void define(SymbolReference reference, Observable d) {
-        table.define(reference, d.getDefinition());
-    }
+	@Override
+	// @Lock(WRITE)
+	public void define(SymbolReference reference, Observable d) {
+		table.define(reference, d.getDefinition());
+	}
 
-    @Override
-    public Set<SymbolReference> listSymbols() {
-        return table.getSymbols();
-    }
+	@Override
+	public Set<SymbolReference> listSymbols() {
+		return table.getSymbols();
+	}
 
-    @Override
-    public TableReference createSpace(final TableReference ref) throws CannotCreateException {
-        return createSpace(ref.getName());
-    }
+	@Override
+	public TableReference createSpace(final TableReference ref)
+			throws CannotCreateException {
+		return createSpace(ref.getName());
+	}
 
-    @Override
-    public TableReference createSpace(final String name) throws CannotCreateException {
-        return doCreate(name);
-    }
+	@Override
+	public TableReference createSpace(final String name)
+			throws CannotCreateException {
+		return doCreate(name);
+	}
 
-    @Override
-    public void deleteSpace(final String name) {
-        deleteSpace(new TableReference(name));
-    }
+	@Override
+	public void deleteSpace(final String name) {
+		deleteSpace(new TableReference(name));
+	}
 
-    @Override
-    public void deleteSpace(final TableReference reference) {
-        doDelete(reference);
-    }
+	@Override
+	public void deleteSpace(final TableReference reference) {
+		doDelete(reference);
+	}
 
-    private TableReference doCreate(String name) throws CannotCreateException {
-        if (tables.containsKey(new TableReference(name))) {
-            throw new CannotCreateException("Cannot create duplicate space");
-        }
+	private TableReference doCreate(String name) throws CannotCreateException {
+		if (tables.containsKey(new TableReference(name))) {
+			throw new CannotCreateException("Cannot create duplicate space");
+		}
 
-        final SymbolTable table = new SymbolTableImpl();
-        if (name != null) {
-            table.setName(name);
-        }
-        final TableReference newRef = new TableReference(table.getId(), name);
-        tables.put(newRef, table);
-        keys = null;
-        return newRef;
-    }
+		final SymbolTable table = new SymbolTableImpl();
+		if (name != null) {
+			table.setName(name);
+		}
+		final TableReference newRef = new TableReference(table.getId(), name);
+		tables.put(newRef, table);
+		keys = null;
+		return newRef;
+	}
 
-    private void doDelete(TableReference reference) {
-        logger.debug(format("Deleting %s", reference));
-        final SymbolTable table = tables.remove(reference);
-        if (table == null) {
-            throw new NotFoundException();
-        } else {
-            recycleBin.add(table);
-            keys = null;
-        }
-    }
+	private void doDelete(TableReference reference) {
+		logger.debug(format("Deleting %s", reference));
+		final SymbolTable table = tables.remove(reference);
+		if (table == null) {
+			throw new NotFoundException();
+		} else {
+			recycleBin.add(table);
+			keys = null;
+		}
+	}
 
-    @Override
-    public List<TableReference> allSpaces() {
-        if (keys == null) {
-            final Set<TableReference> keyset = tables.keySet();
-            keys = new ArrayList<TableReference>(keyset.size());
-            keys.addAll(keyset);
-        }
-        return keys;
-    }
+	@Override
+	public List<TableReference> allSpaces() {
+		if (keys == null) {
+			final Set<TableReference> keyset = tables.keySet();
+			keys = new ArrayList<TableReference>(keyset.size());
+			keys.addAll(keyset);
+		}
+		return keys;
+	}
 
-    public TableReference getSpaceSummary(String spaceName) {
-        final TableReference ref = new TableReference(spaceName);
-        return getSpaceSummary(ref);
-    }
+	public TableReference getSpaceSummary(String spaceName) {
+		final TableReference ref = new TableReference(spaceName);
+		return getSpaceSummary(ref);
+	}
 
-    public TableReference getSpaceSummary(TableReference ref) {
-        final SymbolTable space = getSpace(ref);
-        if (space == null) {
-            throw new NotFoundException();
-        }
-        return new TableReference(space.getId(), ref.getName());
-    }
+	public TableReference getSpaceSummary(TableReference ref) {
+		final SymbolTable space = getSpace(ref);
+		if (space == null) {
+			throw new NotFoundException();
+		}
+		return new TableReference(space.getId(), ref.getName());
+	}
 
-    public SymbolTable getSpace(String spaceName) {
-        return getSpace(new TableReference(spaceName));
-    }
+	public SymbolTable getSpace(String spaceName) {
+		return getSpace(new TableReference(spaceName));
+	}
 
-    public SymbolTable getSpace(TableReference ref) {
-        return tables.get(ref);
-    }
+	public SymbolTable getSpace(TableReference ref) {
+		return tables.get(ref);
+	}
 }

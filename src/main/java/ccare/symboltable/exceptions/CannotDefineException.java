@@ -29,11 +29,8 @@
 package ccare.symboltable.exceptions;
 
 /**
- * Created by IntelliJ IDEA.
- * User: carecx
- * Date: 03-Nov-2010
- * Time: 21:44:42
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: carecx Date: 03-Nov-2010 Time: 21:44:42 To
+ * change this template use File | Settings | File Templates.
  */
 public class CannotDefineException extends RuntimeException {
 }

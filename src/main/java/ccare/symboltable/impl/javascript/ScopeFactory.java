@@ -38,93 +38,91 @@ import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 
 /**
- * User: carecx
- * Date: 27-Oct-2010
- * Time: 09:46:35
+ * User: carecx Date: 27-Oct-2010 Time: 09:46:35
  */
 public class ScopeFactory {
 
-    Scriptable rootScope;
-    static ScopeFactory instance;
+	Scriptable rootScope;
+	static ScopeFactory instance;
 
-    public static ScopeFactory getInstance() {
-        if (instance == null) {
-            synchronized (ScopeFactory.class) {
-                instance = new ScopeFactory();
-            }
-        }
-        return instance;
-    }
+	public static ScopeFactory getInstance() {
+		if (instance == null) {
+			synchronized (ScopeFactory.class) {
+				instance = new ScopeFactory();
+			}
+		}
+		return instance;
+	}
 
-    private Scriptable getRootScope() {
-        if (rootScope == null) {
-            synchronized (this) {
-                Context cx = Context.enter();
-                try {
-                    // New scope / runtime env
-                    ScriptableObject sharedScope = cx.initStandardObjects();
-                    sharedScope.sealObject();
-                    rootScope = sharedScope;
-                } finally {
-                    Context.exit();
-                }
-            }
-        }
-        return rootScope;
-    }
+	private Scriptable getRootScope() {
+		if (rootScope == null) {
+			synchronized (this) {
+				Context cx = Context.enter();
+				try {
+					// New scope / runtime env
+					ScriptableObject sharedScope = cx.initStandardObjects();
+					sharedScope.sealObject();
+					rootScope = sharedScope;
+				} finally {
+					Context.exit();
+				}
+			}
+		}
+		return rootScope;
+	}
 
-    private Scriptable createScope() {
-        Context cx = Context.enter();
-        try {
-            // New scope / runtime env
-            Scriptable sharedScope = getRootScope();
-            Scriptable newScope = cx.newObject(sharedScope);
-            return newScope;
-        } finally {
-            Context.exit();
-        }
-    }
+	private Scriptable createScope() {
+		Context cx = Context.enter();
+		try {
+			// New scope / runtime env
+			Scriptable sharedScope = getRootScope();
+			Scriptable newScope = cx.newObject(sharedScope);
+			return newScope;
+		} finally {
+			Context.exit();
+		}
+	}
 
-    public Scriptable scopeFor(final SymbolTable t) {
-        final Scriptable scope = createScope();
-        Function f = createObserveFunction(t);
-        ScriptableObject.putProperty(scope, "$eden_observe", f);
-        Function g = createDefineFunction(t);
-        ScriptableObject.putProperty(scope, "$eden_define", g);
-        Function xsl = XmlProcessingSupport.createTransformerFactoryFunction();
-        ScriptableObject.putProperty(scope, "XSL", xsl);
+	public Scriptable scopeFor(final SymbolTable t) {
+		final Scriptable scope = createScope();
+		Function f = createObserveFunction(t);
+		ScriptableObject.putProperty(scope, "$eden_observe", f);
+		Function g = createDefineFunction(t);
+		ScriptableObject.putProperty(scope, "$eden_define", g);
+		Function xsl = XmlProcessingSupport.createTransformerFactoryFunction();
+		ScriptableObject.putProperty(scope, "XSL", xsl);
 
-        return scope;
-    }
+		return scope;
+	}
 
-    private Function createDefineFunction(SymbolTable t) {
-        return createObserveFunction(t);
-    }
+	private Function createDefineFunction(SymbolTable t) {
+		return createObserveFunction(t);
+	}
 
-    private Function createObserveFunction(final SymbolTable t) {
-        return new EmptyFunction() {
+	private Function createObserveFunction(final SymbolTable t) {
+		return new EmptyFunction() {
 
-            @Override
-            public Object call(Context context, Scriptable scriptable, Scriptable scriptable1, Object[] objects) {
-                if (objects.length == 1) {
-                    final Object o = objects[0];
-                    final String str = o.toString();
-                    final SymbolReference ref = new SymbolReference(str);
-                    final Object value = t.getValue(ref);
-                    return value;
-                } else if (objects.length == 2) {
-                    final Object sym = objects[0];
-                    final Object defn = objects[1];
-                    final String name = sym.toString();
-                    final SymbolReference ref = new SymbolReference(name);
-                    t.define(ref, defn.toString());
-                    return null;
-                }
-                return Undefined.instance;
-            }
+			@Override
+			public Object call(Context context, Scriptable scriptable,
+					Scriptable scriptable1, Object[] objects) {
+				if (objects.length == 1) {
+					final Object o = objects[0];
+					final String str = o.toString();
+					final SymbolReference ref = new SymbolReference(str);
+					final Object value = t.getValue(ref);
+					return value;
+				} else if (objects.length == 2) {
+					final Object sym = objects[0];
+					final Object defn = objects[1];
+					final String name = sym.toString();
+					final SymbolReference ref = new SymbolReference(name);
+					t.define(ref, defn.toString());
+					return null;
+				}
+				return Undefined.instance;
+			}
 
-        };
-    }
-
+		};
+	}
 
 }
