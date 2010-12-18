@@ -43,16 +43,16 @@ public class StatusController {
 	SymbolTableBean service;
 
 	@GET
-	@Produces("text/plain")
-	public String getStatus() {
-		return "Running and fine";
-	}
-
-	@GET
 	@Path("id")
 	@Produces("text/plain")
 	public String getId() {
 		return service.getId().toString();
+	}
+
+	@GET
+	@Produces("text/plain")
+	public String getStatus() {
+		return "Running and fine";
 	}
 
 }

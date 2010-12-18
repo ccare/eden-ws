@@ -2,12 +2,12 @@ package ccare.symboltable;
 
 public interface LanugageSupport {
 
-	SymbolDefinition createMethodCall(String name, Object... params);
+	SymbolDefinition createDefinition(String defn);
 
-	SymbolDefinition defineTriggeredProc(String defn, String... triggers);
+	SymbolDefinition createMethodCall(String name, Object... params);
 
 	SymbolDefinition defineFunction(String defn);
 
-	SymbolDefinition createDefinition(String defn);
+	SymbolDefinition defineTriggeredProc(String defn, String... triggers);
 
 }

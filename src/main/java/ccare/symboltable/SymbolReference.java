@@ -64,9 +64,8 @@ public class SymbolReference {
 		}
 	}
 
-	@Override
-	public String toString() {
-		return "Ref<" + getName() + ">";
+	public String getName() {
+		return name;
 	}
 
 	@Override
@@ -74,7 +73,8 @@ public class SymbolReference {
 		return name != null ? name.hashCode() : 0;
 	}
 
-	public String getName() {
-		return name;
+	@Override
+	public String toString() {
+		return "Ref<" + getName() + ">";
 	}
 }

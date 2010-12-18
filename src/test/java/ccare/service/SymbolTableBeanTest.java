@@ -47,22 +47,18 @@ public class SymbolTableBeanTest {
 
 	private SymbolTableService service = new SymbolTableBean();
 
+	private SymbolTableService service() throws NamingException {
+		return service;
+		// InitialContext context = createContext();
+		// return (SymbolTableService) context.lookup("SymbolTableBeanLocal");
+	}
+
 	@Test
 	public void testBeanIsSingleton() throws NamingException {
 		SymbolTableService serviceBean = service();
 		assertNotNull(serviceBean);
 		SymbolTableService serviceBean2 = service();
 		assertEquals(serviceBean.getId(), serviceBean2.getId());
-	}
-
-	@Test
-	public void testListSymbol() throws NamingException {
-		SymbolTableService serviceBean = service();
-		Observable def = new Observable();
-		def.setDefinition("a+b");
-		SymbolReference r = new SymbolReference();
-		serviceBean.define(r, def);
-		assertTrue(serviceBean.listSymbols().contains(r));
 	}
 
 	// private InitialContext createContext() {
@@ -78,10 +74,14 @@ public class SymbolTableBeanTest {
 	// return context;
 	// }
 
-	private SymbolTableService service() throws NamingException {
-		return service;
-		// InitialContext context = createContext();
-		// return (SymbolTableService) context.lookup("SymbolTableBeanLocal");
+	@Test
+	public void testListSymbol() throws NamingException {
+		SymbolTableService serviceBean = service();
+		Observable def = new Observable();
+		def.setDefinition("a+b");
+		SymbolReference r = new SymbolReference();
+		serviceBean.define(r, def);
+		assertTrue(serviceBean.listSymbols().contains(r));
 	}
 
 }

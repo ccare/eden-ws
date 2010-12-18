@@ -57,25 +57,25 @@ public class SymbolTableBean implements SymbolTableService {
 			.getLogger(SymbolTableBean.class);
 
 	private final UUID id = UUID.randomUUID();
+	private List<TableReference> keys;
+	private List<SymbolTable> recycleBin = new ArrayList<SymbolTable>();
 	private SymbolTable table = new SymbolTableImpl();
 	private Map<TableReference, SymbolTable> tables = new HashMap<TableReference, SymbolTable>();
-	private List<SymbolTable> recycleBin = new ArrayList<SymbolTable>();
-	private List<TableReference> keys;
 
 	@Override
-	public UUID getId() {
-		return id;
+	public List<TableReference> allSpaces() {
+		if (keys == null) {
+			final Set<TableReference> keyset = tables.keySet();
+			keys = new ArrayList<TableReference>(keyset.size());
+			keys.addAll(keyset);
+		}
+		return keys;
 	}
 
 	@Override
-	// @Lock(WRITE)
-	public void define(SymbolReference reference, Observable d) {
-		table.define(reference, d.getDefinition());
-	}
-
-	@Override
-	public Set<SymbolReference> listSymbols() {
-		return table.getSymbols();
+	public TableReference createSpace(final String name)
+			throws CannotCreateException {
+		return doCreate(name);
 	}
 
 	@Override
@@ -85,9 +85,9 @@ public class SymbolTableBean implements SymbolTableService {
 	}
 
 	@Override
-	public TableReference createSpace(final String name)
-			throws CannotCreateException {
-		return doCreate(name);
+	// @Lock(WRITE)
+	public void define(SymbolReference reference, Observable d) {
+		table.define(reference, d.getDefinition());
 	}
 
 	@Override
@@ -127,13 +127,16 @@ public class SymbolTableBean implements SymbolTableService {
 	}
 
 	@Override
-	public List<TableReference> allSpaces() {
-		if (keys == null) {
-			final Set<TableReference> keyset = tables.keySet();
-			keys = new ArrayList<TableReference>(keyset.size());
-			keys.addAll(keyset);
-		}
-		return keys;
+	public UUID getId() {
+		return id;
+	}
+
+	public SymbolTable getSpace(String spaceName) {
+		return getSpace(new TableReference(spaceName));
+	}
+
+	public SymbolTable getSpace(TableReference ref) {
+		return tables.get(ref);
 	}
 
 	public TableReference getSpaceSummary(String spaceName) {
@@ -149,11 +152,8 @@ public class SymbolTableBean implements SymbolTableService {
 		return new TableReference(space.getId(), ref.getName());
 	}
 
-	public SymbolTable getSpace(String spaceName) {
-		return getSpace(new TableReference(spaceName));
-	}
-
-	public SymbolTable getSpace(TableReference ref) {
-		return tables.get(ref);
+	@Override
+	public Set<SymbolReference> listSymbols() {
+		return table.getSymbols();
 	}
 }

@@ -44,18 +44,6 @@ import org.junit.Test;
 public class SymbolReferenceTest {
 
 	@Test
-	public void testGetName() {
-		SymbolReference sr = new SymbolReference("foo");
-		assertThat(sr.getName(), is(equalTo("foo")));
-	}
-
-	@Test
-	public void testGetNameNotNullForDefault() {
-		SymbolReference sr = new SymbolReference();
-		assertNotNull(sr.getName());
-	}
-
-	@Test
 	public void testEquals() {
 		SymbolReference sr = new SymbolReference("foo");
 
@@ -79,9 +67,15 @@ public class SymbolReferenceTest {
 	}
 
 	@Test
-	public void testToString() {
+	public void testGetName() {
 		SymbolReference sr = new SymbolReference("foo");
-		assertThat(sr.toString(), is(equalTo("Ref<foo>")));
+		assertThat(sr.getName(), is(equalTo("foo")));
+	}
+
+	@Test
+	public void testGetNameNotNullForDefault() {
+		SymbolReference sr = new SymbolReference();
+		assertNotNull(sr.getName());
 	}
 
 	@Test
@@ -89,6 +83,12 @@ public class SymbolReferenceTest {
 		SymbolReference sr = new SymbolReference("foo");
 		assertEquals(sr.hashCode(), sr.hashCode());
 		assertEquals(sr.hashCode(), new SymbolReference("foo").hashCode());
+	}
+
+	@Test
+	public void testToString() {
+		SymbolReference sr = new SymbolReference("foo");
+		assertThat(sr.toString(), is(equalTo("Ref<foo>")));
 	}
 
 }

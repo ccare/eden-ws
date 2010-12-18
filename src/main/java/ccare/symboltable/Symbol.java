@@ -4,14 +4,14 @@ import java.util.Set;
 
 public interface Symbol {
 
-	public abstract Set<Symbol> getDependents();
-
-	public abstract Set<Symbol> getTriggers();
+	public abstract void expireValue();
 
 	public abstract SymbolDefinition getDefinition();
 
-	public abstract void expireValue();
+	public abstract Set<Symbol> getDependents();
 
 	public abstract SymbolReference getReference();
+
+	public abstract Set<Symbol> getTriggers();
 
 }

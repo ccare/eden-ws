@@ -49,13 +49,13 @@ import ccare.symboltable.SymbolReference;
 class Definition implements SymbolDefinition {
 
 	public enum ExprType {
-		FUNCTION, EXPRESSION
+		EXPRESSION, FUNCTION
 	}
 
 	private final String expr;
-	private final ExprType type;
-
 	private List<SymbolReference> triggers;
+
+	private final ExprType type;
 
 	public Definition(String expr) {
 		this(expr, ExprType.EXPRESSION, null);
@@ -76,8 +76,8 @@ class Definition implements SymbolDefinition {
 	}
 
 	@Override
-	public String getExpr() {
-		return translateExpression(expr);
+	public Object evaluate(final LanguageExecutor context) {
+		return context.evaluate(this);
 	}
 
 	@Override
@@ -92,13 +92,13 @@ class Definition implements SymbolDefinition {
 	}
 
 	@Override
-	public Collection<SymbolReference> getTriggers() {
-		return triggers;
+	public String getExpr() {
+		return translateExpression(expr);
 	}
 
 	@Override
-	public Object evaluate(final LanguageExecutor context) {
-		return context.evaluate(this);
+	public Collection<SymbolReference> getTriggers() {
+		return triggers;
 	}
 
 	@Override

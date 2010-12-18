@@ -14,6 +14,14 @@ import ccare.symboltable.exceptions.EvaluationException;
 
 public class JavaScriptLanguageExecutor extends LanguageExecutor {
 
+	static Function compileFunction(Context cx, Scriptable scope, String expr) {
+		return cx.compileFunction(scope, expr, "<func>", 1, null);
+	}
+
+	static Object evalExpression(Context cx, Scriptable scope, String expr) {
+		return cx.evaluateString(scope, expr, "<cmd>", 1, null);
+	}
+
 	final Scriptable scope;
 
 	public JavaScriptLanguageExecutor(SymbolTable table) {
@@ -42,14 +50,6 @@ public class JavaScriptLanguageExecutor extends LanguageExecutor {
 
 	private ScopeFactory getScopeFactory() {
 		return ScopeFactory.getInstance();
-	}
-
-	static Object evalExpression(Context cx, Scriptable scope, String expr) {
-		return cx.evaluateString(scope, expr, "<cmd>", 1, null);
-	}
-
-	static Function compileFunction(Context cx, Scriptable scope, String expr) {
-		return cx.compileFunction(scope, expr, "<func>", 1, null);
 	}
 
 }

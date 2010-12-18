@@ -44,16 +44,53 @@ import ccare.symboltable.exceptions.CannotForgetException;
  */
 class SymbolImpl implements Symbol {
 
-	private final SymbolReference ref;
-	private SymbolDefinition definition;
 	private SoftReference<Object> cachedValue;
-	private boolean upToDate;
-
+	private SymbolDefinition definition;
 	private SymbolGraphNodeRecord dependsOn = new DependencyGraphNodeRecord();
+	private final SymbolReference ref;
+
 	private SymbolGraphNodeRecord tb = new TriggerGraphNodeRecord();
+	private boolean upToDate;
 
 	public SymbolImpl(SymbolReference ref) {
 		this.ref = ref;
+	}
+
+	private void buildDefinitions(SymbolTableImpl t) {
+		dependsOn.buildGraph(this, definition.getDependencies(), t);
+		tb.buildGraph(this, definition.getTriggers(), t);
+	}
+
+	private void clearDefinitions() {
+		cachedValue = null;
+		// value = null;
+		definition = null;
+		dependsOn.unregister(this);
+		tb.unregister(this);
+	}
+
+	@Override
+	public void expireValue() {
+		upToDate = false;
+	}
+
+	void forget() throws CannotForgetException {
+		if (dependsOn.hasListeners() || tb.hasListeners()) {
+			throw new CannotForgetException(
+					"Cannot forget a symbol inside a dependency graph");
+		} else {
+			clearDefinitions();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see ccare.symboltable.impl.ISymbol#getDefinition()
+	 */
+	@Override
+	public SymbolDefinition getDefinition() {
+		return definition;
 	}
 
 	/*
@@ -66,6 +103,11 @@ class SymbolImpl implements Symbol {
 		return dependsOn.getListeners();
 	}
 
+	@Override
+	public SymbolReference getReference() {
+		return ref;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -74,33 +116,6 @@ class SymbolImpl implements Symbol {
 	@Override
 	public Set<Symbol> getTriggers() {
 		return tb.getListeners();
-	}
-
-	@Override
-	public SymbolReference getReference() {
-		return ref;
-	}
-
-	void redefine(SymbolDefinition d, SymbolTableImpl t) {
-		upToDate = false;
-		clearDefinitions();
-		definition = d;
-		buildDefinitions(t);
-		expireValue();
-	}
-
-	void forget() throws CannotForgetException {
-		if (dependsOn.hasListeners() || tb.hasListeners()) {
-			throw new CannotForgetException(
-					"Cannot forget a symbol inside a dependency graph");
-		} else {
-			clearDefinitions();
-		}
-	}
-
-	@Override
-	public void expireValue() {
-		upToDate = false;
 	}
 
 	Object getValue(LanguageExecutor exec) {
@@ -114,46 +129,31 @@ class SymbolImpl implements Symbol {
 		return cachedValue.get();
 	}
 
-	void registerDependent(Symbol s) {
-		dependsOn.addListener(s);
-	}
-
-	void unRegisterDependent(Symbol s) {
-		dependsOn.removeListener(s);
-	}
-
 	boolean isUpToDate() {
 		return upToDate;
+	}
+
+	void redefine(SymbolDefinition d, SymbolTableImpl t) {
+		upToDate = false;
+		clearDefinitions();
+		definition = d;
+		buildDefinitions(t);
+		expireValue();
+	}
+
+	void registerDependent(Symbol s) {
+		dependsOn.addListener(s);
 	}
 
 	void registerTrigger(Symbol symbol) {
 		tb.addListener(symbol);
 	}
 
+	void unRegisterDependent(Symbol s) {
+		dependsOn.removeListener(s);
+	}
+
 	void unRegisterTrigger(Symbol symbol) {
 		tb.removeListener(symbol);
-	}
-
-	private void clearDefinitions() {
-		cachedValue = null;
-		// value = null;
-		definition = null;
-		dependsOn.unregister(this);
-		tb.unregister(this);
-	}
-
-	private void buildDefinitions(SymbolTableImpl t) {
-		dependsOn.buildGraph(this, definition.getDependencies(), t);
-		tb.buildGraph(this, definition.getTriggers(), t);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see ccare.symboltable.impl.ISymbol#getDefinition()
-	 */
-	@Override
-	public SymbolDefinition getDefinition() {
-		return definition;
 	}
 }

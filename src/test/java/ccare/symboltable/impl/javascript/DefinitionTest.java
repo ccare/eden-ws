@@ -49,15 +49,139 @@ import ccare.symboltable.impl.SymbolTableImpl;
  */
 public class DefinitionTest {
 
+	public LanguageExecutor getExecutor() {
+		return null;
+	}
+
+	private SymbolTable stubSymbolTable(final Object value) {
+		return new SymbolTable() {
+			@Override
+			public void define(SymbolReference aRef, String s) {
+
+			}
+
+			@Override
+			public void defineFunction(SymbolReference a, String s) {
+
+			}
+
+			@Override
+			public void defineTriggeredProc(SymbolReference a, String s,
+					String... triggers) {
+
+			}
+
+			@Override
+			public Object evaluate(String s) {
+				return null; // To change body of implemented methods use File |
+								// Settings | File Templates.
+			}
+
+			@Override
+			public Object evaluateDefintion(SymbolDefinition definition) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public String evaluateString(String expression) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Object execute(SymbolReference a) {
+				return null;
+			}
+
+			@Override
+			public Object execute(SymbolReference a, Object... params) {
+				return null;
+			}
+
+			@Override
+			public LanguageExecutor getExecutor() {
+				return new JavaScriptLanguageExecutor(this);
+			}
+
+			@Override
+			public UUID getId() {
+				return null;
+			}
+
+			@Override
+			public String getName() {
+				return null; // To change body of implemented methods use File |
+								// Settings | File Templates.
+			}
+
+			@Override
+			public int getSymbolCount() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+
+			@Override
+			public Set<SymbolReference> getSymbols() {
+				return null;
+			}
+
+			@Override
+			public Object getValue(SymbolReference bRef) {
+				return value;
+			}
+
+			@Override
+			public void setName(String name) {
+				// To change body of implemented methods use File | Settings |
+				// File Templates.
+			}
+		};
+	}
+
+	@Test
+	public void testCallMagicObserveFunctionDelegatesCorrectly()
+			throws Exception {
+		final SymbolDefinition d = new Definition("$eden_observe('a')");
+		final SymbolTable t = stubSymbolTable("abc");
+		assertEquals("abc", d.evaluate(t.getExecutor()));
+	}
+
 	@Test
 	public void testCreate() {
 		new Definition("a+b");
 	}
 
 	@Test
-	public void testToString() {
-		final String expr = "a+b";
-		assertEquals(expr, new Definition(expr).toString());
+	public void testEvaluate() throws Exception {
+		SymbolDefinition d = new Definition("1+2");
+		assertEquals(3, d.evaluate(new JavaScriptLanguageExecutor(null)));
+	}
+
+	@Test
+	public void testEvaluateDependency() throws Exception {
+		final SymbolTableMXBean table = new SymbolTableImpl();
+		final SymbolDefinition d = new Definition("#a");
+		final SymbolTable t = stubSymbolTable("abc");
+		assertEquals("abc", d.evaluate(t.getExecutor()));
+	}
+
+	@Test
+	public void testEvaluateDependencyExpression() throws Exception {
+		final SymbolTableMXBean table = new SymbolTableImpl();
+		final SymbolDefinition d1 = new Definition("#a + 'def'");
+		final SymbolDefinition d2 = new Definition("#{a} + 'def'");
+		final SymbolTable t = stubSymbolTable("abc");
+		final String target = "abcdef";
+		assertEquals(target, d1.evaluate(t.getExecutor()));
+		assertEquals(target, d2.evaluate(t.getExecutor()));
+	}
+
+	@Test
+	public void testEvaluateE4X() throws Exception {
+		SymbolDefinition d = new Definition(
+				"<xml><foo>bar</foo></xml>.foo.toString()");
+		assertEquals("bar", d.evaluate(new JavaScriptLanguageExecutor(null)));
 	}
 
 	@Test
@@ -68,19 +192,6 @@ public class DefinitionTest {
 	}
 
 	@Test
-	public void testExpressionTranslationForExpressionWithSimpleObservables() {
-		validateExpr("a+$eden_observe('c')", "a+#c");
-		validateExpr("a % $eden_observe('c_c_d')", "a % #c_c_d");
-	}
-
-	@Test
-	public void testExpressionTranslationForExpressionWithEscapedObservables() {
-		validateExpr("$eden_observe('abc')", "#{abc}");
-		validateExpr("$eden_observe('http://foo/bar/') * $eden_observe('b')",
-				"#{http://foo/bar/} * #b");
-	}
-
-	@Test
 	public void testExpressionTranslationForCalculatedExpresions() {
 		validateExpr("$eden_observe('abc')", "#{abc}");
 	}
@@ -88,14 +199,6 @@ public class DefinitionTest {
 	@Test
 	public void testExpressionTranslationForDefinition() {
 		validateExpr("$eden_define('a','b+c')", "#a is b+c");
-	}
-
-	@Test
-	public void testExpressionTranslationForDefinitionWithDependency() {
-		validateExpr("$eden_define('a','#b+c')", "#a is #b+c");
-		validateExpr("$eden_define('a','#c')", "#a is #c");
-		validateExpr("$eden_define('a','f(#c)')", "#a is f(#c)");
-		validateExpr("$eden_define('a','#f(#c)')", "#a is #f(#c)");
 	}
 
 	@Test
@@ -126,6 +229,14 @@ public class DefinitionTest {
 	}
 
 	@Test
+	public void testExpressionTranslationForDefinitionWithDependency() {
+		validateExpr("$eden_define('a','#b+c')", "#a is #b+c");
+		validateExpr("$eden_define('a','#c')", "#a is #c");
+		validateExpr("$eden_define('a','f(#c)')", "#a is f(#c)");
+		validateExpr("$eden_define('a','#f(#c)')", "#a is #f(#c)");
+	}
+
+	@Test
 	public void testExpressionTranslationForDoubleQuoteStrings() {
 		validateExpr("function() {$eden_define('a','\"b+c\"');}",
 				"function() {#a is \"b+c\";}");
@@ -138,16 +249,16 @@ public class DefinitionTest {
 	}
 
 	@Test
-	public void testExpressionTranslationForSingleQuoteStrings() {
-		validateExpr("$eden_define('a','\\'...\\'')", "#a is '...'");
+	public void testExpressionTranslationForExpressionWithEscapedObservables() {
+		validateExpr("$eden_observe('abc')", "#{abc}");
+		validateExpr("$eden_observe('http://foo/bar/') * $eden_observe('b')",
+				"#{http://foo/bar/} * #b");
 	}
 
 	@Test
-	public void testExpressionTranslationForSingleQuoteStringsInFunctions() {
-		validateExpr("function() {$eden_define('a','\\'b+c\\'')}",
-				"function() {#a is 'b+c'}");
-		validateExpr("function() {$eden_define('a','\\'b+c\\'');}",
-				"function() {#a is 'b+c';}");
+	public void testExpressionTranslationForExpressionWithSimpleObservables() {
+		validateExpr("a+$eden_observe('c')", "a+#c");
+		validateExpr("a % $eden_observe('c_c_d')", "a % #c_c_d");
 	}
 
 	@Test
@@ -161,13 +272,17 @@ public class DefinitionTest {
 				"function() { #a is ({ a: 1}); }");
 	}
 
-	private void validateExprUnchangedFor(final String expr) {
-		validateExpr(expr, expr);
+	@Test
+	public void testExpressionTranslationForSingleQuoteStrings() {
+		validateExpr("$eden_define('a','\\'...\\'')", "#a is '...'");
 	}
 
-	private void validateExpr(final String target, final String expr) {
-		final SymbolDefinition defn = new Definition(expr);
-		assertEquals(target, defn.getExpr());
+	@Test
+	public void testExpressionTranslationForSingleQuoteStringsInFunctions() {
+		validateExpr("function() {$eden_define('a','\\'b+c\\'')}",
+				"function() {#a is 'b+c'}");
+		validateExpr("function() {$eden_define('a','\\'b+c\\'');}",
+				"function() {#a is 'b+c';}");
 	}
 
 	@Test
@@ -187,139 +302,24 @@ public class DefinitionTest {
 	}
 
 	@Test
-	public void testEvaluate() throws Exception {
-		SymbolDefinition d = new Definition("1+2");
-		assertEquals(3, d.evaluate(new JavaScriptLanguageExecutor(null)));
-	}
-
-	@Test
-	public void testEvaluateE4X() throws Exception {
-		SymbolDefinition d = new Definition(
-				"<xml><foo>bar</foo></xml>.foo.toString()");
-		assertEquals("bar", d.evaluate(new JavaScriptLanguageExecutor(null)));
-	}
-
-	@Test
 	public void testPrintln() throws Exception {
 		SymbolDefinition d = new Definition("java.lang.System.out.println(3)");
 		d.evaluate(new JavaScriptLanguageExecutor(null));
 	}
 
 	@Test
-	public void testCallMagicObserveFunctionDelegatesCorrectly()
-			throws Exception {
-		final SymbolDefinition d = new Definition("$eden_observe('a')");
-		final SymbolTable t = stubSymbolTable("abc");
-		assertEquals("abc", d.evaluate(t.getExecutor()));
+	public void testToString() {
+		final String expr = "a+b";
+		assertEquals(expr, new Definition(expr).toString());
 	}
 
-	@Test
-	public void testEvaluateDependency() throws Exception {
-		final SymbolTableMXBean table = new SymbolTableImpl();
-		final SymbolDefinition d = new Definition("#a");
-		final SymbolTable t = stubSymbolTable("abc");
-		assertEquals("abc", d.evaluate(t.getExecutor()));
+	private void validateExpr(final String target, final String expr) {
+		final SymbolDefinition defn = new Definition(expr);
+		assertEquals(target, defn.getExpr());
 	}
 
-	@Test
-	public void testEvaluateDependencyExpression() throws Exception {
-		final SymbolTableMXBean table = new SymbolTableImpl();
-		final SymbolDefinition d1 = new Definition("#a + 'def'");
-		final SymbolDefinition d2 = new Definition("#{a} + 'def'");
-		final SymbolTable t = stubSymbolTable("abc");
-		final String target = "abcdef";
-		assertEquals(target, d1.evaluate(t.getExecutor()));
-		assertEquals(target, d2.evaluate(t.getExecutor()));
-	}
-
-	private SymbolTable stubSymbolTable(final Object value) {
-		return new SymbolTable() {
-			@Override
-			public UUID getId() {
-				return null;
-			}
-
-			@Override
-			public Set<SymbolReference> getSymbols() {
-				return null;
-			}
-
-			@Override
-			public void define(SymbolReference aRef, String s) {
-
-			}
-
-			@Override
-			public Object getValue(SymbolReference bRef) {
-				return value;
-			}
-
-			@Override
-			public void defineFunction(SymbolReference a, String s) {
-
-			}
-
-			@Override
-			public void defineTriggeredProc(SymbolReference a, String s,
-					String... triggers) {
-
-			}
-
-			@Override
-			public Object execute(SymbolReference a) {
-				return null;
-			}
-
-			@Override
-			public Object execute(SymbolReference a, Object... params) {
-				return null;
-			}
-
-			@Override
-			public String getName() {
-				return null; // To change body of implemented methods use File |
-								// Settings | File Templates.
-			}
-
-			@Override
-			public void setName(String name) {
-				// To change body of implemented methods use File | Settings |
-				// File Templates.
-			}
-
-			@Override
-			public Object evaluate(String s) {
-				return null; // To change body of implemented methods use File |
-								// Settings | File Templates.
-			}
-
-			@Override
-			public int getSymbolCount() {
-				// TODO Auto-generated method stub
-				return 0;
-			}
-
-			@Override
-			public String evaluateString(String expression) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public Object evaluateDefintion(SymbolDefinition definition) {
-				// TODO Auto-generated method stub
-				return null;
-			}
-
-			@Override
-			public LanguageExecutor getExecutor() {
-				return new JavaScriptLanguageExecutor(this);
-			}
-		};
-	}
-
-	public LanguageExecutor getExecutor() {
-		return null;
+	private void validateExprUnchangedFor(final String expr) {
+		validateExpr(expr, expr);
 	}
 
 }

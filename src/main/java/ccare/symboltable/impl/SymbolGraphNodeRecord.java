@@ -11,9 +11,13 @@ import ccare.symboltable.SymbolReference;
 abstract class SymbolGraphNodeRecord {
 	private static final SymbolImpl[] EMPTY_SYMBOL_ARRAY = {};
 
+	private SymbolImpl[] backPointers = EMPTY_SYMBOL_ARRAY;
+
 	private final Set<Symbol> listeners = new HashSet<Symbol>();
 
-	private SymbolImpl[] backPointers = EMPTY_SYMBOL_ARRAY;
+	public void addListener(Symbol symbol) {
+		listeners.add(symbol);
+	}
 
 	void buildGraph(Symbol sym, Collection<SymbolReference> obs,
 			SymbolTableImpl t) {
@@ -28,6 +32,20 @@ abstract class SymbolGraphNodeRecord {
 		backPointers = newReferences;
 	}
 
+	public Set<Symbol> getListeners() {
+		return Collections.unmodifiableSet(listeners);
+	}
+
+	public boolean hasListeners() {
+		return !listeners.isEmpty();
+	}
+
+	abstract void register(Symbol sym, SymbolImpl s);
+
+	public void removeListener(Symbol symbol) {
+		listeners.remove(symbol);
+	}
+
 	void unregister(Symbol sym) {
 		System.out.println("unregistering " + backPointers.length);
 		for (SymbolImpl s : backPointers) {
@@ -35,23 +53,5 @@ abstract class SymbolGraphNodeRecord {
 		}
 	}
 
-	abstract void register(Symbol sym, SymbolImpl s);
-
 	abstract void unregister(Symbol sym, SymbolImpl s);
-
-	public void removeListener(Symbol symbol) {
-		listeners.remove(symbol);
-	}
-
-	public void addListener(Symbol symbol) {
-		listeners.add(symbol);
-	}
-
-	public boolean hasListeners() {
-		return !listeners.isEmpty();
-	}
-
-	public Set<Symbol> getListeners() {
-		return Collections.unmodifiableSet(listeners);
-	}
 }

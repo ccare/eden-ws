@@ -6,8 +6,28 @@ import ccare.symboltable.SymbolDefinition;
 public class JavaScriptLanguageSupport implements LanugageSupport {
 
 	@Override
+	public SymbolDefinition createDefinition(String defn) {
+		if (defn.trim().startsWith("function")) {
+			return defineFunction(defn);
+		} else {
+			return new Definition(defn);
+		}
+
+	}
+
+	@Override
 	public SymbolDefinition createMethodCall(String name, Object[] params) {
 		return new Definition("#{" + name + "}(" + encodeParams(params) + ")");
+	}
+
+	@Override
+	public SymbolDefinition defineFunction(String defn) {
+		return new Definition(defn, Definition.ExprType.FUNCTION);
+	}
+
+	@Override
+	public SymbolDefinition defineTriggeredProc(String defn, String... triggers) {
+		return new Definition(defn, Definition.ExprType.FUNCTION, triggers);
 	}
 
 	private String encodeParams(Object... params) {
@@ -22,26 +42,6 @@ public class JavaScriptLanguageSupport implements LanugageSupport {
 			}
 			return sb.toString();
 		}
-	}
-
-	@Override
-	public SymbolDefinition defineTriggeredProc(String defn, String... triggers) {
-		return new Definition(defn, Definition.ExprType.FUNCTION, triggers);
-	}
-
-	@Override
-	public SymbolDefinition defineFunction(String defn) {
-		return new Definition(defn, Definition.ExprType.FUNCTION);
-	}
-
-	@Override
-	public SymbolDefinition createDefinition(String defn) {
-		if (defn.trim().startsWith("function")) {
-			return defineFunction(defn);
-		} else {
-			return new Definition(defn);
-		}
-
 	}
 
 }

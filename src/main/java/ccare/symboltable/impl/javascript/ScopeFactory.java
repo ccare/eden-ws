@@ -42,9 +42,7 @@ import ccare.symboltable.SymbolTable;
  */
 public class ScopeFactory {
 
-	Scriptable rootScope;
 	static ScopeFactory instance;
-
 	public static ScopeFactory getInstance() {
 		if (instance == null) {
 			synchronized (ScopeFactory.class) {
@@ -54,46 +52,7 @@ public class ScopeFactory {
 		return instance;
 	}
 
-	private Scriptable getRootScope() {
-		if (rootScope == null) {
-			synchronized (this) {
-				Context cx = Context.enter();
-				try {
-					// New scope / runtime env
-					ScriptableObject sharedScope = cx.initStandardObjects();
-					sharedScope.sealObject();
-					rootScope = sharedScope;
-				} finally {
-					Context.exit();
-				}
-			}
-		}
-		return rootScope;
-	}
-
-	private Scriptable createScope() {
-		Context cx = Context.enter();
-		try {
-			// New scope / runtime env
-			Scriptable sharedScope = getRootScope();
-			Scriptable newScope = cx.newObject(sharedScope);
-			return newScope;
-		} finally {
-			Context.exit();
-		}
-	}
-
-	public Scriptable scopeFor(final SymbolTable t) {
-		final Scriptable scope = createScope();
-		Function f = createObserveFunction(t);
-		ScriptableObject.putProperty(scope, "$eden_observe", f);
-		Function g = createDefineFunction(t);
-		ScriptableObject.putProperty(scope, "$eden_define", g);
-		Function xsl = XmlProcessingSupport.createTransformerFactoryFunction();
-		ScriptableObject.putProperty(scope, "XSL", xsl);
-
-		return scope;
-	}
+	Scriptable rootScope;
 
 	private Function createDefineFunction(SymbolTable t) {
 		return createObserveFunction(t);
@@ -123,6 +82,47 @@ public class ScopeFactory {
 			}
 
 		};
+	}
+
+	private Scriptable createScope() {
+		Context cx = Context.enter();
+		try {
+			// New scope / runtime env
+			Scriptable sharedScope = getRootScope();
+			Scriptable newScope = cx.newObject(sharedScope);
+			return newScope;
+		} finally {
+			Context.exit();
+		}
+	}
+
+	private Scriptable getRootScope() {
+		if (rootScope == null) {
+			synchronized (this) {
+				Context cx = Context.enter();
+				try {
+					// New scope / runtime env
+					ScriptableObject sharedScope = cx.initStandardObjects();
+					sharedScope.sealObject();
+					rootScope = sharedScope;
+				} finally {
+					Context.exit();
+				}
+			}
+		}
+		return rootScope;
+	}
+
+	public Scriptable scopeFor(final SymbolTable t) {
+		final Scriptable scope = createScope();
+		Function f = createObserveFunction(t);
+		ScriptableObject.putProperty(scope, "$eden_observe", f);
+		Function g = createDefineFunction(t);
+		ScriptableObject.putProperty(scope, "$eden_define", g);
+		Function xsl = XmlProcessingSupport.createTransformerFactoryFunction();
+		ScriptableObject.putProperty(scope, "XSL", xsl);
+
+		return scope;
 	}
 
 }

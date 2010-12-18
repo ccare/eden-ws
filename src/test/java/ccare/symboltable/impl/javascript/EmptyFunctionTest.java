@@ -29,8 +29,43 @@ public class EmptyFunctionTest {
 	}
 
 	@Test
+	public void testDeleteDoesntThrowException() {
+		f.delete(1);
+		f.delete(2);
+		f.delete(3);
+		f.delete('a');
+		f.delete('b');
+		f.delete('c');
+	}
+
+	@Test
 	public void testGetClassName() {
 		assertNull(f.getClassName());
+	}
+
+	@Test
+	public void testGetDefaultValue() {
+		assertNull(f.getDefaultValue(null));
+	}
+
+	@Test
+	public void testGetIds() {
+		assertNotNull(f.getIds());
+		assertEquals(0, f.getIds().length);
+	}
+
+	@Test
+	public void testGetParentScope() {
+		assertNull(f.getParentScope());
+		f.setParentScope(null);
+		assertNull(f.getParentScope());
+		f.setParentScope(createMock(Scriptable.class));
+		assertNull(f.getParentScope());
+	}
+
+	@Test
+	public void testGetPrototype() {
+		assertNull(f.getPrototype());
 	}
 
 	@Test
@@ -38,6 +73,11 @@ public class EmptyFunctionTest {
 		Scriptable s = createMock(Scriptable.class);
 		assertNull(f.get(1, s));
 		assertNull(f.get('a', s));
+	}
+
+	@Test
+	public void testHasInstance() {
+		assertFalse(f.hasInstance(null));
 	}
 
 	@Test
@@ -52,46 +92,6 @@ public class EmptyFunctionTest {
 		Scriptable s = createMock(Scriptable.class);
 		f.put(1, s, new Object());
 		f.put('a', s, new Object());
-	}
-
-	@Test
-	public void testDeleteDoesntThrowException() {
-		f.delete(1);
-		f.delete(2);
-		f.delete(3);
-		f.delete('a');
-		f.delete('b');
-		f.delete('c');
-	}
-
-	@Test
-	public void testGetPrototype() {
-		assertNull(f.getPrototype());
-	}
-
-	@Test
-	public void testGetParentScope() {
-		assertNull(f.getParentScope());
-		f.setParentScope(null);
-		assertNull(f.getParentScope());
-		f.setParentScope(createMock(Scriptable.class));
-		assertNull(f.getParentScope());
-	}
-
-	@Test
-	public void testGetIds() {
-		assertNotNull(f.getIds());
-		assertEquals(0, f.getIds().length);
-	}
-
-	@Test
-	public void testGetDefaultValue() {
-		assertNull(f.getDefaultValue(null));
-	}
-
-	@Test
-	public void testHasInstance() {
-		assertFalse(f.hasInstance(null));
 	}
 
 }

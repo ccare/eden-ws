@@ -41,37 +41,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class TableReference {
 
 	@XmlElement
-	private String name;
-	@XmlElement
 	private UUID id;
+	@XmlElement
+	private String name;
 
 	public TableReference() {
-	}
-
-	public TableReference(UUID id) {
-		this.id = id;
 	}
 
 	public TableReference(String name) {
 		this.name = name;
 	}
 
+	public TableReference(UUID id) {
+		this.id = id;
+	}
+
 	public TableReference(UUID id, String name) {
 		this.id = id;
 		this.name = name;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public UUID getId() {
-		return id;
-	}
-
-	@Override
-	public String toString() {
-		return "TableReference<" + name + ',' + id + '>';
 	}
 
 	@Override
@@ -89,8 +76,21 @@ public class TableReference {
 		return true;
 	}
 
+	public UUID getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
 	@Override
 	public int hashCode() {
 		return name != null ? name.hashCode() : 0;
+	}
+
+	@Override
+	public String toString() {
+		return "TableReference<" + name + ',' + id + '>';
 	}
 }

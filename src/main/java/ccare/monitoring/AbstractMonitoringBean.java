@@ -12,17 +12,6 @@ import javax.management.ObjectName;
 
 public class AbstractMonitoringBean extends NotificationBroadcasterSupport {
 
-	protected final void register(final String group, final String type,
-			final String name) {
-		final String beanName = group + ":type=" + type + ",name=" + name;
-		register(beanName);
-	}
-
-	final void register(final String beanName) {
-		final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-		registerAsMXBean(createName(beanName), this, mbs);
-	}
-
 	static ObjectName createName(final String beanName) {
 		try {
 			return new ObjectName(beanName);
@@ -47,6 +36,17 @@ public class AbstractMonitoringBean extends NotificationBroadcasterSupport {
 					"Exception thrown when registering MXBean - bean not compliant",
 					e);
 		}
+	}
+
+	final void register(final String beanName) {
+		final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+		registerAsMXBean(createName(beanName), this, mbs);
+	}
+
+	protected final void register(final String group, final String type,
+			final String name) {
+		final String beanName = group + ":type=" + type + ",name=" + name;
+		register(beanName);
 	}
 
 }

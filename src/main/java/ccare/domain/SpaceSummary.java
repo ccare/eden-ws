@@ -47,12 +47,12 @@ public class SpaceSummary {
 		return count;
 	}
 
-	public void setCount(Integer count) {
-		this.count = count;
-	}
-
 	public Set<Space> getSpaces() {
 		return spaces;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
 	}
 
 	public void setSpaces(Set<Space> spaces) {

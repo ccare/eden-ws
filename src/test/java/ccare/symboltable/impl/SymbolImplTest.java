@@ -57,20 +57,78 @@ import ccare.symboltable.exceptions.CannotForgetException;
 public class SymbolImplTest {
 
 	SymbolDefinition defn;
-	SymbolTableImpl symbolTable;
 	LanguageExecutor executor;
+	SymbolTableImpl symbolTable;
+
+	private void defineAsIncrement(SymbolTableImpl table,
+			final SymbolReference refB, SymbolImpl a) {
+		a.redefine(new SymbolDefinition() {
+			@Override
+			public Object evaluate(LanguageExecutor context) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Collection<SymbolReference> getDependencies() {
+				return Arrays.asList(new SymbolReference[] { refB });
+			}
+
+			@Override
+			public String getExpr() {
+				return null;
+			}
+
+			@Override
+			public Collection<SymbolReference> getTriggers() {
+				return Collections.<SymbolReference> emptyList();
+			}
+
+			@Override
+			public boolean isExecutable() {
+				return false;
+			}
+		}, table);
+	}
+
+	private void defineAsNumber(final SymbolTableImpl table,
+			final SymbolImpl b, final Integer val) {
+		b.redefine(new SymbolDefinition() {
+			@Override
+			public Object evaluate(LanguageExecutor context) {
+				return val;
+
+			}
+
+			@Override
+			public Collection<SymbolReference> getDependencies() {
+				return Collections.<SymbolReference> emptyList();
+			}
+
+			@Override
+			public String getExpr() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public Collection<SymbolReference> getTriggers() {
+				return Collections.<SymbolReference> emptyList();
+			}
+
+			@Override
+			public boolean isExecutable() {
+				return false;
+			}
+		}, table);
+
+	}
 
 	@Before
 	public void setup() {
 		defn = createMock(SymbolDefinition.class);
 		symbolTable = createMock(SymbolTableImpl.class);
 		executor = createMock(LanguageExecutor.class);
-	}
-
-	@Test
-	public void testIsUpToDateInitialisesCorrectly() throws Exception {
-		SymbolImpl s = new SymbolImpl(new SymbolReference());
-		assertFalse(s.isUpToDate());
 	}
 
 	@Test
@@ -91,68 +149,6 @@ public class SymbolImplTest {
 		assertTrue(s.isUpToDate());
 		s.expireValue();
 		assertFalse(s.isUpToDate());
-
-		verify(defn);
-		verify(symbolTable);
-	}
-
-	@Test
-	public void testRegisterDependent() throws Exception {
-		final Symbol dependant = createMock(SymbolImpl.class);
-		replay(dependant);
-		SymbolImpl s = new SymbolImpl(new SymbolReference());
-		s.registerDependent(dependant);
-		verify(dependant);
-	}
-
-	@Test
-	public void testRegisterTrigger() throws Exception {
-		final Symbol other = createMock(SymbolImpl.class);
-		replay(other);
-		SymbolImpl s = new SymbolImpl(new SymbolReference());
-		s.registerTrigger(other);
-		verify(other);
-	}
-
-	@Test
-	public void testGetValueDoesntReEvaluateButCaches() throws Exception {
-		expect(defn.evaluate(executor)).andReturn(new Object());
-		expect(defn.getDependencies()).andReturn(
-				Collections.<SymbolReference> emptyList());
-		expect(defn.getTriggers()).andReturn(
-				Collections.<SymbolReference> emptyList());
-
-		replay(defn);
-		replay(symbolTable);
-
-		SymbolImpl s = new SymbolImpl(new SymbolReference());
-		s.redefine(defn, symbolTable);
-		s.getValue(executor);
-		s.getValue(executor);
-		s.getValue(executor);
-
-		verify(defn);
-		verify(symbolTable);
-	}
-
-	@Test
-	public void testGetValueReEvaluatesWhenSymbolValueExpires()
-			throws Exception {
-		expect(defn.evaluate(executor)).andReturn(new Object()).times(2);
-		expect(defn.getDependencies()).andReturn(
-				Collections.<SymbolReference> emptyList());
-		expect(defn.getTriggers()).andReturn(
-				Collections.<SymbolReference> emptyList());
-
-		replay(defn);
-		replay(symbolTable);
-
-		SymbolImpl s = new SymbolImpl(new SymbolReference());
-		s.redefine(defn, symbolTable);
-		s.getValue(executor);
-		s.expireValue();
-		s.getValue(executor);
-		s.getValue(executor);
 
 		verify(defn);
 		verify(symbolTable);
@@ -202,68 +198,72 @@ public class SymbolImplTest {
 		assertEquals(Undefined.instance, c.getValue(executor));
 	}
 
-	private void defineAsNumber(final SymbolTableImpl table,
-			final SymbolImpl b, final Integer val) {
-		b.redefine(new SymbolDefinition() {
-			@Override
-			public Collection<SymbolReference> getDependencies() {
-				return Collections.<SymbolReference> emptyList();
-			}
+	@Test
+	public void testGetValueDoesntReEvaluateButCaches() throws Exception {
+		expect(defn.evaluate(executor)).andReturn(new Object());
+		expect(defn.getDependencies()).andReturn(
+				Collections.<SymbolReference> emptyList());
+		expect(defn.getTriggers()).andReturn(
+				Collections.<SymbolReference> emptyList());
 
-			@Override
-			public Collection<SymbolReference> getTriggers() {
-				return Collections.<SymbolReference> emptyList();
-			}
+		replay(defn);
+		replay(symbolTable);
 
-			@Override
-			public Object evaluate(LanguageExecutor context) {
-				return val;
+		SymbolImpl s = new SymbolImpl(new SymbolReference());
+		s.redefine(defn, symbolTable);
+		s.getValue(executor);
+		s.getValue(executor);
+		s.getValue(executor);
 
-			}
-
-			@Override
-			public boolean isExecutable() {
-				return false;
-			}
-
-			@Override
-			public String getExpr() {
-				// TODO Auto-generated method stub
-				return null;
-			}
-		}, table);
-
+		verify(defn);
+		verify(symbolTable);
 	}
 
-	private void defineAsIncrement(SymbolTableImpl table,
-			final SymbolReference refB, SymbolImpl a) {
-		a.redefine(new SymbolDefinition() {
-			@Override
-			public Collection<SymbolReference> getDependencies() {
-				return Arrays.asList(new SymbolReference[] { refB });
-			}
+	@Test
+	public void testGetValueReEvaluatesWhenSymbolValueExpires()
+			throws Exception {
+		expect(defn.evaluate(executor)).andReturn(new Object()).times(2);
+		expect(defn.getDependencies()).andReturn(
+				Collections.<SymbolReference> emptyList());
+		expect(defn.getTriggers()).andReturn(
+				Collections.<SymbolReference> emptyList());
 
-			@Override
-			public Collection<SymbolReference> getTriggers() {
-				return Collections.<SymbolReference> emptyList();
-			}
+		replay(defn);
+		replay(symbolTable);
 
-			@Override
-			public boolean isExecutable() {
-				return false;
-			}
+		SymbolImpl s = new SymbolImpl(new SymbolReference());
+		s.redefine(defn, symbolTable);
+		s.getValue(executor);
+		s.expireValue();
+		s.getValue(executor);
+		s.getValue(executor);
 
-			@Override
-			public Object evaluate(LanguageExecutor context) {
-				// TODO Auto-generated method stub
-				return null;
-			}
+		verify(defn);
+		verify(symbolTable);
+	}
 
-			@Override
-			public String getExpr() {
-				return null;
-			}
-		}, table);
+	@Test
+	public void testIsUpToDateInitialisesCorrectly() throws Exception {
+		SymbolImpl s = new SymbolImpl(new SymbolReference());
+		assertFalse(s.isUpToDate());
+	}
+
+	@Test
+	public void testRegisterDependent() throws Exception {
+		final Symbol dependant = createMock(SymbolImpl.class);
+		replay(dependant);
+		SymbolImpl s = new SymbolImpl(new SymbolReference());
+		s.registerDependent(dependant);
+		verify(dependant);
+	}
+
+	@Test
+	public void testRegisterTrigger() throws Exception {
+		final Symbol other = createMock(SymbolImpl.class);
+		replay(other);
+		SymbolImpl s = new SymbolImpl(new SymbolReference());
+		s.registerTrigger(other);
+		verify(other);
 	}
 
 }

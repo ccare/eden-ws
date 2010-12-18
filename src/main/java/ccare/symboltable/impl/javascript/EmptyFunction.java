@@ -47,37 +47,7 @@ public abstract class EmptyFunction implements Function {
 	}
 
 	@Override
-	public String getClassName() {
-		return null;
-	}
-
-	@Override
-	public Object get(String s, Scriptable scriptable) {
-		return null;
-	}
-
-	@Override
-	public Object get(int i, Scriptable scriptable) {
-		return null;
-	}
-
-	@Override
-	public boolean has(String s, Scriptable scriptable) {
-		return false;
-	}
-
-	@Override
-	public boolean has(int i, Scriptable scriptable) {
-		return false;
-	}
-
-	@Override
-	public void put(String s, Scriptable scriptable, Object o) {
-
-	}
-
-	@Override
-	public void put(int i, Scriptable scriptable, Object o) {
+	public void delete(int i) {
 
 	}
 
@@ -87,32 +57,18 @@ public abstract class EmptyFunction implements Function {
 	}
 
 	@Override
-	public void delete(int i) {
-
-	}
-
-	@Override
-	public Scriptable getPrototype() {
+	public Object get(int i, Scriptable scriptable) {
 		return null;
 	}
 
 	@Override
-	public void setPrototype(Scriptable scriptable) {
-	}
-
-	@Override
-	public Scriptable getParentScope() {
+	public Object get(String s, Scriptable scriptable) {
 		return null;
 	}
 
 	@Override
-	public void setParentScope(Scriptable scriptable) {
-
-	}
-
-	@Override
-	public Object[] getIds() {
-		return EMPTY_ARRAY;
+	public String getClassName() {
+		return null;
 	}
 
 	@Override
@@ -121,7 +77,51 @@ public abstract class EmptyFunction implements Function {
 	}
 
 	@Override
+	public Object[] getIds() {
+		return EMPTY_ARRAY;
+	}
+
+	@Override
+	public Scriptable getParentScope() {
+		return null;
+	}
+
+	@Override
+	public Scriptable getPrototype() {
+		return null;
+	}
+
+	@Override
+	public boolean has(int i, Scriptable scriptable) {
+		return false;
+	}
+
+	@Override
+	public boolean has(String s, Scriptable scriptable) {
+		return false;
+	}
+
+	@Override
 	public boolean hasInstance(Scriptable scriptable) {
 		return false;
+	}
+
+	@Override
+	public void put(int i, Scriptable scriptable, Object o) {
+
+	}
+
+	@Override
+	public void put(String s, Scriptable scriptable, Object o) {
+
+	}
+
+	@Override
+	public void setParentScope(Scriptable scriptable) {
+
+	}
+
+	@Override
+	public void setPrototype(Scriptable scriptable) {
 	}
 }

@@ -8,14 +8,14 @@ public abstract class LanguageExecutor {
 		setSymbolTable(table);
 	}
 
-	public void setSymbolTable(SymbolTable symbolTable) {
-		this.symbolTable = symbolTable;
-	}
+	public abstract Object evaluate(SymbolDefinition definition);
 
 	public SymbolTable getSymbolTable() {
 		return symbolTable;
 	}
 
-	public abstract Object evaluate(SymbolDefinition definition);
+	public void setSymbolTable(SymbolTable symbolTable) {
+		this.symbolTable = symbolTable;
+	}
 
 }

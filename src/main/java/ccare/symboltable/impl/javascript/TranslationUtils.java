@@ -42,11 +42,65 @@ import java.util.regex.Pattern;
  */
 public class TranslationUtils {
 
+	/**
+	 * Tuple to represent the location of a Definition Fragment inside a bigger
+	 * definition
+	 */
+	static class DefnFragment {
+		public final int exprEnd;
+		public final int exprStart;
+		public final int start;
+
+		DefnFragment(int start, int exprStart, int exprEnd) {
+			this.start = start;
+			this.exprStart = exprStart;
+			this.exprEnd = exprEnd;
+		}
+	}
 	static final Pattern DEFN = Pattern.compile("[\\w:/#_]+\\s*is(\\s+)");
 	static final Pattern SPECIALNAME_ESCAPEDPATTERN = Pattern
 			.compile("#\\{([^\\}]+)\\}");
+
 	static final Pattern SPECIALNAME_PATTERN = Pattern
 			.compile("#([^#{][\\w:/#_]*)");
+
+	private static void createRegion(String string, List<String> regionList,
+			int startIndex, int endIndex) {
+		if (endIndex > startIndex) {
+			regionList.add(string.substring(startIndex, endIndex));
+		} else if (endIndex != startIndex) {
+			throw new IllegalArgumentException("Bad substring range");
+		}
+	}
+
+	private static boolean e4XRegion(String region) {
+		if (region.isEmpty()) {
+			return false;
+		} else {
+			final char c = region.charAt(0);
+			return c == '<';
+		}
+	}
+
+	static String encodeObservation(final String in) {
+		final StringBuilder sb = new StringBuilder();
+		for (final String region : pullOutRegions(in)) {
+			if (processibleRegion(region)) {
+				final String translatedEscaped = translateObservationsInString(region);
+				sb.append(translatedEscaped);
+			} else if (e4XRegion(region)) {
+				final String translatedEscaped = translateE4XObservation(region);
+				sb.append(translatedEscaped);
+			} else {
+				sb.append(region);
+			}
+		}
+		return sb.toString();
+	}
+
+	static String extractExpr(String s, int i) {
+		return s.substring(i, findEndOfExpr(s, i));
+	}
 
 	public static Set<String> extractSpecialSymbols(final String input) {
 		Set<String> symbols = new HashSet<String>();
@@ -69,36 +123,6 @@ public class TranslationUtils {
 			}
 		}
 		return symbols;
-	}
-
-	public static String translateExpression(String expr) {
-		List<DefnFragment> fragments = findExprRange(expr);
-		StringBuilder sb = new StringBuilder();
-		int ptr = 0;
-		for (DefnFragment d : fragments) {
-			final int defnStart = d.start;
-			final int start = d.exprStart;
-			final int end = d.exprEnd;
-			final String preamble = expr.substring(ptr, defnStart);
-			final String sym = expr.substring(defnStart, start);
-			final String expression = expr.substring(start, end);
-			sb.append(preamble);
-			sb.append("$eden_define('");
-			sb.append(sym.replaceAll("\\s*is\\s*", "").replaceAll("^#", ""));
-			sb.append("','");
-			final String escapedSlashes = expression.replaceAll("\\\\",
-					"\\\\\\\\");
-			final String escapedQuotes = escapedSlashes
-					.replaceAll("'", "\\\\'");
-			sb.append(escapedQuotes);
-			sb.append("')");
-			ptr = end;
-		}
-		final String remainingCode = expr.substring(ptr, expr.length());
-		sb.append(encodeObservation(remainingCode));
-		final String s = sb.toString();
-
-		return s;
 	}
 
 	static int findEndOfExpr(final String s, final int i) {
@@ -193,53 +217,37 @@ public class TranslationUtils {
 		return ptr;
 	}
 
-	static String extractExpr(String s, int i) {
-		return s.substring(i, findEndOfExpr(s, i));
-	}
-
-	static String encodeObservation(final String in) {
-		final StringBuilder sb = new StringBuilder();
-		for (final String region : pullOutRegions(in)) {
+	/**
+	 * Find index bounds of definitions inside an input string
+	 * 
+	 * @param input
+	 * @return
+	 */
+	static List<DefnFragment> findExprRange(final String input) {
+		final List<String> regions = pullOutRegions(input);
+		List<DefnFragment> indexes = new ArrayList();
+		int index = 0;
+		for (String region : regions) {
 			if (processibleRegion(region)) {
-				final String translatedEscaped = translateObservationsInString(region);
-				sb.append(translatedEscaped);
-			} else if (e4XRegion(region)) {
-				final String translatedEscaped = translateE4XObservation(region);
-				sb.append(translatedEscaped);
-			} else {
-				sb.append(region);
+				final Matcher matcher = DEFN.matcher(region);
+				while (matcher.find() == true) {
+					final int exprStart = index + matcher.end();
+					indexes.add(new DefnFragment(index + matcher.start(),
+							exprStart, findEndOfExpr(input, exprStart)));
+				}
 			}
+			index = index + region.length();
 		}
-		return sb.toString();
+		return indexes;
 	}
 
-	static String translateE4XObservation(final String input) {
-		int levels = 0;
-		StringBuilder result = new StringBuilder();
-		StringBuilder working = new StringBuilder();
-		for (char c : input.toCharArray()) {
-			working.append(c);
-			if (c == '{') {
-				levels++;
-			} else if (c == '}') {
-				levels--;
-			}
-			if (levels == 0) {
-				final String translated = translateObservationsInString(working);
-				result.append(translated);
-				working = new StringBuilder();
-			}
+	private static boolean processibleRegion(String region) {
+		if (region.isEmpty()) {
+			return false;
+		} else {
+			final char c = region.charAt(0);
+			return c != '\'' && c != '"' && c != '<';
 		}
-		return result.toString();
-	}
-
-	private static String translateObservationsInString(final CharSequence input) {
-		final String translatedNormalObservables = SPECIALNAME_PATTERN.matcher(
-				input).replaceAll("\\$eden_observe('$1')");
-		final String translatedEscapedObservables = SPECIALNAME_ESCAPEDPATTERN
-				.matcher(translatedNormalObservables).replaceAll(
-						"\\$eden_observe('$1')");
-		return translatedEscapedObservables;
 	}
 
 	static List<String> pullOutRegions(final String s) {
@@ -356,71 +364,63 @@ public class TranslationUtils {
 		return list;
 	}
 
-	private static void createRegion(String string, List<String> regionList,
-			int startIndex, int endIndex) {
-		if (endIndex > startIndex) {
-			regionList.add(string.substring(startIndex, endIndex));
-		} else if (endIndex != startIndex) {
-			throw new IllegalArgumentException("Bad substring range");
-		}
-	}
-
-	/**
-	 * Find index bounds of definitions inside an input string
-	 * 
-	 * @param input
-	 * @return
-	 */
-	static List<DefnFragment> findExprRange(final String input) {
-		final List<String> regions = pullOutRegions(input);
-		List<DefnFragment> indexes = new ArrayList();
-		int index = 0;
-		for (String region : regions) {
-			if (processibleRegion(region)) {
-				final Matcher matcher = DEFN.matcher(region);
-				while (matcher.find() == true) {
-					final int exprStart = index + matcher.end();
-					indexes.add(new DefnFragment(index + matcher.start(),
-							exprStart, findEndOfExpr(input, exprStart)));
-				}
+	static String translateE4XObservation(final String input) {
+		int levels = 0;
+		StringBuilder result = new StringBuilder();
+		StringBuilder working = new StringBuilder();
+		for (char c : input.toCharArray()) {
+			working.append(c);
+			if (c == '{') {
+				levels++;
+			} else if (c == '}') {
+				levels--;
 			}
-			index = index + region.length();
+			if (levels == 0) {
+				final String translated = translateObservationsInString(working);
+				result.append(translated);
+				working = new StringBuilder();
+			}
 		}
-		return indexes;
+		return result.toString();
 	}
 
-	private static boolean processibleRegion(String region) {
-		if (region.isEmpty()) {
-			return false;
-		} else {
-			final char c = region.charAt(0);
-			return c != '\'' && c != '"' && c != '<';
+	public static String translateExpression(String expr) {
+		List<DefnFragment> fragments = findExprRange(expr);
+		StringBuilder sb = new StringBuilder();
+		int ptr = 0;
+		for (DefnFragment d : fragments) {
+			final int defnStart = d.start;
+			final int start = d.exprStart;
+			final int end = d.exprEnd;
+			final String preamble = expr.substring(ptr, defnStart);
+			final String sym = expr.substring(defnStart, start);
+			final String expression = expr.substring(start, end);
+			sb.append(preamble);
+			sb.append("$eden_define('");
+			sb.append(sym.replaceAll("\\s*is\\s*", "").replaceAll("^#", ""));
+			sb.append("','");
+			final String escapedSlashes = expression.replaceAll("\\\\",
+					"\\\\\\\\");
+			final String escapedQuotes = escapedSlashes
+					.replaceAll("'", "\\\\'");
+			sb.append(escapedQuotes);
+			sb.append("')");
+			ptr = end;
 		}
+		final String remainingCode = expr.substring(ptr, expr.length());
+		sb.append(encodeObservation(remainingCode));
+		final String s = sb.toString();
+
+		return s;
 	}
 
-	private static boolean e4XRegion(String region) {
-		if (region.isEmpty()) {
-			return false;
-		} else {
-			final char c = region.charAt(0);
-			return c == '<';
-		}
-	}
-
-	/**
-	 * Tuple to represent the location of a Definition Fragment inside a bigger
-	 * definition
-	 */
-	static class DefnFragment {
-		public final int exprStart;
-		public final int start;
-		public final int exprEnd;
-
-		DefnFragment(int start, int exprStart, int exprEnd) {
-			this.start = start;
-			this.exprStart = exprStart;
-			this.exprEnd = exprEnd;
-		}
+	private static String translateObservationsInString(final CharSequence input) {
+		final String translatedNormalObservables = SPECIALNAME_PATTERN.matcher(
+				input).replaceAll("\\$eden_observe('$1')");
+		final String translatedEscapedObservables = SPECIALNAME_ESCAPEDPATTERN
+				.matcher(translatedNormalObservables).replaceAll(
+						"\\$eden_observe('$1')");
+		return translatedEscapedObservables;
 	}
 
 }

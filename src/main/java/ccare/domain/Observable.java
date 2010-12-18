@@ -42,15 +42,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Observable implements Serializable {
 
-	private String definition;
-
 	private Object currentValue;
 
-	@XmlElement
-	private Collection<Observable> dependents = new HashSet<Observable>();
+	private String definition;
 
 	@XmlElement
 	private Collection<Observable> dependees = new HashSet<Observable>();
+
+	@XmlElement
+	private Collection<Observable> dependents = new HashSet<Observable>();
 
 	public Object getCurrentValue() {
 		return currentValue;
@@ -59,11 +59,6 @@ public class Observable implements Serializable {
 	@XmlElement
 	public String getDefinition() {
 		return definition;
-	}
-
-	public void setDefinition(String definition) {
-		this.definition = definition;
-		this.currentValue = "eval(" + definition + ")";
 	}
 
 	public Collection<Observable> getDependees() {
@@ -76,5 +71,10 @@ public class Observable implements Serializable {
 
 	public void setCurrentValue(Object o) {
 		currentValue = o;
+	}
+
+	public void setDefinition(String definition) {
+		this.definition = definition;
+		this.currentValue = "eval(" + definition + ")";
 	}
 }

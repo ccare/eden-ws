@@ -35,30 +35,30 @@ import java.util.UUID;
  * User: carecx Date: 26-Oct-2010 Time: 15:24:19
  */
 public interface SymbolTable extends SymbolTableMXBean {
-	UUID getId();
-
-	Set<SymbolReference> getSymbols();
-
 	void define(SymbolReference aRef, String s);
-
-	Object getValue(SymbolReference bRef);
 
 	void defineFunction(SymbolReference a, String s);
 
 	void defineTriggeredProc(SymbolReference a, String s, String... triggers);
 
-	Object execute(SymbolReference a);
-
-	Object execute(SymbolReference a, Object... params);
-
-	@Override
-	String getName();
-
-	void setName(String name);
-
 	Object evaluate(String s);
 
 	Object evaluateDefintion(SymbolDefinition definition);
 
+	Object execute(SymbolReference a);
+
+	Object execute(SymbolReference a, Object... params);
+
 	public abstract LanguageExecutor getExecutor();
+
+	UUID getId();
+
+	@Override
+	String getName();
+
+	Set<SymbolReference> getSymbols();
+
+	Object getValue(SymbolReference bRef);
+
+	void setName(String name);
 }

@@ -34,13 +34,13 @@ import java.util.Collection;
  * User: carecx Date: 13-Oct-2010 Time: 22:25:05
  */
 public interface SymbolDefinition {
+	public Object evaluate(LanguageExecutor context);
+
 	public Collection<SymbolReference> getDependencies();
+
+	public abstract String getExpr();
 
 	public Collection<SymbolReference> getTriggers();
 
-	public Object evaluate(LanguageExecutor context);
-
 	boolean isExecutable();
-
-	public abstract String getExpr();
 }

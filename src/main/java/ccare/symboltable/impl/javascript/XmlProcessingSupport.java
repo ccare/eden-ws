@@ -60,22 +60,6 @@ class XmlProcessingSupport {
 	private static Pattern PROCESSING_INSTRUCT_PATTERN = Pattern
 			.compile("^<\\?xml version=\"1.0\" encoding=\"UTF-8\"\\?>");
 
-	static String doTransform(final Transformer transformer,
-			StreamSource inputSource, Map<String, Object> m)
-			throws TransformerException {
-		if (m != null) {
-			for (String k : m.keySet()) {
-				transformer.setParameter(k, m.get(k));
-			}
-		}
-		final OutputStream bos = new ByteArrayOutputStream();
-		final StreamResult result = new StreamResult(bos);
-		transformer.transform(inputSource, result);
-
-		final String transformedString = bos.toString();
-		return transformedString;
-	}
-
 	static Function createTransformerFactoryFunction() {
 		final TransformerFactory factory = TransformerFactory.newInstance();
 		return new EmptyFunction() {
@@ -150,6 +134,22 @@ class XmlProcessingSupport {
 			}
 
 		};
+	}
+
+	static String doTransform(final Transformer transformer,
+			StreamSource inputSource, Map<String, Object> m)
+			throws TransformerException {
+		if (m != null) {
+			for (String k : m.keySet()) {
+				transformer.setParameter(k, m.get(k));
+			}
+		}
+		final OutputStream bos = new ByteArrayOutputStream();
+		final StreamResult result = new StreamResult(bos);
+		transformer.transform(inputSource, result);
+
+		final String transformedString = bos.toString();
+		return transformedString;
 	}
 
 	private static String getXMLStringFromObject(Object xsl) {

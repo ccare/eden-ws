@@ -42,15 +42,15 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
  * change this template use File | Settings | File Templates.
  */
 public class IntegrationSupport {
+	private static URI getBaseURI(final String resourcePath) {
+		return UriBuilder.fromUri(
+				"http://localhost:8080/services/" + resourcePath).build();
+	}
+
 	protected WebResource resource(final String resourcePath) {
 		ClientConfig config = new DefaultClientConfig();
 		Client client = Client.create(config);
 		WebResource resource = client.resource(getBaseURI(resourcePath));
 		return resource;
-	}
-
-	private static URI getBaseURI(final String resourcePath) {
-		return UriBuilder.fromUri(
-				"http://localhost:8080/services/" + resourcePath).build();
 	}
 }
