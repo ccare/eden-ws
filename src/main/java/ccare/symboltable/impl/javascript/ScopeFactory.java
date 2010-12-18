@@ -28,10 +28,14 @@
 
 package ccare.symboltable.impl.javascript;
 
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Undefined;
+
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
-
-import org.mozilla.javascript.*;
 
 /**
  * User: carecx

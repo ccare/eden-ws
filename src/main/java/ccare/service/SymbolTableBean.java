@@ -28,18 +28,25 @@
 
 package ccare.service;
 
+import static java.lang.String.format;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ccare.domain.Observable;
 import ccare.domain.TableReference;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.impl.SymbolTableImpl;
+
 import com.sun.jersey.api.NotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.*;
-
-import static java.lang.String.format;
 
 //@Singleton
 

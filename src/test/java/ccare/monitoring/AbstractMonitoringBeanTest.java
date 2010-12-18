@@ -1,19 +1,16 @@
 package ccare.monitoring;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.replay;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
-import javax.management.MXBean;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
 import org.junit.Test;
-
-import ccare.symboltable.SymbolDefinition;
 
 public class AbstractMonitoringBeanTest {
 

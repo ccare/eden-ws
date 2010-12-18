@@ -28,16 +28,16 @@
 
 package ccare.symboltable.impl;
 
+import java.lang.ref.SoftReference;
+import java.util.Set;
+
+import org.mozilla.javascript.Undefined;
+
 import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.exceptions.CannotForgetException;
-
-import org.mozilla.javascript.Undefined;
-
-import java.lang.ref.SoftReference;
-import java.util.Set;
 
 /**
  * User: carecx Date: 13-Oct-2010 Time: 23:36:43

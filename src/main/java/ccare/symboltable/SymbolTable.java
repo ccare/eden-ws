@@ -31,8 +31,6 @@ package ccare.symboltable;
 import java.util.Set;
 import java.util.UUID;
 
-import ccare.symboltable.SymbolTableMXBean;
-
 /**
  * User: carecx
  * Date: 26-Oct-2010

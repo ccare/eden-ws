@@ -28,12 +28,13 @@
 
 package ccare.web;
 
-import ccare.service.SymbolTableBean;
-import com.sun.jersey.api.core.InjectParam;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+
+import ccare.service.SymbolTableBean;
+
+import com.sun.jersey.api.core.InjectParam;
 
 @Path("status")
 public class StatusController {

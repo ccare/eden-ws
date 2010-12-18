@@ -28,24 +28,28 @@
 
 package ccare.symboltable.impl;
 
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mozilla.javascript.Undefined;
+
 import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.Symbol;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.exceptions.CannotForgetException;
-import org.junit.Before;
-import org.junit.Test;
-import org.mozilla.javascript.Undefined;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
-import static junit.framework.Assert.*;
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 
 /**

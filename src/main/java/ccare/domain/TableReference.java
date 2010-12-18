@@ -28,9 +28,10 @@
 
 package ccare.domain;
 
+import java.util.UUID;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.UUID;
 
 /**
  * Created by IntelliJ IDEA.

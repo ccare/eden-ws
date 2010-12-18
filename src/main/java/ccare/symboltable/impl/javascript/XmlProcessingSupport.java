@@ -28,12 +28,13 @@
 
 package ccare.symboltable.impl.javascript;
 
-import org.apache.commons.io.IOUtils;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.Undefined;
-import org.mozilla.javascript.xml.XMLObject;
+import static org.apache.commons.lang.Validate.notNull;
+
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -41,13 +42,13 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Pattern;
 
-import static org.apache.commons.lang.Validate.notNull;
+import org.apache.commons.io.IOUtils;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.Undefined;
+import org.mozilla.javascript.xml.XMLObject;
 
 /**
  * Created by IntelliJ IDEA.

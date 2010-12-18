@@ -28,24 +28,36 @@
 
 package ccare.web;
 
+import static java.lang.String.format;
+
+import java.util.List;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ccare.domain.TableReference;
 import ccare.service.CannotCreateException;
 import ccare.service.SymbolTableBean;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
+
 import com.sun.jersey.api.NotFoundException;
 import com.sun.jersey.api.core.InjectParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import java.util.List;
-
-import static java.lang.String.format;
 
 @Path("spaces")
 public class SymbolTableController {

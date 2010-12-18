@@ -28,6 +28,14 @@
 
 package ccare.symboltable.impl;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import org.mozilla.javascript.Undefined;
+
 import ccare.monitoring.AbstractMonitoringBean;
 import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.LanugageSupport;
@@ -39,13 +47,9 @@ import ccare.symboltable.exceptions.CannotDefineException;
 import ccare.symboltable.exceptions.SymbolTableException;
 import ccare.symboltable.impl.javascript.JavaScriptLanguageExecutor;
 import ccare.symboltable.impl.javascript.JavaScriptLanguageSupport;
-import ccare.symboltable.maintainers.StateMaintainer;
 import ccare.symboltable.maintainers.MarkOutOfDateMaintainer;
+import ccare.symboltable.maintainers.StateMaintainer;
 import ccare.symboltable.maintainers.TriggeredProcScheduler;
-
-import org.mozilla.javascript.Undefined;
-
-import java.util.*;
 
 public class SymbolTableImpl extends AbstractMonitoringBean implements SymbolTable {
 

@@ -28,13 +28,14 @@
 
 package ccare.web;
 
+import java.net.URI;
+
+import javax.ws.rs.core.UriBuilder;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-
-import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
 
 /**
  * Created by IntelliJ IDEA.

@@ -28,19 +28,20 @@
 
 package ccare.symboltable.impl.javascript;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Collection;
+import java.util.Set;
+import java.util.UUID;
+
+import org.junit.Test;
+
 import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
 import ccare.symboltable.SymbolTable;
 import ccare.symboltable.SymbolTableMXBean;
 import ccare.symboltable.impl.SymbolTableImpl;
-import org.junit.Test;
-
-import java.util.Collection;
-import java.util.Set;
-import java.util.UUID;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by IntelliJ IDEA.

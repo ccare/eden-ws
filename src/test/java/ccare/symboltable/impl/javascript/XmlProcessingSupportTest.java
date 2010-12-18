@@ -28,21 +28,24 @@
 
 package ccare.symboltable.impl.javascript;
 
+import static ccare.symboltable.impl.javascript.JavaScriptLanguageExecutor.evalExpression;
+import static ccare.symboltable.impl.javascript.XmlProcessingSupport.createTransformFunction;
+import static ccare.symboltable.impl.javascript.XmlProcessingSupport.removeProcessingInstruction;
+import static ccare.symboltable.impl.javascript.XmlProcessingSupport.toXMLString;
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+
 import org.junit.Test;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.xml.XMLObject;
 import org.xml.sax.SAXException;
-
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import java.io.IOException;
-
-import static ccare.symboltable.impl.javascript.JavaScriptLanguageExecutor.evalExpression;
-import static ccare.symboltable.impl.javascript.XmlProcessingSupport.*;
-import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by IntelliJ IDEA.

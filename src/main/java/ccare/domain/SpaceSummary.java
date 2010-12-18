@@ -28,8 +28,9 @@
 
 package ccare.domain;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Set;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Created by IntelliJ IDEA.

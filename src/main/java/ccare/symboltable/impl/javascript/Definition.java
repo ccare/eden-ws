@@ -28,19 +28,19 @@
 
 package ccare.symboltable.impl.javascript;
 
+import static ccare.symboltable.impl.javascript.TranslationUtils.extractSpecialSymbols;
+import static ccare.symboltable.impl.javascript.TranslationUtils.translateExpression;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import ccare.symboltable.LanguageExecutor;
 import ccare.symboltable.SymbolDefinition;
 import ccare.symboltable.SymbolReference;
-import ccare.symboltable.exceptions.EvaluationException;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EcmaError;
-import org.mozilla.javascript.Scriptable;
-
-import java.util.*;
-
-import static ccare.symboltable.impl.javascript.TranslationUtils.extractSpecialSymbols;
-import static ccare.symboltable.impl.javascript.TranslationUtils.translateExpression;
-import static java.lang.String.format;
 
 /**
  * Created by IntelliJ IDEA.

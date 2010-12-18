@@ -28,13 +28,13 @@
 
 package ccare.service;
 
-import ccare.domain.Observable;
-import ccare.domain.TableReference;
-import ccare.symboltable.SymbolReference;
-
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import ccare.domain.Observable;
+import ccare.domain.TableReference;
+import ccare.symboltable.SymbolReference;
 
 /**
  * User: carecx

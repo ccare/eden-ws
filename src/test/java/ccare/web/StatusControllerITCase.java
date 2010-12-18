@@ -28,11 +28,12 @@
 
 package ccare.web;
 
-import com.sun.jersey.api.client.WebResource;
-import org.junit.Test;
-
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+import com.sun.jersey.api.client.WebResource;
 
 /**
  * User: carecx

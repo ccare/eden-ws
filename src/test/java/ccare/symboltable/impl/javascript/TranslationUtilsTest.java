@@ -28,17 +28,27 @@
 
 package ccare.symboltable.impl.javascript;
 
-import org.junit.Test;
-
-import java.util.List;
-import java.util.Set;
-
-import static ccare.symboltable.impl.javascript.TranslationUtils.*;
+import static ccare.symboltable.impl.javascript.TranslationUtils.SPECIALNAME_PATTERN;
+import static ccare.symboltable.impl.javascript.TranslationUtils.encodeObservation;
+import static ccare.symboltable.impl.javascript.TranslationUtils.extractExpr;
+import static ccare.symboltable.impl.javascript.TranslationUtils.extractSpecialSymbols;
+import static ccare.symboltable.impl.javascript.TranslationUtils.findEndOfExpr;
+import static ccare.symboltable.impl.javascript.TranslationUtils.findExprRange;
+import static ccare.symboltable.impl.javascript.TranslationUtils.pullOutRegions;
+import static ccare.symboltable.impl.javascript.TranslationUtils.translateE4XObservation;
+import static ccare.symboltable.impl.javascript.TranslationUtils.translateExpression;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+import java.util.Set;
+
+import org.junit.Test;
+
+import ccare.symboltable.impl.javascript.TranslationUtils.DefnFragment;
 
 /**
  * User: carecx
