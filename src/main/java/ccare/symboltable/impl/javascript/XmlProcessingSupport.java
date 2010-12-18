@@ -47,6 +47,7 @@ import org.apache.commons.io.IOUtils;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.xml.XMLObject;
 
@@ -161,7 +162,7 @@ class XmlProcessingSupport {
     }
 
     static String toXMLString(XMLObject transformed) {
-        final Object o = XMLObject.callMethod(transformed, "toXMLString", null);
+        final Object o = ScriptableObject.callMethod(transformed, "toXMLString", null);
         if (o instanceof String) {
             return (String) o;
         } else if (o == null) {

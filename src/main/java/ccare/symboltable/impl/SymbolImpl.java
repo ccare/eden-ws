@@ -111,7 +111,7 @@ class SymbolImpl implements Symbol {
 	}
 
 	void registerDependent(Symbol s) {
-		dependsOn.addListener((Symbol) s);
+		dependsOn.addListener(s);
 	}
 
 	void unRegisterDependent(Symbol s) {

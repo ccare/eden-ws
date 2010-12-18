@@ -53,7 +53,8 @@ public interface SymbolTable extends SymbolTableMXBean {
 
     Object execute(SymbolReference a, Object... params);
 
-    String getName();
+    @Override
+	String getName();
 
     void setName(String name);
 
