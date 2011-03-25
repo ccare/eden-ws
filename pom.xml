@@ -34,6 +34,14 @@
     <packaging>war</packaging>
     <name>Eden WebServices</name>
     <url>http://maven.apache.org</url>
+
+  <scm>
+    <connection>scm:git:git://github.com/ccare/eden-ws.git</connection>
+    <developerConnection>scm:git:git://github.com/care/eden-ws.git</developerConnection>
+    <url>https://github.com/care/eden-ws/</url>
+  </scm>
+
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
